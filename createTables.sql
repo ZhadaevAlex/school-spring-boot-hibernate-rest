@@ -11,11 +11,30 @@ create table if not exists school.students (
     foreign key (group_id) references school.groups(group_id)
 );
 
-create table if not exists school.courses (
+create table if not exists school.courses1 (
     course_id integer,
     course_name varchar(255),
     course_description text
 );
+
+create table if not exists school.courses2 (
+    course_id integer,
+    course_name varchar(255),
+    course_description text
+);
+
+create table if not exists school.courses3 (
+                                               course_id integer,
+                                               course_name varchar(255),
+                                               course_description text
+);
+
+create table if not exists school.courses4 (
+                                               course_id integer,
+                                               course_name varchar(255),
+                                               course_description text
+);
+
 
 -- drop table school.students;
 -- drop table school.groups;
