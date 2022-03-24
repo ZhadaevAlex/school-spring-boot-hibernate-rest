@@ -36,7 +36,7 @@ public class Main {
                 "Turner", "Morgan", "Baker", "Hill", "Phillips");
 
         School school = new SchoolCreator(10, subjects, 200,
-                firstNames, lastNames, 10, 30).createSchool();
+                firstNames, lastNames, 10, 30, 1, 3).createSchool();
 
         String url = PropertiesReader.getInstance().getProperty("URL");
         String user = PropertiesReader.getInstance().getProperty("USER");

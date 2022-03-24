@@ -10,9 +10,11 @@ public class SchoolCreator {
     private final int numberStudents;
     private final int minStudentsInGroup;
     private final int maxStudentsInGroup;
+    private final int minCourses;
+    private final int maxCourses;
 
     public SchoolCreator(int numberGroups, Map<String, String> subjects, int numberStudents, List<String> firstNames, List<String> lastNames,
-                         int minStudentsInGroup, int maxStudentsInGroup) {
+                         int minStudentsInGroup, int maxStudentsInGroup, int minCourses, int maxCourses) {
         this.numberGroups = numberGroups;
         this.subjects = subjects;
         this.firstNames = firstNames;
@@ -20,6 +22,8 @@ public class SchoolCreator {
         this.numberStudents = numberStudents;
         this.minStudentsInGroup = minStudentsInGroup;
         this.maxStudentsInGroup = maxStudentsInGroup;
+        this.minCourses = minCourses;
+        this.maxCourses = maxCourses;
 
     }
 
@@ -30,7 +34,7 @@ public class SchoolCreator {
         school.setCourses(createCourses(subjects));
 
         school.setStudents(createStudents(numberStudents, firstNames, lastNames,
-                school.getGroups(), school.getCourses(), minStudentsInGroup, maxStudentsInGroup));
+                school.getGroups(), school.getCourses(), minStudentsInGroup, maxStudentsInGroup, minCourses, maxCourses));
 
         return school;
     }
@@ -65,7 +69,7 @@ public class SchoolCreator {
 
     private List<Student> createStudents(int numberStudents, List<String> firstNames, List<String> lastNames,
                                          List<Group> groups, List<Course> courses,
-                                         int minStudentsInGroup, int maxStudentsInGroup) {
+                                         int minStudentsInGroup, int maxStudentsInGroup, int minCourses, int maxCourses) {
         List<Student> students = new ArrayList<>();
 
         Random rnd = new Random();
@@ -74,9 +78,21 @@ public class SchoolCreator {
             String lastName = lastNames.get(rnd.nextInt(lastNames.size()));
             Student student = new Student(firstName, lastName);
             student.setGroup(new Group("No group"));
+
+            //Распределение по курсам
+            int numberCourses = minCourses + rnd.nextInt(maxCourses -  minCourses + 1);
+            Set<Course> coursesForStudents = new HashSet<>();
+            int countCourses = 0;
+            while (countCourses < numberCourses) {
+                coursesForStudents.add(courses.get(rnd.nextInt(courses.size())));
+                countCourses = coursesForStudents.size();
+            }
+            student.setCourse(coursesForStudents);
+
             students.add(student);
         }
 
+        //Распределение по группам
         int nextGroupPointer = 0;
         for (Group group : groups) {
             int studentsInGroup = minStudentsInGroup + rnd.nextInt(maxStudentsInGroup - minStudentsInGroup + 1);

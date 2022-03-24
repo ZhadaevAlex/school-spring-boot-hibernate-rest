@@ -1,10 +1,13 @@
 package ru.zhadaev;
 
+import java.util.List;
+import java.util.Set;
+
 public class Student {
     private Group group;
     private final String firstName;
     private final String lastName;
-    private String courseName;
+    private Set<Course> courses;
 
     public Student(String firstName, String lastName) {
         this.firstName = firstName;
@@ -27,12 +30,12 @@ public class Student {
         return group;
     }
 
-    public void setCourseName(String courseName) {
-        this.courseName = courseName;
+    public void setCourse(Set<Course> courses) {
+        this.courses = courses;
     }
 
-    public String getCourseName() {
-        return courseName;
+    public Set<Course> getCourse() {
+        return courses;
     }
 
 
