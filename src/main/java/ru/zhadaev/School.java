@@ -1,18 +1,20 @@
 package ru.zhadaev;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class School {
-    private List<Group> groups = new ArrayList<>();
+    private Set<Group> groups = new HashSet<>();
     private List<Course> courses = new ArrayList<>();
     private List<Student> students = new ArrayList<>();
 
-    public void setGroups(List<Group> groups) {
+    public void setGroups(Set<Group> groups) {
         this.groups = groups;
     }
 
-    public List<Group> getGroups() {
+    public Set<Group> getGroups() {
         return groups;
     }
 

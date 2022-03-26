@@ -35,8 +35,11 @@ public class Main {
                 "Cooper", "King", "Green",  "Walker", "Edwards",
                 "Turner", "Morgan", "Baker", "Hill", "Phillips");
 
-        School school = new SchoolCreator(10, subjects, 200,
-                firstNames, lastNames, 10, 30, 1, 3).createSchool();
+        List<Student> students = new StudentsCreator().createStudents(200, firstNames, lastNames);
+        School school = new SchoolCreator(10, 10, 30,
+        subjects, 1, 3).createSchool(students);
+
+        int a = 1;
 
         String url = PropertiesReader.getInstance().getProperty("URL");
         String user = PropertiesReader.getInstance().getProperty("USER");

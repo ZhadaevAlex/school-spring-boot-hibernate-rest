@@ -4,109 +4,66 @@ import java.util.*;
 
 public class SchoolCreator {
     private final int numberGroups;
-    private final Map<String, String> subjects;
-    private final List<String> firstNames;
-    private final List<String> lastNames;
-    private final int numberStudents;
     private final int minStudentsInGroup;
     private final int maxStudentsInGroup;
+    private final Map<String, String> subjects;
     private final int minCourses;
     private final int maxCourses;
 
-    public SchoolCreator(int numberGroups, Map<String, String> subjects, int numberStudents, List<String> firstNames, List<String> lastNames,
-                         int minStudentsInGroup, int maxStudentsInGroup, int minCourses, int maxCourses) {
+    public SchoolCreator(int numberGroups, int minStudentsInGroup,
+                         int maxStudentsInGroup, Map<String, String> subjects,
+                         int minCourses, int maxCourses) {
+
+        requiredNotNull(subjects);
+        requiredNumberRowsNotZero(subjects);
+
         this.numberGroups = numberGroups;
-        this.subjects = subjects;
-        this.firstNames = firstNames;
-        this.lastNames = lastNames;
-        this.numberStudents = numberStudents;
         this.minStudentsInGroup = minStudentsInGroup;
         this.maxStudentsInGroup = maxStudentsInGroup;
+        this.subjects = subjects;
         this.minCourses = minCourses;
         this.maxCourses = maxCourses;
-
     }
 
-    public School createSchool() {
+    public School createSchool(List<Student> students) {
+        requiredNotNull(students);
+        requiredNumberRowsNotZero(students);
+
         School school = new School();
 
-        school.setGroups(createGroups(numberGroups));
-        school.setCourses(createCourses(subjects));
+        school.setGroups(new GroupCreator().createGroups(numberGroups));
+        school.setCourses(new CourseCreator().createCourses(subjects));
 
-        school.setStudents(createStudents(numberStudents, firstNames, lastNames,
-                school.getGroups(), school.getCourses(), minStudentsInGroup, maxStudentsInGroup, minCourses, maxCourses));
+        StudentsDistributor studentsDistributor = new StudentsDistributor();
+        students = studentsDistributor.distributeByGroups(students, school.getGroups(), minStudentsInGroup, maxStudentsInGroup);
+        students = studentsDistributor.distributionByCourses(students, school.getCourses(), minCourses, maxCourses);
+
+        school.setStudents(students);
 
         return school;
     }
 
-    private List<Group> createGroups(int numberGroups) {
-        List<Group> groups = new ArrayList<>();
-
-        RandomWords randomWords = new RandomWords();
-        for (int i = 0; i < numberGroups; i++) {
-            StringBuilder name = new StringBuilder();
-            name.append(randomWords.getRandomWord(2, LetterCase.UPPERCASE))
-                    .append("-")
-                    .append(randomWords.getRandomNumber(10, 99));
-
-            groups.add(new Group(name.toString()));
+    private void requiredNotNull(Map<String, String> map) {
+        if (map == null) {
+            throw new IllegalArgumentException("Requires a non-null argument");
         }
-
-        return groups;
     }
 
-    private List<Course> createCourses(Map<String, String> subjects) {
-        List<Course> courses = new ArrayList<>();
-
-        for (Map.Entry<String, String> item : subjects.entrySet()) {
-            Course course = new Course(item.getKey());
-            course.setDescription(item.getValue());
-            courses.add(course);
+    private void requiredNumberRowsNotZero(Map<String, String> map) {
+        if (map.isEmpty()) {
+            throw new IllegalArgumentException("The number of rows not equal to zero is required");
         }
-
-        return courses;
     }
 
-    private List<Student> createStudents(int numberStudents, List<String> firstNames, List<String> lastNames,
-                                         List<Group> groups, List<Course> courses,
-                                         int minStudentsInGroup, int maxStudentsInGroup, int minCourses, int maxCourses) {
-        List<Student> students = new ArrayList<>();
-
-        Random rnd = new Random();
-        for (int i = 0; i < numberStudents; i++) {
-            String firstName = firstNames.get(rnd.nextInt(lastNames.size()));
-            String lastName = lastNames.get(rnd.nextInt(lastNames.size()));
-            Student student = new Student(firstName, lastName);
-            student.setGroup(new Group("No group"));
-
-            //Распределение по курсам
-            int numberCourses = minCourses + rnd.nextInt(maxCourses -  minCourses + 1);
-            Set<Course> coursesForStudents = new HashSet<>();
-            int countCourses = 0;
-            while (countCourses < numberCourses) {
-                coursesForStudents.add(courses.get(rnd.nextInt(courses.size())));
-                countCourses = coursesForStudents.size();
-            }
-            student.setCourse(coursesForStudents);
-
-            students.add(student);
+    private <T> void requiredNotNull(List<T> list) {
+        if (list == null) {
+            throw new IllegalArgumentException("Requires a non-null argument");
         }
+    }
 
-        //Распределение по группам
-        int nextGroupPointer = 0;
-        for (Group group : groups) {
-            int studentsInGroup = minStudentsInGroup + rnd.nextInt(maxStudentsInGroup - minStudentsInGroup + 1);
-            if (nextGroupPointer + studentsInGroup > students.size()) {
-                break;
-            }
-
-            for (int j = 0; j < studentsInGroup; j++) {
-                students.get(nextGroupPointer + j).setGroup(group);
-            }
-
-            nextGroupPointer += studentsInGroup;
+    private <T> void requiredNumberRowsNotZero(List<T> list) {
+        if (list.isEmpty()) {
+            throw new IllegalArgumentException("The number of rows not equal to zero is required");
         }
-
-        return students;
     }
 }

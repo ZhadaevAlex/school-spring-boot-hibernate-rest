@@ -1,6 +1,5 @@
 package ru.zhadaev;
 
-import java.util.List;
 import java.util.Set;
 
 public class Student {
