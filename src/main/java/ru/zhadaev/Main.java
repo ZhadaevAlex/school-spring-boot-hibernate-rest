@@ -1,14 +1,10 @@
 package ru.zhadaev;
 
-import java.nio.file.NoSuchFileException;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.*;
 
 public class Main {
-    public static void main(String[] args) throws SQLException, NoSuchFileException, IsNotFileException {
+    public static void main(String[] args) throws SQLException {
         Map<String, String> subjects = new HashMap<>();
         subjects.put("Literature", "Subject Literature");
         subjects.put("Astronomy", "Subject Astronomy");
@@ -39,17 +35,13 @@ public class Main {
         School school = new SchoolCreator(10, 10, 30,
         subjects, 1, 3).createSchool(students);
 
-        int a = 1;
+        Group groupIn1 = new Group("RR-16");
+        GroupRepository gr = new GroupRepository();
+        Group groupOut1 = gr.save(groupIn1);
 
-        String url = PropertiesReader.getInstance().getProperty("URL");
-        String user = PropertiesReader.getInstance().getProperty("USER");
-        String password = PropertiesReader.getInstance().getProperty("PASSWORD");
-        String sqlFile = PropertiesReader.getInstance().getProperty("SQL_FILE");
+        Group groupIn2 = new Group("RR-17");
+        Group groupOut2 = gr.save(groupIn2);
 
-        String sqlQuery = new SqlFileReader().read(sqlFile);
-
-        Connection con = DriverManager.getConnection(url, user, password);
-        Statement statement = con.createStatement();
-        statement.executeLargeUpdate(sqlQuery);
+        int bb = 2;
     }
 }
