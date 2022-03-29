@@ -57,6 +57,8 @@ public class Main {
         long a = gr.count();
         System.out.println(a);
 
+        gr.deleteById(3);
+
         int b = 2;
     }
 }

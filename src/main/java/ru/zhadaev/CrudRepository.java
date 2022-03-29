@@ -15,7 +15,7 @@ public interface CrudRepository<T, ID> {
 
         long count() throws DAOException;
 
-        void deleteById(ID id);
+        void deleteById(ID id) throws DAOException;
 
         void delete(T entity);
 

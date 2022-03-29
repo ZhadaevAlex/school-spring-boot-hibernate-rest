@@ -188,19 +188,17 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
     }
 
     @Override
-    public void deleteById(Integer integer) {
-
+    public void deleteById(Integer integer) throws DAOException {
+        logger.error("Операция DELETE нарушает ограничение внешнего ключа таблицы students");
     }
 
     @Override
     public void delete(Group entity) {
-
+        logger.error("Операция DELETE нарушает ограничение внешнего ключа таблицы students");
     }
 
     @Override
     public void deleteAll() {
-
+        logger.error("Операция DELETE нарушает ограничение внешнего ключа таблицы students");
     }
-
-
 }
