@@ -7,6 +7,9 @@ import java.util.Optional;
 import org.apache.log4j.Logger;
 
 public class GroupRepository implements CrudRepository<Group, Integer> {
+    private final String groupName = "group_name";
+    private final String groupId = "group_id";
+    private final
     ConnectionManager conManager = ConnectionManager.getInstance();
     Logger logger = Logger.getLogger(this.getClass().getName());
 
@@ -27,8 +30,8 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
             resultSet = preStatement.getGeneratedKeys();
             resultSet.next();
 
-            group = new Group(resultSet.getString("group_name"));
-            group.setId(resultSet.getInt("group_id"));
+            group = new Group(resultSet.getString(groupName));
+            group.setId(resultSet.getInt(groupId));
         } catch (SQLException e) {
             logger.error("Cannot save the group", e);
             throw new DAOException("Cannot save the group", e);
@@ -50,7 +53,7 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
         }
 
         if (group == null) {
-            group = new Group(new String());
+            group = new Group("");
         }
 
         return group;
@@ -60,8 +63,8 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
     public Optional<Group> findById(Integer integer) throws DAOException {
         Group group = null;
         Connection connection = conManager.getConnection();
-        ResultSet resultSet = null;
-        PreparedStatement preStatement = null;
+        ResultSet resultSet;
+        PreparedStatement preStatement;
 
         String sql = "select * from school.groups where group_id = ?";
 
@@ -71,27 +74,14 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
             resultSet = preStatement.executeQuery();
 
             if (resultSet.next()) {
-                group = new Group(resultSet.getString("group_name"));
-                group.setId(resultSet.getInt("group_id"));
+                group = new Group(resultSet.getString(groupName));
+                group.setId(resultSet.getInt(groupId));
             }
         } catch (SQLException e) {
             logger.error("Cannot be found by id in the group", e);
             throw new DAOException("cannot be found by id in the group", e);
         } finally {
-            try {
-                if (resultSet != null) {
-                    resultSet.close();
-                }
 
-                if (preStatement != null) {
-                    preStatement.close();
-                }
-
-                connection.close();
-            } catch (SQLException e) {
-                logger.error("Close error", e);
-                throw new DAOException("Close error", e);
-            }
         }
 
         return Optional.ofNullable(group);
@@ -122,8 +112,8 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
             resultSet = statement.executeQuery(sql);
 
             while (resultSet.next()) {
-                Group group = new Group(resultSet.getString("group_name"));
-                group.setId(resultSet.getInt("group_id"));
+                Group group = new Group(resultSet.getString(groupName));
+                group.setId(resultSet.getInt(groupId));
                 groups.add(group);
             }
         } catch (SQLException e) {
