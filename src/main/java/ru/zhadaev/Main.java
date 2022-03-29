@@ -42,7 +42,7 @@ public class Main {
 //        Group groupIn2 = new Group("RR-17");
 //        Group groupOut2 = gr.save(groupIn2);
 
-        Optional<Group> pg = gr.findById(22);
+        Optional<Group> pg = gr.findById(44);
         if (pg.isPresent()) {
             System.out.println(pg.get().getId());
             System.out.println(pg.get().getName());
@@ -50,6 +50,13 @@ public class Main {
             System.out.println("Null");
         }
 
-        int bb = 2;
+        System.out.println(gr.existsById(66));
+
+        List<Group> groups = gr.findAll();
+
+        long a = gr.count();
+        System.out.println(a);
+
+        int b = 2;
     }
 }

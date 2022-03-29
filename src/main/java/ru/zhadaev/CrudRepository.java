@@ -9,11 +9,11 @@ public interface CrudRepository<T, ID> {
 
         Optional<T> findById(ID id) throws DAOException;
 
-        boolean existsById(ID id);
+        boolean existsById(ID id) throws DAOException;
 
-        List<T> findAll();
+        List<T> findAll() throws DAOException;
 
-        long count();
+        long count() throws DAOException;
 
         void deleteById(ID id);
 
