@@ -7,7 +7,7 @@ import java.util.Optional;
 public interface CrudRepository<T, ID> {
         T save(T entity) throws SQLException;
 
-        Optional<T> findById(ID id);
+        Optional<T> findById(ID id) throws DAOException;
 
         boolean existsById(ID id);
 

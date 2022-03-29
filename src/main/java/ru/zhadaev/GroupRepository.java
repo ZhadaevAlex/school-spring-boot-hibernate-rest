@@ -56,8 +56,45 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
     }
 
     @Override
-    public Optional<Group> findById(Integer integer) {
-        return Optional.empty();
+    public Optional<Group> findById(Integer integer) throws DAOException {
+        Group group = null;
+        Connection connection = conManager.getConnection();
+        ResultSet resultSet = null;
+        PreparedStatement preStatement = null;
+
+        String sql = "select * from school.groups where group_id = ?;";
+
+        try {
+            preStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            preStatement.setInt(1, integer);
+            resultSet = preStatement.executeQuery();
+
+            //resultSet = preStatement.getGeneratedKeys();
+            if (resultSet.next()) {
+                group = new Group(resultSet.getString("group_name"));
+                group.setId(resultSet.getInt("group_id"));
+            }
+        } catch (SQLException e) {
+            logger.error("Cannot save the group", e);
+            throw new DAOException("Cannot save the group", e);
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+
+                if (preStatement != null) {
+                    preStatement.close();
+                }
+
+                connection.close();
+            } catch (SQLException e) {
+                logger.error("Close error", e);
+                throw new DAOException("Cannot save the group", e);
+            }
+        }
+
+        return Optional.ofNullable(group);
     }
 
     @Override

@@ -37,10 +37,18 @@ public class Main {
 
         Group groupIn1 = new Group("RR-16");
         GroupRepository gr = new GroupRepository();
-        Group groupOut1 = gr.save(groupIn1);
+//        Group groupOut1 = gr.save(groupIn1);
+//
+//        Group groupIn2 = new Group("RR-17");
+//        Group groupOut2 = gr.save(groupIn2);
 
-        Group groupIn2 = new Group("RR-17");
-        Group groupOut2 = gr.save(groupIn2);
+        Optional<Group> pg = gr.findById(22);
+        if (pg.isPresent()) {
+            System.out.println(pg.get().getId());
+            System.out.println(pg.get().getName());
+        } else {
+            System.out.println("Null");
+        }
 
         int bb = 2;
     }
