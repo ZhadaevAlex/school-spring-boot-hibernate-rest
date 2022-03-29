@@ -1,20 +1,22 @@
 package ru.zhadaev;
 
+import org.apache.log4j.Logger;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.apache.log4j.Logger;
 
 public class GroupRepository implements CrudRepository<Group, Integer> {
-    private final String groupName = "group_name";
-    private final String groupId = "group_id";
-    private final
+    private String groupName = "group_name";
+    private String groupId = "group_id";
+    private String closeError = "Close error";
+
     ConnectionManager conManager = ConnectionManager.getInstance();
     Logger logger = Logger.getLogger(this.getClass().getName());
 
     @Override
-    public Group save(Group entity) throws DAOException {
+    public Group save(Group entity) throws SQLException {
         Group group;
         Connection connection = conManager.getConnection();
         ResultSet resultSet = null;
@@ -47,8 +49,8 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
 
                 connection.close();
             } catch (SQLException e) {
-                logger.error("Close error", e);
-                throw new DAOException("Close error", e);
+                logger.error(closeError, e);
+                throw new DAOException(closeError, e);
             }
         }
 
@@ -63,8 +65,8 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
     public Optional<Group> findById(Integer integer) throws DAOException {
         Group group = null;
         Connection connection = conManager.getConnection();
-        ResultSet resultSet;
-        PreparedStatement preStatement;
+        ResultSet resultSet = null;
+        PreparedStatement preStatement = null;
 
         String sql = "select * from school.groups where group_id = ?";
 
@@ -81,7 +83,20 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
             logger.error("Cannot be found by id in the group", e);
             throw new DAOException("cannot be found by id in the group", e);
         } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
 
+                if (preStatement != null) {
+                    preStatement.close();
+                }
+
+                connection.close();
+            } catch (SQLException e) {
+                logger.error(closeError, e);
+                throw new DAOException(closeError, e);
+            }
         }
 
         return Optional.ofNullable(group);
@@ -131,8 +146,8 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
 
                 connection.close();
             } catch (SQLException e) {
-                logger.error("Close error", e);
-                throw new DAOException("Close error", e);
+                logger.error(closeError, e);
+                throw new DAOException(closeError, e);
             }
         }
 
@@ -171,8 +186,8 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
 
                 connection.close();
             } catch (SQLException e) {
-                logger.error("Close error", e);
-                throw new DAOException("Close error", e);
+                logger.error(closeError, e);
+                throw new DAOException(closeError, e);
             }
         }
     }
