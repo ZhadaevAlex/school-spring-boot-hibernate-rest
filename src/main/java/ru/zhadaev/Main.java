@@ -1,10 +1,29 @@
 package ru.zhadaev;
 
+import ru.zhadaev.config.PropertiesReader;
+import ru.zhadaev.dao.entitie.Group;
+import ru.zhadaev.dao.entitie.School;
+import ru.zhadaev.dao.entitie.Student;
+import ru.zhadaev.dao.repository.impl.GroupRepository;
+import ru.zhadaev.config.ConnectionManager;
+import ru.zhadaev.util.creation.SchoolCreator;
+import ru.zhadaev.util.creation.StudentsCreator;
+
 import java.sql.SQLException;
 import java.util.*;
 
 public class Main {
+
     public static void main(String[] args) throws SQLException {
+
+        PropertiesReader propertiesReader = new PropertiesReader("application.properties");
+        String url = propertiesReader.getProperty("URL");
+        String user = propertiesReader.getProperty("USER");
+        String password = propertiesReader.getProperty("PASSWORD");
+        ConnectionManager connectionManager = new ConnectionManager(url, user, password);
+        GroupRepository groupRepository = new GroupRepository(connectionManager);
+
+
         Map<String, String> subjects = new HashMap<>();
         subjects.put("Literature", "Subject Literature");
         subjects.put("Astronomy", "Subject Astronomy");
@@ -28,21 +47,20 @@ public class Main {
         Collections.addAll(lastNames,
                 "Anderson", "Thomas", "Jackson", "White", "Harris",
                 "Martin", "Thompson", "Wood", "Lewis", "Scott",
-                "Cooper", "King", "Green",  "Walker", "Edwards",
+                "Cooper", "King", "Green", "Walker", "Edwards",
                 "Turner", "Morgan", "Baker", "Hill", "Phillips");
 
         List<Student> students = new StudentsCreator().createStudents(200, firstNames, lastNames);
         School school = new SchoolCreator(10, 10, 30,
-        subjects, 1, 3).createSchool(students);
+                subjects, 1, 3).createSchool(students);
 
         Group groupIn1 = new Group("RR-16");
-        GroupRepository gr = new GroupRepository();
-//        Group groupOut1 = gr.save(groupIn1);
+//        Group groupOut1 = groupRepository.save(groupIn1);
 //
 //        Group groupIn2 = new Group("RR-17");
-//        Group groupOut2 = gr.save(groupIn2);
+//        Group groupOut2 = groupRepository.save(groupIn2);
 
-        Optional<Group> pg = gr.findById(44);
+        Optional<Group> pg = groupRepository.findById(44);
         if (pg.isPresent()) {
             System.out.println(pg.get().getId());
             System.out.println(pg.get().getName());
@@ -50,14 +68,14 @@ public class Main {
             System.out.println("Null");
         }
 
-        System.out.println(gr.existsById(66));
+        System.out.println(groupRepository.existsById(66));
 
-        List<Group> groups = gr.findAll();
+        List<Group> groups = groupRepository.findAll();
 
-        long a = gr.count();
+        long a = groupRepository.count();
         System.out.println(a);
 
-        gr.deleteById(3);
+        groupRepository.deleteById(3);
 
         int b = 2;
     }

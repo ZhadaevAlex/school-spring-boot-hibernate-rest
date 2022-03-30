@@ -1,4 +1,4 @@
-package ru.zhadaev;
+package ru.zhadaev.dao.entitie;
 
 import java.util.Set;
 

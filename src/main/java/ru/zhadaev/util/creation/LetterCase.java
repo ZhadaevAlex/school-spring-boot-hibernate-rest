@@ -1,4 +1,4 @@
-package ru.zhadaev;
+package ru.zhadaev.util.creation;
 
 public enum LetterCase {
     LOWERCASE,

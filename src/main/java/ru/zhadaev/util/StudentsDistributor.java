@@ -1,4 +1,8 @@
-package ru.zhadaev;
+package ru.zhadaev.util;
+
+import ru.zhadaev.dao.entitie.Course;
+import ru.zhadaev.dao.entitie.Group;
+import ru.zhadaev.dao.entitie.Student;
 
 import java.security.SecureRandom;
 import java.util.*;

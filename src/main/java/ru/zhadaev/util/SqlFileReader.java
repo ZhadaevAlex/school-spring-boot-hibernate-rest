@@ -1,4 +1,7 @@
-package ru.zhadaev;
+package ru.zhadaev.util;
+
+import ru.zhadaev.exception.FileReadException;
+import ru.zhadaev.exception.IsNotFileException;
 
 import java.io.File;
 import java.io.IOException;

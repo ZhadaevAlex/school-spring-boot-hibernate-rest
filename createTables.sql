@@ -1,3 +1,7 @@
+drop schema if exists school;
+
+create schema school;
+
 drop table if exists school.students;
 
 drop table if exists school.groups;

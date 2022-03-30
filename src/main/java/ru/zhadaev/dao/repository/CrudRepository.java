@@ -1,4 +1,6 @@
-package ru.zhadaev;
+package ru.zhadaev.dao.repository;
+
+import ru.zhadaev.exception.DAOException;
 
 import java.sql.SQLException;
 import java.util.List;

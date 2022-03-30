@@ -1,4 +1,4 @@
-package ru.zhadaev;
+package ru.zhadaev.exception;
 
 import java.sql.SQLException;
 

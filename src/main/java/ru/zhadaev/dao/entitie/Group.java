@@ -1,4 +1,4 @@
-package ru.zhadaev;
+package ru.zhadaev.dao.entitie;
 
 public class Group {
     private Integer id;

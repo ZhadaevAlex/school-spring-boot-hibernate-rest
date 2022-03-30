@@ -1,4 +1,4 @@
-package ru.zhadaev;
+package ru.zhadaev.dao.entitie;
 
 import java.util.ArrayList;
 import java.util.HashSet;

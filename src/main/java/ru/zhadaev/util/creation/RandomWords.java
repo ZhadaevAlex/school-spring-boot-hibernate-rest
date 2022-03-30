@@ -1,4 +1,4 @@
-package ru.zhadaev;
+package ru.zhadaev.util.creation;
 
 import java.util.Random;
 

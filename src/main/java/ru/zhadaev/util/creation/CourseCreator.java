@@ -1,4 +1,6 @@
-package ru.zhadaev;
+package ru.zhadaev.util.creation;
+
+import ru.zhadaev.dao.entitie.Course;
 
 import java.util.ArrayList;
 import java.util.List;
