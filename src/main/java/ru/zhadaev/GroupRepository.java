@@ -21,12 +21,12 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
         Group group;
         Connection connection = conManager.getConnection();
         ResultSet resultSet = null;
-        PreparedStatement preStatement = null;
+        //PreparedStatement preStatement = null;
 
         String sql = "insert into school.groups (group_name) values (?)";
 
-        try {
-            preStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        try (PreparedStatement preStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
             preStatement.setString(1, entity.getName());
             preStatement.execute();
 
@@ -44,10 +44,6 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
                     resultSet.close();
                 }
 
-                if (preStatement != null) {
-                    preStatement.close();
-               }
-
                 connection.close();
             } catch (SQLException e) {
                 logger.error(CLOSE_ERROR_MSG, e);
@@ -62,12 +58,10 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
         Group group = null;
         Connection connection = conManager.getConnection();
         ResultSet resultSet = null;
-        PreparedStatement preStatement = null;
 
         String sql = "select * from school.groups where group_id = ?";
 
-        try {
-            preStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        try (PreparedStatement preStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             preStatement.setInt(1, integer);
             resultSet = preStatement.executeQuery();
 
@@ -82,10 +76,6 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
             try {
                 if (resultSet != null) {
                     resultSet.close();
-                }
-
-                if (preStatement != null) {
-                    preStatement.close();
                 }
 
                 connection.close();
@@ -109,12 +99,10 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
         List<Group> groups = new ArrayList<>();
         Connection connection = conManager.getConnection();
         ResultSet resultSet = null;
-        Statement statement = null;
 
         String sql = "select * from school.groups";
 
-        try {
-            statement = connection.createStatement();
+        try (Statement statement = connection.createStatement()) {
             resultSet = statement.executeQuery(sql);
 
             while (resultSet.next()) {
@@ -131,10 +119,6 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
                     resultSet.close();
                 }
 
-                if (statement != null) {
-                    statement.close();
-                }
-
                 connection.close();
             } catch (SQLException e) {
                 logger.error(CLOSE_ERROR_MSG, e);
@@ -148,12 +132,10 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
     public long count() throws DAOException {
         Connection connection = conManager.getConnection();
         ResultSet resultSet = null;
-        Statement statement = null;
 
         String sql = "select count(*) from school.groups;";
 
-        try {
-            statement = connection.createStatement();
+        try (Statement statement = connection.createStatement()) {
             resultSet = statement.executeQuery(sql);
 
             if (resultSet.next()) {
@@ -168,10 +150,6 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
             try {
                 if (resultSet != null) {
                     resultSet.close();
-                }
-
-                if (statement != null) {
-                    statement.close();
                 }
 
                 connection.close();
