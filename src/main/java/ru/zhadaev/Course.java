@@ -1,7 +1,7 @@
 package ru.zhadaev;
 
 public class Course {
-    private int id;
+    private Integer id;
     private final String name;
     private String description;
 
@@ -13,11 +13,11 @@ public class Course {
         return name;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

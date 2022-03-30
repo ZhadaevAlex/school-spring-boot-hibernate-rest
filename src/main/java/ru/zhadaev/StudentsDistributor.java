@@ -1,21 +1,22 @@
 package ru.zhadaev;
 
+import java.security.SecureRandom;
 import java.util.*;
 
 public class StudentsDistributor {
+    private Random rnd = new SecureRandom();
     public List<Student> distributionByCourses(List<Student> students, List<Course> courses, int minNumberCourses, int maxNumberCourses) {
         requiredNotNull(students);
         requiredNotNull(courses);
         requiredNumberRowsNotZero(students);
         requiredNumberRowsNotZero(courses);
 
-        Random rnd = new Random();
         for (Student student : students) {
-            int numberCourses = minNumberCourses + rnd.nextInt(maxNumberCourses - minNumberCourses + 1);
+            int numberCourses = minNumberCourses + this.rnd.nextInt(maxNumberCourses - minNumberCourses + 1);
             Set<Course> coursesForStudents = new HashSet<>();
             int countCourses = 0;
             while (countCourses < numberCourses) {
-                coursesForStudents.add(courses.get(rnd.nextInt(courses.size())));
+                coursesForStudents.add(courses.get(this.rnd.nextInt(courses.size())));
                 countCourses = coursesForStudents.size();
             }
 
@@ -31,10 +32,9 @@ public class StudentsDistributor {
         requiredNumberRowsNotZero(students);
         requiredNumberRowsNotZero(groups);
 
-        Random rnd = new Random();
         int nextGroupPointer = 0;
         for (Group group : groups) {
-            int studentsInGroup = minStudentsInGroup + rnd.nextInt(maxStudentsInGroup - minStudentsInGroup + 1);
+            int studentsInGroup = minStudentsInGroup + this.rnd.nextInt(maxStudentsInGroup - minStudentsInGroup + 1);
             if (nextGroupPointer + studentsInGroup > students.size()) {
                 break;
             }

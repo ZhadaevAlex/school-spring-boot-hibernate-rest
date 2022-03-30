@@ -8,9 +8,10 @@ import java.util.List;
 import java.util.Optional;
 
 public class GroupRepository implements CrudRepository<Group, Integer> {
-    private String groupName = "group_name";
-    private String groupId = "group_id";
-    private String closeError = "Close error";
+    private static final String GROUP_NAME = "group_name";
+    private static final String GROUP_ID = "group_id";
+    private static final String CLOSE_ERROR_MSG = "Close error";
+    private static final String MSG_SQL_DELETE = "The DELETE operation violates the foreign key constraint of the students table";
 
     ConnectionManager conManager = ConnectionManager.getInstance();
     Logger logger = Logger.getLogger(this.getClass().getName());
@@ -32,8 +33,8 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
             resultSet = preStatement.getGeneratedKeys();
             resultSet.next();
 
-            group = new Group(resultSet.getString(groupName));
-            group.setId(resultSet.getInt(groupId));
+            group = new Group(resultSet.getString(GROUP_NAME));
+            group.setId(resultSet.getInt(GROUP_ID));
         } catch (SQLException e) {
             logger.error("Cannot save the group", e);
             throw new DAOException("Cannot save the group", e);
@@ -45,17 +46,12 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
 
                 if (preStatement != null) {
                     preStatement.close();
-                }
+               }
 
                 connection.close();
             } catch (SQLException e) {
-                logger.error(closeError, e);
-                throw new DAOException(closeError, e);
+                logger.error(CLOSE_ERROR_MSG, e);
             }
-        }
-
-        if (group == null) {
-            group = new Group("");
         }
 
         return group;
@@ -76,8 +72,8 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
             resultSet = preStatement.executeQuery();
 
             if (resultSet.next()) {
-                group = new Group(resultSet.getString(groupName));
-                group.setId(resultSet.getInt(groupId));
+                group = new Group(resultSet.getString(GROUP_NAME));
+                group.setId(resultSet.getInt(GROUP_ID));
             }
         } catch (SQLException e) {
             logger.error("Cannot be found by id in the group", e);
@@ -94,8 +90,7 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
 
                 connection.close();
             } catch (SQLException e) {
-                logger.error(closeError, e);
-                throw new DAOException(closeError, e);
+                logger.error(CLOSE_ERROR_MSG, e);
             }
         }
 
@@ -106,11 +101,7 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
     public boolean existsById(Integer integer) throws DAOException {
         Optional<Group> optGroup = this.findById(integer);
 
-        if (optGroup.isPresent()) {
-            return true;
-        }
-
-        return false;
+        return optGroup.isPresent();
     }
 
     @Override
@@ -127,8 +118,8 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
             resultSet = statement.executeQuery(sql);
 
             while (resultSet.next()) {
-                Group group = new Group(resultSet.getString(groupName));
-                group.setId(resultSet.getInt(groupId));
+                Group group = new Group(resultSet.getString(GROUP_NAME));
+                group.setId(resultSet.getInt(GROUP_ID));
                 groups.add(group);
             }
         } catch (SQLException e) {
@@ -146,8 +137,7 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
 
                 connection.close();
             } catch (SQLException e) {
-                logger.error(closeError, e);
-                throw new DAOException(closeError, e);
+                logger.error(CLOSE_ERROR_MSG, e);
             }
         }
 
@@ -186,24 +176,23 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
 
                 connection.close();
             } catch (SQLException e) {
-                logger.error(closeError, e);
-                throw new DAOException(closeError, e);
+                logger.error(CLOSE_ERROR_MSG, e);
             }
         }
     }
 
     @Override
-    public void deleteById(Integer integer) throws DAOException {
-        logger.error("Операция DELETE нарушает ограничение внешнего ключа таблицы students");
+    public void deleteById(Integer integer) {
+        logger.error(MSG_SQL_DELETE);
     }
 
     @Override
     public void delete(Group entity) {
-        logger.error("Операция DELETE нарушает ограничение внешнего ключа таблицы students");
+        logger.error(MSG_SQL_DELETE);
     }
 
     @Override
     public void deleteAll() {
-        logger.error("Операция DELETE нарушает ограничение внешнего ключа таблицы students");
+        logger.error(MSG_SQL_DELETE);
     }
 }

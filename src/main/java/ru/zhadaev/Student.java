@@ -3,7 +3,7 @@ package ru.zhadaev;
 import java.util.Set;
 
 public class Student {
-    private int id;
+    private Integer id;
     private Group group;
     private final String firstName;
     private final String lastName;
@@ -22,11 +22,11 @@ public class Student {
         return lastName;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
