@@ -50,3 +50,11 @@ course_description *string*)
    e. Add a student to the course (from a list)
 
    f. Remove the student from one of his or her courses
+
+#SQL query
+create schema school
+grant create, usage on schema school to zhadaev
+
+create role zhadaev with createdb login password '123';
+create database school;
+grant create, connect, temporary on database school to zhadaev;
