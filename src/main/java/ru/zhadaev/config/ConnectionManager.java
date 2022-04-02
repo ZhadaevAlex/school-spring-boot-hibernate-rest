@@ -22,7 +22,10 @@ public class ConnectionManager {
 
     public Connection getConnection() {
         try {
-            if (connection != null && !connection.isClosed()) return connection;
+            if (connection != null && !connection.isClosed()) {
+                return connection;
+            }
+
             connection = DriverManager.getConnection(url, user, password);
             log.debug("New DB connection created");
             return connection;

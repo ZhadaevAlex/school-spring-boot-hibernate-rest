@@ -19,8 +19,8 @@ public interface CrudRepository<T, ID> {
 
         void deleteById(ID id) throws DAOException;
 
-        void delete(T entity);
+        void delete(T entity) throws DAOException;
 
-        void deleteAll();
+        void deleteAll() throws DAOException;
 }
 

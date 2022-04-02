@@ -25,8 +25,11 @@ public class PropertiesReader {
      */
     public String getProperty(String key) {
         String property = properties.getProperty(key);
-        if (property != null && !property.isEmpty()) return property;
-        else throw new IllegalArgumentException("Not found property " + key);
+        if (property != null && !property.isEmpty()) {
+            return property;
+        } else {
+            throw new IllegalArgumentException("Not found property " + key);
+        }
     }
 }
 
