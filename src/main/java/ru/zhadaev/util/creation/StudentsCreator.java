@@ -7,6 +7,7 @@ import ru.zhadaev.dao.entitie.Student;
 import java.util.*;
 
 public class StudentsCreator {
+    private Random rnd;
 
     public List<Student> createStudents(int numberStudents, List<String> firstNames, List<String> lastNames) {
         requiredNotNull(firstNames);
@@ -16,7 +17,7 @@ public class StudentsCreator {
         requiredEqualityNumberRows(firstNames, lastNames);
 
         List<Student> students = new ArrayList<>();
-        Random rnd = new Random();
+        rnd = new Random();
         for (int i = 0; i < numberStudents; i++) {
             String firstName = firstNames.get(rnd.nextInt(lastNames.size()));
             String lastName = lastNames.get(rnd.nextInt(lastNames.size()));
