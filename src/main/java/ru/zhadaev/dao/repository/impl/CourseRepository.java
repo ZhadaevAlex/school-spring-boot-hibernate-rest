@@ -3,7 +3,7 @@ package ru.zhadaev.dao.repository.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.zhadaev.config.ConnectionManager;
-import ru.zhadaev.dao.entitie.Group;
+import ru.zhadaev.dao.entitie.Course;
 import ru.zhadaev.dao.repository.CrudRepository;
 import ru.zhadaev.exception.DAOException;
 
@@ -12,42 +12,45 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class GroupRepository implements CrudRepository<Group, Integer> {
-    private static final Logger logger = LoggerFactory.getLogger(GroupRepository.class);
-    private static final String GROUP_ID = "group_id";
-    private static final String GROUP_NAME = "group_name";
+public class CourseRepository implements CrudRepository<Course, Integer> {
+    private static final Logger logger = LoggerFactory.getLogger(CourseRepository.class);
+    private static final String COURSE_ID = "course_id";
+    private static final String COURSE_NAME = "course_name";
+    private static final String COURSE_DESCRIPTION = "course_description";
     private static final String CLOSE_ERROR_MSG = "ResultSet close error";
-    private static final String CREATE_QUERY = "insert into school.groups (group_name) values (?)";
-    private static final String FIND_BY_ID_QUERY = "select * from school.groups where group_id = ?";
-    private static final String FIND_ALL_QUERY = "select * from school.groups";
-    private static final String COUNT_QUERY = "select count(*) from school.groups";
-    private static final String DELETE_BY_ID_QUERY = "delete from school.groups where group_id = ?";
-    private static final String DELETE_ALL = "delete from school.groups";
+    private static final String CREATE_QUERY = "insert into school.courses (course_name, course_description) values (?, ?)";
+    private static final String FIND_BY_ID_QUERY = "select * from school.courses where course_id = ?";
+    private static final String FIND_ALL_QUERY = "select * from school.courses";
+    private static final String COUNT_QUERY = "select count(*) from school.courses";
+    private static final String DELETE_BY_ID_QUERY = "delete from school.courses where course_id = ?";
+    private static final String DELETE_ALL = "delete from school.courses";
 
     private final ConnectionManager connectionManager;
 
-    public GroupRepository(ConnectionManager connectionManager) {
+    public CourseRepository(ConnectionManager connectionManager) {
         this.connectionManager = connectionManager;
     }
 
     @Override
-    public Group save(Group entity) throws DAOException {
-        Group group;
+    public Course save(Course entity) throws DAOException {
+        Course course;
         Connection connection = connectionManager.getConnection();
         ResultSet resultSet = null;
 
         try (PreparedStatement preStatement = connection.prepareStatement(CREATE_QUERY, Statement.RETURN_GENERATED_KEYS)) {
             preStatement.setString(1, entity.getName());
+            preStatement.setString(2, entity.getDescription());
             preStatement.execute();
 
             resultSet = preStatement.getGeneratedKeys();
             resultSet.next();
 
-            group = new Group(resultSet.getString(GROUP_NAME));
-            group.setId(resultSet.getInt(GROUP_ID));
+            course = new Course(resultSet.getString(COURSE_NAME));
+            course.setId(resultSet.getInt(COURSE_ID));
+            course.setDescription(resultSet.getString(COURSE_DESCRIPTION));
         } catch (SQLException e) {
             logger.error(e.getLocalizedMessage());
-            throw new DAOException("Cannot save the group", e);
+            throw new DAOException("Cannot save the course", e);
         } finally {
             try {
                 if (resultSet != null) {
@@ -58,12 +61,12 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
             }
         }
 
-        return group;
+        return course;
     }
 
     @Override
-    public Optional<Group> findById(Integer integer) throws DAOException {
-        Group group = null;
+    public Optional<Course> findById(Integer integer) throws DAOException {
+        Course course = null;
         Connection connection = connectionManager.getConnection();
         ResultSet resultSet = null;
 
@@ -72,12 +75,13 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
             resultSet = preStatement.executeQuery();
 
             if (resultSet.next()) {
-                group = new Group(resultSet.getString(GROUP_NAME));
-                group.setId(resultSet.getInt(GROUP_ID));
+                course = new Course(resultSet.getString(COURSE_NAME));
+                course.setId(resultSet.getInt(COURSE_ID));
+                course.setDescription(resultSet.getString(COURSE_DESCRIPTION));
             }
         } catch (SQLException e) {
             logger.error(e.getLocalizedMessage());
-            throw new DAOException("cannot be found by id in the groups", e);
+            throw new DAOException("cannot be found by id in the courses", e);
         } finally {
             try {
                 if (resultSet != null) {
@@ -88,19 +92,19 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
             }
         }
 
-        return Optional.ofNullable(group);
+        return Optional.ofNullable(course);
     }
 
     @Override
     public boolean existsById(Integer integer) throws DAOException {
-        Optional<Group> optGroup = this.findById(integer);
+        Optional<Course> optCourse = this.findById(integer);
 
-        return optGroup.isPresent();
+        return optCourse.isPresent();
     }
 
     @Override
-    public List<Group> findAll() throws DAOException {
-        List<Group> groups = new ArrayList<>();
+    public List<Course> findAll() throws DAOException {
+        List<Course> courses = new ArrayList<>();
         Connection connection = connectionManager.getConnection();
         ResultSet resultSet = null;
 
@@ -108,13 +112,14 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
             resultSet = statement.executeQuery(FIND_ALL_QUERY);
 
             while (resultSet.next()) {
-                Group group = new Group(resultSet.getString(GROUP_NAME));
-                group.setId(resultSet.getInt(GROUP_ID));
-                groups.add(group);
+                Course course = new Course(resultSet.getString(COURSE_NAME));
+                course.setId(resultSet.getInt(COURSE_ID));
+                course.setDescription(resultSet.getString(COURSE_DESCRIPTION));
+                courses.add(course);
             }
         } catch (SQLException e) {
             logger.error(e.getLocalizedMessage());
-            throw new DAOException("Cannot be found all in the groups", e);
+            throw new DAOException("Cannot be found all in the courses", e);
         } finally {
             try {
                 if (resultSet != null) {
@@ -125,7 +130,7 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
             }
         }
 
-        return groups;
+        return courses;
     }
 
     @Override
@@ -139,11 +144,11 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
             if (resultSet.next()) {
                 return resultSet.getInt(1);
             } else {
-                throw new DAOException("Cannot to count a groups");
+                throw new DAOException("Cannot to count a courses");
             }
         } catch (SQLException e) {
             logger.error(e.getLocalizedMessage());
-            throw new DAOException("Cannot to count a groups", e);
+            throw new DAOException("Cannot to count a courses", e);
         } finally {
             try {
                 if (resultSet != null) {
@@ -164,12 +169,12 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
             preStatement.execute();
         } catch (SQLException e) {
             logger.error(e.getLocalizedMessage());
-            throw new DAOException("Cannot be deleted by id in the groups", e);
+            throw new DAOException("Cannot be deleted by id in the courses", e);
         }
     }
 
     @Override
-    public void delete(Group entity) throws DAOException {
+    public void delete(Course entity) throws DAOException {
         deleteById(entity.getId());
     }
 
@@ -181,7 +186,7 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
             statement.execute(DELETE_ALL);
         } catch (SQLException e) {
             logger.error(e.getLocalizedMessage());
-            throw new DAOException("Cannot be deleted all in the groups", e);
+            throw new DAOException("Cannot be deleted all in the courses", e);
         }
     }
 }
