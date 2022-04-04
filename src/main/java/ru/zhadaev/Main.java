@@ -9,6 +9,7 @@ import ru.zhadaev.dao.entitie.Student;
 import ru.zhadaev.dao.repository.impl.CourseRepository;
 import ru.zhadaev.dao.repository.impl.GroupRepository;
 import ru.zhadaev.config.ConnectionManager;
+import ru.zhadaev.dao.repository.impl.StudentRepository;
 import ru.zhadaev.util.creation.SchoolCreator;
 import ru.zhadaev.util.creation.StudentsCreator;
 
@@ -90,6 +91,9 @@ public class Main {
         cr.deleteById(3);
         cr.delete(courseIn1);
         cr.deleteAll();
+
+        StudentRepository sr = new StudentRepository(connectionManager);
+        sr.save(new Student("aaa", "bbb"));
 
         int c = 3;
 
