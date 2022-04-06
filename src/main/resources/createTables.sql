@@ -13,31 +13,30 @@ drop table if exists school.courses;
 create table if not exists school.groups
 (
     group_id   serial primary key,
-    group_name varchar(255)
+    group_name varchar(255) null
 );
 
 create table if not exists school.students
 (
     student_id serial primary key,
-    group_id   integer,
-    first_name varchar(255),
-    last_name  varchar(255),
+    group_id   integer null,
+    first_name varchar(255) null,
+    last_name  varchar(255) null,
     foreign key (group_id) references school.groups (group_id) on delete set null
 );
 
 create table if not exists school.courses
 (
-    course_id          serial,
-    course_name        varchar(255),
-    course_description text
+    course_id          serial primary key,
+    course_name        varchar(255) null,
+    course_description text null
 );
 
 create table if not exists school.students_courses
 (
-    id         serial primary key,
-    student_id integer,
-    course_id  integer,
-    foreign key (student_id) references school.students (student_id),
-    foreign key (student_id) references school.students (student_id),
+    student_id integer null,
+    course_id  integer null,
+    foreign key (student_id) references school.students (student_id) on delete set null,
+    foreign key (course_id) references school.courses (course_id) on delete set null,
     unique (student_id, course_id)
 );

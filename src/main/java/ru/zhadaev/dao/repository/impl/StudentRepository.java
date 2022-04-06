@@ -10,17 +10,17 @@ import ru.zhadaev.dao.repository.CrudRepository;
 import ru.zhadaev.exception.DAOException;
 
 import java.sql.*;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public class StudentRepository implements CrudRepository<Student, Integer> {
     private static final Logger logger = LoggerFactory.getLogger(GroupRepository.class);
     private static final String STUDENT_ID = "student_id";
-    private static final String GROUP_ID = "group_id";
-    private static final String FIRST_NAME = "first_name";
-    private static final String LAST_NAME = "last_name";
     private static final String CLOSE_ERROR_MSG = "ResultSet close error";
+    private static final String CREATE_QUERY = "insert into school.students (group_id, first_name, last_name) values (?, ?, ?)";
+    private static final String CREATE_STUDENTS_COURSES_QUERY = "insert into school.students_courses (student_id, course_id) values (?, ?)";
 
     private final ConnectionManager connectionManager;
 
@@ -31,21 +31,23 @@ public class StudentRepository implements CrudRepository<Student, Integer> {
     @Override
     public Student save(Student entity) throws DAOException {
         Student student;
-        Group group;
-        List<Course> courses = new ArrayList<>();
+        Group group = null;
+        Set<Course> courses = new HashSet<>();
         Connection connection = connectionManager.getConnection();
         ResultSet resultSet = null;
 
         GroupRepository groupRepository = new GroupRepository(this.connectionManager);
-        boolean existsGroup = groupRepository.existsById(entity.getGroup().getId());
-        if (!existsGroup) {
-            group = groupRepository.save(entity.getGroup());
-        } else {
-            group = entity.getGroup();
+        if (entity.getGroup() != null) {
+            boolean existsGroup = groupRepository.existsById(entity.getGroup().getId());
+            if (!existsGroup) {
+                group = groupRepository.save(entity.getGroup());
+            } else {
+                group = entity.getGroup();
+            }
         }
 
         CourseRepository courseRepository = new CourseRepository(this.connectionManager);
-        for (Course course: entity.getCourse()) {
+        for (Course course : entity.getCourses()) {
             boolean existsCourse = courseRepository.existsById(course.getId());
             if (!existsCourse) {
                 courses.add(courseRepository.save(course));
@@ -55,17 +57,25 @@ public class StudentRepository implements CrudRepository<Student, Integer> {
         }
 
         try (PreparedStatement preStatement = connection.prepareStatement(CREATE_QUERY, Statement.RETURN_GENERATED_KEYS)) {
-            preStatement.setString(1, entity.getName());
+            if (entity.getGroup() == null) {
+                preStatement.setNull(1, Types.INTEGER);
+            } else {
+                preStatement.setInt(1, entity.getGroup().getId());
+            }
+            preStatement.setString(2, entity.getFirstName());
+            preStatement.setString(3, entity.getLastName());
             preStatement.execute();
 
             resultSet = preStatement.getGeneratedKeys();
             resultSet.next();
 
-            group = new Group(resultSet.getString(GROUP_NAME));
-            group.setId(resultSet.getInt(GROUP_ID));
+            student = new Student(entity.getFirstName(), entity.getLastName());
+            student.setId(resultSet.getInt(STUDENT_ID));
+            student.setGroup(group);
+            student.setCourses(courses);
         } catch (SQLException e) {
             logger.error(e.getLocalizedMessage());
-            throw new DAOException("Cannot save the group", e);
+            throw new DAOException("Cannot save the student", e);
         } finally {
             try {
                 if (resultSet != null) {
@@ -76,8 +86,9 @@ public class StudentRepository implements CrudRepository<Student, Integer> {
             }
         }
 
-        //try (PreparedStatement preparedStatement = connection.prepareStatement(CREATE))
-        return new Student("", "");
+        saveStudentsCourses(student);
+
+        return student;
     }
 
     @Override
@@ -113,5 +124,32 @@ public class StudentRepository implements CrudRepository<Student, Integer> {
     @Override
     public void deleteAll() throws DAOException {
 
+    }
+
+    private void saveStudentsCourses(Student entity) throws DAOException {
+        Student student;
+        Group group = null;
+        Set<Course> courses = new HashSet<>();
+        Connection connection = connectionManager.getConnection();
+        ResultSet resultSet = null;
+
+        for (Course course : entity.getCourses()) {
+            try (PreparedStatement preStatement = connection.prepareStatement(CREATE_STUDENTS_COURSES_QUERY, Statement.RETURN_GENERATED_KEYS)) {
+                preStatement.setInt(1, entity.getId());
+                preStatement.setInt(2, course.getId());
+                preStatement.execute();
+            } catch (SQLException e) {
+                logger.error(e.getLocalizedMessage());
+                throw new DAOException("Cannot save the student", e);
+            } finally {
+                try {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
+                } catch (SQLException e) {
+                    logger.error(CLOSE_ERROR_MSG, e.getLocalizedMessage());
+                }
+            }
+        }
     }
 }

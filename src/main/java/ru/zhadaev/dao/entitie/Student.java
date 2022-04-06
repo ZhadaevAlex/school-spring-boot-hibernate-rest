@@ -38,11 +38,11 @@ public class Student {
         return group;
     }
 
-    public void setCourse(Set<Course> courses) {
+    public void setCourses(Set<Course> courses) {
         this.courses = courses;
     }
 
-    public Set<Course> getCourse() {
+    public Set<Course> getCourses() {
         return courses;
     }
 }

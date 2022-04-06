@@ -24,7 +24,7 @@ public class StudentsDistributor {
                 countCourses = coursesForStudents.size();
             }
 
-            student.setCourse(coursesForStudents);
+            student.setCourses(coursesForStudents);
         }
 
         return students;

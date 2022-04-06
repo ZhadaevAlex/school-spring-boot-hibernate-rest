@@ -2,17 +2,17 @@ package ru.zhadaev.dao.entitie;
 
 public class Group {
     private Integer id;
-    private final String name;
-
-    public Group(String name) {
-        this.name = name;
-    }
+    private String name;
 
     public String getName() {
         return name;
     }
 
-    public int getId() {
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Integer getId() {
         return id;
     }
 

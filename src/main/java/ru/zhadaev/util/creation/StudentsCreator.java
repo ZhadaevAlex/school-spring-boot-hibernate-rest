@@ -22,10 +22,10 @@ public class StudentsCreator {
             String firstName = firstNames.get(rnd.nextInt(lastNames.size()));
             String lastName = lastNames.get(rnd.nextInt(lastNames.size()));
             Student student = new Student(firstName, lastName);
-            student.setGroup(new Group("No group"));
+//            student.setGroup(new Group());
 
-            Set<Course> courses = new HashSet<>();
-            student.setCourse(courses);
+//            Set<Course> courses = new HashSet<>();
+//            student.setCourses(courses);
 
             students.add(student);
         }
