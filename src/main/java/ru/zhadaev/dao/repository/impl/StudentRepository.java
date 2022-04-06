@@ -10,17 +10,33 @@ import ru.zhadaev.dao.repository.CrudRepository;
 import ru.zhadaev.exception.DAOException;
 
 import java.sql.*;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class StudentRepository implements CrudRepository<Student, Integer> {
     private static final Logger logger = LoggerFactory.getLogger(GroupRepository.class);
     private static final String STUDENT_ID = "student_id";
+    private static final String GROUP_ID = "group_id";
+    private static final String FIRST_NAME = "first_name";
+    private static final String LAST_NAME = "last_name";
+    private static final String GROUP_NAME = "group_name";
+    private static final String COURSE_ID = "course_id";
+    private static final String COURSE_NAME = "course_name";
+    private static final String COURSE_DESCRIPTION = "course_description";
     private static final String CLOSE_ERROR_MSG = "ResultSet close error";
     private static final String CREATE_QUERY = "insert into school.students (group_id, first_name, last_name) values (?, ?, ?)";
     private static final String CREATE_STUDENTS_COURSES_QUERY = "insert into school.students_courses (student_id, course_id) values (?, ?)";
+    private static final String FIND_BY_ID_QUERY = "select s.*, g.group_name, c.* from school.students s\n" +
+            "left join school.groups g on g.group_id = s.group_id\n" +
+            "left join school.students_courses sc on s.student_id = sc.student_id\n" +
+            "left join school.courses c on sc.course_id = c.course_id\n" +
+            "where s.student_id = ?";
+    private static final String FIND_ALL_QUERY = "select s.*, g.group_name, c.* from school.students s\n" +
+            "left join school.groups g on g.group_id = s.group_id\n" +
+            "left join school.students_courses sc on s.student_id = sc.student_id\n" +
+            "left join school.courses c on sc.course_id = c.course_id";
+    private static final String COUNT_QUERY = "select count(*) from school.students";
+    private static final String DELETE_BY_ID_QUERY = "delete from school.students where student_id = ?";
+    private static final String DELETE_ALL = "delete from school.students";
 
     private final ConnectionManager connectionManager;
 
@@ -93,37 +109,178 @@ public class StudentRepository implements CrudRepository<Student, Integer> {
 
     @Override
     public Optional<Student> findById(Integer integer) throws DAOException {
-        return Optional.empty();
+        Student student = null;
+        Connection connection = connectionManager.getConnection();
+        ResultSet resultSet = null;
+
+        try (PreparedStatement preStatement = connection.prepareStatement(FIND_BY_ID_QUERY, Statement.RETURN_GENERATED_KEYS)) {
+            preStatement.setInt(1, integer);
+            resultSet = preStatement.executeQuery();
+
+            Set<Course> courses = new HashSet<>();
+            boolean firstLine = false;
+            while (resultSet.next()) {
+                if (firstLine == false) {
+                    student = new Student(resultSet.getString(FIRST_NAME), resultSet.getString(LAST_NAME));
+                    student.setId(resultSet.getInt(STUDENT_ID));
+
+                    Group group = new Group();
+                    group.setId(resultSet.getInt(GROUP_ID));
+                    group.setName(resultSet.getString(GROUP_NAME));
+                    student.setGroup(group);
+
+                    firstLine = true;
+                }
+
+                Course course = new Course(resultSet.getString(COURSE_NAME));
+                course.setId(resultSet.getInt(COURSE_ID));
+                course.setDescription(resultSet.getString(COURSE_DESCRIPTION));
+                courses.add(course);
+            }
+
+            if (student != null) {
+                student.setCourses(courses);
+            }
+        } catch (SQLException e) {
+            logger.error(e.getLocalizedMessage());
+            throw new DAOException("cannot be found by id in the students", e);
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (SQLException e) {
+                logger.error(CLOSE_ERROR_MSG, e.getLocalizedMessage());
+            }
+        }
+
+        return Optional.ofNullable(student);
     }
 
     @Override
     public boolean existsById(Integer integer) throws DAOException {
-        return false;
+        Optional<Student> optStudent = this.findById(integer);
+
+        return optStudent.isPresent();
     }
 
     @Override
     public List<Student> findAll() throws DAOException {
-        return null;
+        List<Student> students = new ArrayList<>();
+        Connection connection = connectionManager.getConnection();
+        ResultSet resultSet = null;
+
+        try (Statement statement = connection.createStatement()) {
+            resultSet = statement.executeQuery(FIND_ALL_QUERY);
+
+            int prevId = 0;
+            Student student = new Student("", "");
+            Set<Course> courses = new HashSet<>();
+            boolean firstStudent = true;
+
+            while (resultSet.next()) {
+                int currentId = resultSet.getInt(STUDENT_ID);
+                if (currentId != prevId) {
+
+                    if (!firstStudent) {
+                        student.setCourses(courses);
+                        students.add(student);
+                    }
+
+                    firstStudent = false;
+
+                    student = new Student(resultSet.getString(FIRST_NAME), resultSet.getString(LAST_NAME));
+                    student.setId(currentId);
+
+                    Group group = new Group();
+                    group.setId(resultSet.getInt(GROUP_ID));
+                    group.setName(resultSet.getString(GROUP_NAME));
+                    student.setGroup(group);
+                    courses = new HashSet<>();
+                    prevId = currentId;
+                }
+
+                Course course = new Course(resultSet.getString(COURSE_NAME));
+                course.setId(resultSet.getInt(COURSE_ID));
+                course.setDescription(resultSet.getString(COURSE_DESCRIPTION));
+                courses.add(course);
+
+                if (resultSet.isLast()) {
+                    student.setCourses(courses);
+                    students.add(student);
+                }
+            }
+        } catch (SQLException e) {
+            logger.error(e.getLocalizedMessage());
+            throw new DAOException("Cannot be found all in the students", e);
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (SQLException e) {
+                logger.error(CLOSE_ERROR_MSG, e.getLocalizedMessage());
+            }
+        }
+
+        return students;
     }
 
     @Override
     public long count() throws DAOException {
-        return 0;
+        Connection connection = connectionManager.getConnection();
+        ResultSet resultSet = null;
+
+        try (Statement statement = connection.createStatement()) {
+            resultSet = statement.executeQuery(COUNT_QUERY);
+
+            if (resultSet.next()) {
+                return resultSet.getInt(1);
+            } else {
+                throw new DAOException("Cannot to count a students");
+            }
+        } catch (SQLException e) {
+            logger.error(e.getLocalizedMessage());
+            throw new DAOException("Cannot to count a students", e);
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (SQLException e) {
+                logger.error(CLOSE_ERROR_MSG, e.getLocalizedMessage());
+            }
+        }
     }
 
     @Override
     public void deleteById(Integer integer) throws DAOException {
+        Connection connection = connectionManager.getConnection();
 
+        try (PreparedStatement preStatement = connection.prepareStatement(DELETE_BY_ID_QUERY, Statement.RETURN_GENERATED_KEYS)) {
+            preStatement.setInt(1, integer);
+            preStatement.execute();
+        } catch (SQLException e) {
+            logger.error(e.getLocalizedMessage());
+            throw new DAOException("Cannot be deleted by id in the students", e);
+        }
     }
 
     @Override
     public void delete(Student entity) throws DAOException {
-
+        deleteById(entity.getId());
     }
 
     @Override
     public void deleteAll() throws DAOException {
+        Connection connection = connectionManager.getConnection();
 
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(DELETE_ALL);
+        } catch (SQLException e) {
+            logger.error(e.getLocalizedMessage());
+            throw new DAOException("Cannot be deleted all in the students", e);
+        }
     }
 
     private void saveStudentsCourses(Student entity) throws DAOException {

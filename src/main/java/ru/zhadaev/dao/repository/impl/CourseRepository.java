@@ -23,7 +23,7 @@ public class CourseRepository implements CrudRepository<Course, Integer> {
     private static final String FIND_ALL_QUERY = "select * from school.courses";
     private static final String COUNT_QUERY = "select count(*) from school.courses";
     private static final String DELETE_BY_ID_QUERY = "delete from school.courses where course_id = ?";
-    private static final String DELETE_ALL = "truncate school.courses restart identity cascade";
+    private static final String DELETE_ALL = "delete from school.courses";
 
     private final ConnectionManager connectionManager;
 

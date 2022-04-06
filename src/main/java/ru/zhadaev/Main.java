@@ -91,8 +91,23 @@ public class Main {
             studentsWithId.add(studentRepository.save(student));
         }
 
+        int a1 = 2;
+        //groupRepository.deleteAll();
+        //courseRepository.deleteAll();
+        Student student = studentRepository.findById(3).get();
+        boolean is = studentRepository.existsById(4);
+        boolean is1 = studentRepository.existsById(999);
 
-        int a = 1;
+        List<Student> studentsWithId1 = studentRepository.findAll();
+
+        long count = studentRepository.count();
+
+        studentRepository.deleteById(3);
+        studentRepository.deleteAll();
+
+        int bb = 2;
+
+
 
 
 //

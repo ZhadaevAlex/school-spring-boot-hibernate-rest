@@ -22,7 +22,7 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
     private static final String FIND_ALL_QUERY = "select * from school.groups";
     private static final String COUNT_QUERY = "select count(*) from school.groups";
     private static final String DELETE_BY_ID_QUERY = "delete from school.groups where group_id = ?";
-    private static final String DELETE_ALL = "truncate school.groups restart identity cascade";
+    private static final String DELETE_ALL = "delete from school.groups";
 
     private final ConnectionManager connectionManager;
 
