@@ -13,7 +13,7 @@ import java.sql.*;
 import java.util.*;
 
 public class StudentRepository implements CrudRepository<Student, Integer> {
-    private static final Logger logger = LoggerFactory.getLogger(GroupRepository.class);
+    private static final Logger logger = LoggerFactory.getLogger(StudentRepository.class);
     private static final String STUDENT_ID = "student_id";
     private static final String GROUP_ID = "group_id";
     private static final String FIRST_NAME = "first_name";
@@ -120,7 +120,7 @@ public class StudentRepository implements CrudRepository<Student, Integer> {
             Set<Course> courses = new HashSet<>();
             boolean firstLine = false;
             while (resultSet.next()) {
-                if (firstLine == false) {
+                if (!firstLine) {
                     student = new Student(resultSet.getString(FIRST_NAME), resultSet.getString(LAST_NAME));
                     student.setId(resultSet.getInt(STUDENT_ID));
 
@@ -284,11 +284,7 @@ public class StudentRepository implements CrudRepository<Student, Integer> {
     }
 
     private void saveStudentsCourses(Student entity) throws DAOException {
-        Student student;
-        Group group = null;
-        Set<Course> courses = new HashSet<>();
         Connection connection = connectionManager.getConnection();
-        ResultSet resultSet = null;
 
         for (Course course : entity.getCourses()) {
             try (PreparedStatement preStatement = connection.prepareStatement(CREATE_STUDENTS_COURSES_QUERY, Statement.RETURN_GENERATED_KEYS)) {
@@ -297,15 +293,7 @@ public class StudentRepository implements CrudRepository<Student, Integer> {
                 preStatement.execute();
             } catch (SQLException e) {
                 logger.error(e.getLocalizedMessage());
-                throw new DAOException("Cannot save the student", e);
-            } finally {
-                try {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
-                } catch (SQLException e) {
-                    logger.error(CLOSE_ERROR_MSG, e.getLocalizedMessage());
-                }
+                throw new DAOException("Cannot save the student_courses", e);
             }
         }
     }

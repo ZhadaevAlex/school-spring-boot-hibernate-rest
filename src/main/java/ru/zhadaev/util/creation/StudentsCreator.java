@@ -1,7 +1,5 @@
 package ru.zhadaev.util.creation;
 
-import ru.zhadaev.dao.entitie.Course;
-import ru.zhadaev.dao.entitie.Group;
 import ru.zhadaev.dao.entitie.Student;
 
 import java.util.*;
@@ -22,10 +20,6 @@ public class StudentsCreator {
             String firstName = firstNames.get(rnd.nextInt(lastNames.size()));
             String lastName = lastNames.get(rnd.nextInt(lastNames.size()));
             Student student = new Student(firstName, lastName);
-//            student.setGroup(new Group());
-
-//            Set<Course> courses = new HashSet<>();
-//            student.setCourses(courses);
 
             students.add(student);
         }
