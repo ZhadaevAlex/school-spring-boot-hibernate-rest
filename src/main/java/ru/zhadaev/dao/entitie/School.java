@@ -1,20 +1,18 @@
 package ru.zhadaev.dao.entitie;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class School {
-    private Set<Group> groups = new HashSet<>();
+    private List<Group> groups = new ArrayList<>();
     private List<Course> courses = new ArrayList<>();
     private List<Student> students = new ArrayList<>();
 
-    public void setGroups(Set<Group> groups) {
+    public void setGroups(List<Group> groups) {
         this.groups = groups;
     }
 
-    public Set<Group> getGroups() {
+    public List<Group> getGroups() {
         return groups;
     }
 

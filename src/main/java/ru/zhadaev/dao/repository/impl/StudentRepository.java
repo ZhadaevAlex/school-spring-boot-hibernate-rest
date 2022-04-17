@@ -48,13 +48,16 @@ public class StudentRepository implements CrudRepository<Student, Integer> {
     public Student save(Student entity) throws DAOException {
         Student student;
         Group group = null;
-        Set<Course> courses = new HashSet<>();
+        List<Course> courses = new ArrayList<>();
         Connection connection = connectionManager.getConnection();
         ResultSet resultSet = null;
 
-        GroupRepository groupRepository = new GroupRepository(this.connectionManager);
+        CrudRepository<Group, Integer> groupRepository = new GroupRepository(this.connectionManager);
         if (entity.getGroup() != null) {
-            boolean existsGroup = groupRepository.existsById(entity.getGroup().getId());
+            boolean existsGroup = false;
+            if (entity.getGroup().getId() != null) {
+                existsGroup = groupRepository.existsById(entity.getGroup().getId());
+            }
             if (!existsGroup) {
                 group = groupRepository.save(entity.getGroup());
             } else {
@@ -62,9 +65,12 @@ public class StudentRepository implements CrudRepository<Student, Integer> {
             }
         }
 
-        CourseRepository courseRepository = new CourseRepository(this.connectionManager);
+        CrudRepository<Course, Integer> courseRepository = new CourseRepository(this.connectionManager);
         for (Course course : entity.getCourses()) {
-            boolean existsCourse = courseRepository.existsById(course.getId());
+            boolean existsCourse = false;
+            if (course.getId() != null) {
+                existsCourse = courseRepository.existsById(course.getId());
+            }
             if (!existsCourse) {
                 courses.add(courseRepository.save(course));
             } else {
@@ -76,7 +82,7 @@ public class StudentRepository implements CrudRepository<Student, Integer> {
             if (entity.getGroup() == null) {
                 preStatement.setNull(1, Types.INTEGER);
             } else {
-                preStatement.setInt(1, entity.getGroup().getId());
+                preStatement.setInt(1, group.getId());
             }
             preStatement.setString(2, entity.getFirstName());
             preStatement.setString(3, entity.getLastName());
@@ -117,7 +123,7 @@ public class StudentRepository implements CrudRepository<Student, Integer> {
             preStatement.setInt(1, integer);
             resultSet = preStatement.executeQuery();
 
-            Set<Course> courses = new HashSet<>();
+            List<Course> courses = new ArrayList<>();
             boolean firstLine = false;
             while (resultSet.next()) {
                 if (!firstLine) {
@@ -175,7 +181,7 @@ public class StudentRepository implements CrudRepository<Student, Integer> {
 
             int prevId = 0;
             Student student = new Student("", "");
-            Set<Course> courses = new HashSet<>();
+            List<Course> courses = new ArrayList<>();
             boolean firstStudent = true;
 
             while (resultSet.next()) {
@@ -196,7 +202,7 @@ public class StudentRepository implements CrudRepository<Student, Integer> {
                     group.setId(resultSet.getInt(GROUP_ID));
                     group.setName(resultSet.getString(GROUP_NAME));
                     student.setGroup(group);
-                    courses = new HashSet<>();
+                    courses = new ArrayList<>();
                     prevId = currentId;
                 }
 

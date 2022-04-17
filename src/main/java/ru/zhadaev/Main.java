@@ -6,106 +6,58 @@ import ru.zhadaev.dao.entitie.Course;
 import ru.zhadaev.dao.entitie.Group;
 import ru.zhadaev.dao.entitie.School;
 import ru.zhadaev.dao.entitie.Student;
-import ru.zhadaev.dao.repository.impl.CourseRepository;
+import ru.zhadaev.dao.repository.CrudRepository;
 import ru.zhadaev.dao.repository.impl.GroupRepository;
-import ru.zhadaev.dao.repository.impl.StudentRepository;
+import ru.zhadaev.domain.ISchoolManager;
+import ru.zhadaev.domain.SchoolInitData;
+import ru.zhadaev.domain.SchoolInitializer;
+import ru.zhadaev.domain.impl.SchoolManager;
+import ru.zhadaev.exception.IsNotFileException;
 import ru.zhadaev.util.creation.SchoolCreator;
 import ru.zhadaev.util.creation.StudentsCreator;
 
+import java.nio.file.NoSuchFileException;
 import java.sql.SQLException;
 import java.util.*;
 
 public class Main {
 
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) throws SQLException, NoSuchFileException, IsNotFileException {
+        System.out.println("1. Find all groups with less or equals student count");
+        System.out.println("2. Find all students related to course with given name");
+        System.out.println("3. Add new student");
+        System.out.println("4. Delete student by STUDENT_ID");
+        System.out.println("5. Add a student to the course (from a list)");
+        System.out.println("6. Remove the student from one of his or her courses");
 
-        PropertiesReader propertiesReader = new PropertiesReader("application.properties");
-        String url = propertiesReader.getProperty("URL");
-        String user = propertiesReader.getProperty("USER");
-        String password = propertiesReader.getProperty("PASSWORD");
-        ConnectionManager connectionManager = new ConnectionManager(url, user, password);
+        SchoolInitializer schoolInitializer = new SchoolInitializer();
+        schoolInitializer.initialize();
 
-        Map<String, String> subjects = new HashMap<>();
-        subjects.put("Literature", "Subject Literature");
-        subjects.put("Astronomy", "Subject Astronomy");
-        subjects.put("Biology", "Subject Biology");
-        subjects.put("Music", "Subject Music");
-        subjects.put("Botany", "Subject Botany");
-        subjects.put("Chemistry", "Subject Chemistry");
-        subjects.put("Computer science", "Subject Computer science");
-        subjects.put("Economics", "Subject Economics");
-        subjects.put("Math", "Subject Math");
-        subjects.put("History", "Subject History");
 
-        List<String> firstNames = new ArrayList<>();
-        Collections.addAll(firstNames,
-                "Oliver", "Jack", "Harry", "Jacob", "Charlie",
-                "Thomas", "Oscar", "William", "James", "George",
-                "Amelia", "Olivia", "Emily", "Ava", "Jessica",
-                "Isabella", "Sophie", "Mia", "Ruby", "Lily");
+//        ISchoolManager schoolManager = new SchoolManager();
+//        schoolManager.findGroupsByStudentsCount(4);
 
-        List<String> lastNames = new ArrayList<>();
-        Collections.addAll(lastNames,
-                "Anderson", "Thomas", "Jackson", "White", "Harris",
-                "Martin", "Thompson", "Wood", "Lewis", "Scott",
-                "Cooper", "King", "Green", "Walker", "Edwards",
-                "Turner", "Morgan", "Baker", "Hill", "Phillips");
 
-        List<Student> students = new StudentsCreator().createStudents(200, firstNames, lastNames);
-        School school = new SchoolCreator(10, 10, 30,
-                subjects, 1, 3).createSchool(students);
+//
 
-        GroupRepository groupRepository = new GroupRepository(connectionManager);
-        groupRepository.deleteAll();
-        Set<Group> groups = new HashSet<>();
-        for (Group group : school.getGroups()) {
-            groups.add(groupRepository.save(group));
-        }
+//
 
-        CourseRepository courseRepository = new CourseRepository(connectionManager);
-        courseRepository.deleteAll();
-        Set<Course> courses = new HashSet<>();
-        for (Course course : school.getCourses()) {
-            courses.add(courseRepository.save(course));
-        }
-
-        for (Student student : students) {
-            Group groupWithId = null;
-            if (student.getGroup() != null) {
-                groupWithId= groups.stream().filter(p-> p.getName() == student.getGroup().getName()).findFirst().orElse(student.getGroup());
-            }
-
-            student.setGroup(groupWithId);
-
-            Set<Course> coursesWithId = new HashSet<>();
-            for (Course course: student.getCourses()) {
-                coursesWithId.add(courses.stream().filter(p -> p.getName() == course.getName()).findFirst().orElse(course));
-            }
-
-            student.setCourses(coursesWithId);
-        }
-
-        StudentRepository studentRepository = new StudentRepository(connectionManager);
-        List<Student> studentsWithId = new ArrayList<>();
-        for (Student student : students) {
-            studentsWithId.add(studentRepository.save(student));
-        }
-
-        int a1 = 2;
-        //groupRepository.deleteAll();
-        //courseRepository.deleteAll();
-        Student student = studentRepository.findById(3).get();
-        boolean is = studentRepository.existsById(4);
-        boolean is1 = studentRepository.existsById(999);
-
-        List<Student> studentsWithId1 = studentRepository.findAll();
-
-        long count = studentRepository.count();
-
-        studentRepository.deleteById(3);
-        studentRepository.deleteAll();
-
-        int bb = 2;
+//
+//        int a1 = 2;
+//        //groupRepository.deleteAll();
+//        //courseRepository.deleteAll();
+//        Student student = studentRepository.findById(3).get();
+//        boolean is = studentRepository.existsById(4);
+//        boolean is1 = studentRepository.existsById(999);
+//
+//        List<Student> studentsWithId1 = studentRepository.findAll();
+//
+//        long count = studentRepository.count();
+//
+//        studentRepository.deleteById(3);
+//        studentRepository.deleteAll();
+//
+//        int bb = 2;
 
 
 

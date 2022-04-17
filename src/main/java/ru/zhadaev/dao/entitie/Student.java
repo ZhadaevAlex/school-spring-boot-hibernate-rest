@@ -1,13 +1,13 @@
 package ru.zhadaev.dao.entitie;
 
-import java.util.Set;
+import java.util.List;
 
 public class Student {
     private Integer id;
     private Group group;
     private final String firstName;
     private final String lastName;
-    private Set<Course> courses;
+    private List<Course> courses;
 
     public Student(String firstName, String lastName) {
         this.firstName = firstName;
@@ -38,11 +38,11 @@ public class Student {
         return group;
     }
 
-    public void setCourses(Set<Course> courses) {
+    public void setCourses(List<Course> courses) {
         this.courses = courses;
     }
 
-    public Set<Course> getCourses() {
+    public List<Course> getCourses() {
         return courses;
     }
 }

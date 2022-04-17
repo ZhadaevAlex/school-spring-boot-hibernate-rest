@@ -17,20 +17,20 @@ public class StudentsDistributor {
 
         for (Student student : students) {
             int numberCourses = minNumberCourses + this.rnd.nextInt(maxNumberCourses - minNumberCourses + 1);
-            Set<Course> coursesForStudents = new HashSet<>();
+            Set<Course> coursesForStudents = new LinkedHashSet<>();
             int countCourses = 0;
             while (countCourses < numberCourses) {
                 coursesForStudents.add(courses.get(this.rnd.nextInt(courses.size())));
                 countCourses = coursesForStudents.size();
             }
 
-            student.setCourses(coursesForStudents);
+            student.setCourses(new ArrayList<>(coursesForStudents));
         }
 
         return students;
     }
 
-    public List<Student> distributeByGroups(List<Student> students, Set<Group> groups, int minStudentsInGroup, int maxStudentsInGroup) {
+    public List<Student> distributeByGroups(List<Student> students, List<Group> groups, int minStudentsInGroup, int maxStudentsInGroup) {
         requiredNotNull(students);
         requiredNotNull(groups);
         requiredNumberRowsNotZero(students);

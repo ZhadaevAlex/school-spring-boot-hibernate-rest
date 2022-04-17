@@ -5,8 +5,8 @@ import ru.zhadaev.dao.entitie.Group;
 import java.util.*;
 
 public class GroupCreator {
-    public Set<Group> createGroups(int numberGroups) {
-        Set<Group> groups = new HashSet<>();
+    public List<Group> createGroups(int numberGroups) {
+        Set<Group> groups = new LinkedHashSet<>();
 
         RandomWords randomWords = new RandomWords();
 
@@ -21,6 +21,6 @@ public class GroupCreator {
             groups.add(group);
         }
 
-        return groups;
+        return new ArrayList<>(groups);
     }
 }
