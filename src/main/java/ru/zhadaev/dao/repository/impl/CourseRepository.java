@@ -17,13 +17,19 @@ public class CourseRepository implements CrudRepository<Course, Integer> {
     private static final String COURSE_ID = "course_id";
     private static final String COURSE_NAME = "course_name";
     private static final String COURSE_DESCRIPTION = "course_description";
-    private static final String CLOSE_ERROR_MSG = "ResultSet close error";
     private static final String CREATE_QUERY = "insert into school.courses (course_name, course_description) values (?, ?)";
     private static final String FIND_BY_ID_QUERY = "select * from school.courses where course_id = ?";
+    private static final String FIND_QUERY = "select * from school.courses where" +
+            " course_name = ? AND" +
+            " course_description = ?";
     private static final String FIND_ALL_QUERY = "select * from school.courses";
     private static final String COUNT_QUERY = "select count(*) from school.courses";
     private static final String DELETE_BY_ID_QUERY = "delete from school.courses where course_id = ?";
-    private static final String DELETE_ALL = "delete from school.courses";
+    private static final String DELETE_QUERY = "delete from school.courses where" +
+            " course_name = ? AND" +
+            " course_description = ?";
+    private static final String DELETE_ALL_QUERY = "delete from school.courses";
+    private static final String CLOSE_ERROR_MSG = "ResultSet close error";
 
     private final ConnectionManager connectionManager;
 
@@ -32,22 +38,22 @@ public class CourseRepository implements CrudRepository<Course, Integer> {
     }
 
     @Override
-    public Course save(Course entity) throws DAOException {
-        Course course;
+    public Course save(Course course) throws DAOException {
+        Course courseDb;
         Connection connection = connectionManager.getConnection();
         ResultSet resultSet = null;
 
         try (PreparedStatement preStatement = connection.prepareStatement(CREATE_QUERY, Statement.RETURN_GENERATED_KEYS)) {
-            preStatement.setString(1, entity.getName());
-            preStatement.setString(2, entity.getDescription());
+            preStatement.setString(1, course.getName());
+            preStatement.setString(2, course.getDescription());
             preStatement.execute();
 
             resultSet = preStatement.getGeneratedKeys();
             resultSet.next();
 
-            course = new Course(entity.getName());
-            course.setId(resultSet.getInt(COURSE_ID));
-            course.setDescription(entity.getDescription());
+            courseDb = new Course(course.getName());
+            courseDb.setId(resultSet.getInt(COURSE_ID));
+            courseDb.setDescription(course.getDescription());
         } catch (SQLException e) {
             logger.error(e.getLocalizedMessage());
             throw new DAOException("Cannot save the course", e);
@@ -61,27 +67,27 @@ public class CourseRepository implements CrudRepository<Course, Integer> {
             }
         }
 
-        return course;
+        return courseDb;
     }
 
     @Override
-    public Optional<Course> findById(Integer integer) throws DAOException {
-        Course course = null;
+    public Optional<Course> findById(Integer id) throws DAOException {
+        Course courseDb = null;
         Connection connection = connectionManager.getConnection();
         ResultSet resultSet = null;
 
         try (PreparedStatement preStatement = connection.prepareStatement(FIND_BY_ID_QUERY, Statement.RETURN_GENERATED_KEYS)) {
-            preStatement.setInt(1, integer);
-            resultSet = preStatement.executeQuery();
+            preStatement.setInt(1, id);
 
+            resultSet = preStatement.executeQuery();
             if (resultSet.next()) {
-                course = new Course(resultSet.getString(COURSE_NAME));
-                course.setId(resultSet.getInt(COURSE_ID));
-                course.setDescription(resultSet.getString(COURSE_DESCRIPTION));
+                courseDb = new Course(resultSet.getString(COURSE_NAME));
+                courseDb.setId(resultSet.getInt(COURSE_ID));
+                courseDb.setDescription(resultSet.getString(COURSE_DESCRIPTION));
             }
         } catch (SQLException e) {
             logger.error(e.getLocalizedMessage());
-            throw new DAOException("cannot be found by id in the courses", e);
+            throw new DAOException("Cannot be found by id in the courses", e);
         } finally {
             try {
                 if (resultSet != null) {
@@ -92,30 +98,57 @@ public class CourseRepository implements CrudRepository<Course, Integer> {
             }
         }
 
-        return Optional.ofNullable(course);
+        return Optional.ofNullable(courseDb);
     }
 
     @Override
-    public boolean existsById(Integer integer) throws DAOException {
-        Optional<Course> optCourse = this.findById(integer);
+    public Optional<List<Course>> find(Course course) throws DAOException {
+        List<Course> coursesDb = new ArrayList<>();
+        Connection connection = connectionManager.getConnection();
+        ResultSet resultSet = null;
 
-        return optCourse.isPresent();
+        try (PreparedStatement preStatement = connection.prepareStatement(FIND_QUERY, Statement.RETURN_GENERATED_KEYS)) {
+            preStatement.setString(1, course.getName());
+            preStatement.setString(2, course.getDescription());
+            preStatement.getGeneratedKeys();
+            preStatement.execute();
+
+            resultSet = preStatement.getResultSet();
+            while(resultSet.next()) {
+                Course courseDb = new Course(resultSet.getString(COURSE_NAME));
+                courseDb.setId(resultSet.getInt(COURSE_ID));
+                courseDb.setDescription(resultSet.getString(COURSE_DESCRIPTION));
+                coursesDb.add(courseDb);
+            }
+        } catch (SQLException e) {
+            logger.error(e.getLocalizedMessage());
+            throw new DAOException("The group cannot be found in groups", e);
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (SQLException e) {
+                logger.error(e.getLocalizedMessage());
+            }
+        }
+
+        return Optional.of(coursesDb);
     }
 
     @Override
     public List<Course> findAll() throws DAOException {
-        List<Course> courses = new ArrayList<>();
+        List<Course> coursesDb = new ArrayList<>();
         Connection connection = connectionManager.getConnection();
         ResultSet resultSet = null;
 
         try (Statement statement = connection.createStatement()) {
             resultSet = statement.executeQuery(FIND_ALL_QUERY);
-
             while (resultSet.next()) {
-                Course course = new Course(resultSet.getString(COURSE_NAME));
-                course.setId(resultSet.getInt(COURSE_ID));
-                course.setDescription(resultSet.getString(COURSE_DESCRIPTION));
-                courses.add(course);
+                Course courseResult = new Course(resultSet.getString(COURSE_NAME));
+                courseResult.setId(resultSet.getInt(COURSE_ID));
+                courseResult.setDescription(resultSet.getString(COURSE_DESCRIPTION));
+                coursesDb.add(courseResult);
             }
         } catch (SQLException e) {
             logger.error(e.getLocalizedMessage());
@@ -130,7 +163,14 @@ public class CourseRepository implements CrudRepository<Course, Integer> {
             }
         }
 
-        return courses;
+        return coursesDb;
+    }
+
+    @Override
+    public boolean existsById(Integer id) throws DAOException {
+        Optional<Course> optCourse = this.findById(id);
+
+        return optCourse.isPresent();
     }
 
     @Override
@@ -140,7 +180,6 @@ public class CourseRepository implements CrudRepository<Course, Integer> {
 
         try (Statement statement = connection.createStatement()) {
             resultSet = statement.executeQuery(COUNT_QUERY);
-
             if (resultSet.next()) {
                 return resultSet.getInt(1);
             } else {
@@ -161,11 +200,11 @@ public class CourseRepository implements CrudRepository<Course, Integer> {
     }
 
     @Override
-    public void deleteById(Integer integer) throws DAOException {
+    public void deleteById(Integer id) throws DAOException {
         Connection connection = connectionManager.getConnection();
 
         try (PreparedStatement preStatement = connection.prepareStatement(DELETE_BY_ID_QUERY, Statement.RETURN_GENERATED_KEYS)) {
-            preStatement.setInt(1, integer);
+            preStatement.setInt(1, id);
             preStatement.execute();
         } catch (SQLException e) {
             logger.error(e.getLocalizedMessage());
@@ -174,8 +213,16 @@ public class CourseRepository implements CrudRepository<Course, Integer> {
     }
 
     @Override
-    public void delete(Course entity) throws DAOException {
-        deleteById(entity.getId());
+    public void delete(Course course) throws DAOException {
+        Connection connection = connectionManager.getConnection();
+
+        try (PreparedStatement preStatement = connection.prepareStatement(DELETE_QUERY, Statement.RETURN_GENERATED_KEYS)) {
+            preStatement.setString(1, course.getName());
+            preStatement.execute();
+        } catch (SQLException e) {
+            logger.error(e.getLocalizedMessage());
+            throw new DAOException("Cannot be deleted in the groups", e);
+        }
     }
 
     @Override
@@ -183,7 +230,7 @@ public class CourseRepository implements CrudRepository<Course, Integer> {
         Connection connection = connectionManager.getConnection();
 
         try (Statement statement = connection.createStatement()) {
-            statement.execute(DELETE_ALL);
+            statement.execute(DELETE_ALL_QUERY);
         } catch (SQLException e) {
             logger.error(e.getLocalizedMessage());
             throw new DAOException("Cannot be deleted all in the courses", e);

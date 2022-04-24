@@ -16,8 +16,7 @@ public class GroupCreator {
                     .append("-")
                     .append(randomWords.getRandomNumber(10, 99));
 
-            Group group = new Group();
-            group.setName(name.toString());
+            Group group = new Group(name.toString());
             groups.add(group);
         }
 

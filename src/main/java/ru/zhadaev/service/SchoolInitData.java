@@ -1,4 +1,4 @@
-package ru.zhadaev.domain;
+package ru.zhadaev.service;
 
 import java.util.*;
 

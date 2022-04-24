@@ -10,9 +10,11 @@ public interface CrudRepository<T, ID> {
 
         Optional<T> findById(ID id) throws DAOException;
 
-        boolean existsById(ID id) throws DAOException;
+        Optional<List<T>> find(T entity) throws DAOException;
 
         List<T> findAll() throws DAOException;
+
+        boolean existsById(ID id) throws DAOException;
 
         long count() throws DAOException;
 
