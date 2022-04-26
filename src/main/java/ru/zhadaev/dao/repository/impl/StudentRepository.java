@@ -98,7 +98,7 @@ public class StudentRepository implements CrudRepository<Student, Integer> {
     }
 
     @Override
-    public Optional findById(Integer id) throws DAOException {
+    public Optional<Student> findById(Integer id) throws DAOException {
         Student studentDb = null;
         Connection connection = connectionManager.getConnection();
         ResultSet resultSet = null;
@@ -147,8 +147,8 @@ public class StudentRepository implements CrudRepository<Student, Integer> {
     }
 
     @Override
-    public Optional<List<Student>> find(Student student) throws DAOException {
-        List<Student> studentsDb = new ArrayList<>();
+    public List<Student> find(Student student) throws DAOException {
+        List<Student> students = new ArrayList<>();
         Connection connection = connectionManager.getConnection();
         ResultSet resultSet = null;
 
@@ -167,7 +167,7 @@ public class StudentRepository implements CrudRepository<Student, Integer> {
                 int id = resultSet.getInt(STUDENT_ID);
                 if (id != prevId) {
                     if (studentDb != null) {
-                        studentsDb.add(studentDb);
+                        students.add(studentDb);
                     }
 
                     studentDb = new Student(resultSet.getString(FIRST_NAME), resultSet.getString(LAST_NAME));
@@ -190,7 +190,7 @@ public class StudentRepository implements CrudRepository<Student, Integer> {
                 prevId = id;
 
                 if (resultSet.isLast()) {
-                    studentsDb.add(studentDb);
+                    students.add(studentDb);
                 }
             }
         } catch (SQLException e) {
@@ -206,11 +206,11 @@ public class StudentRepository implements CrudRepository<Student, Integer> {
             }
         }
 
-        return Optional.ofNullable(studentsDb);
+        return students;
     }
 
     @Override
-    public List findAll() throws DAOException {
+    public List<Student> findAll() throws DAOException {
         List<Student> studentsDb = new ArrayList<>();
         Connection connection = connectionManager.getConnection();
         ResultSet resultSet = null;

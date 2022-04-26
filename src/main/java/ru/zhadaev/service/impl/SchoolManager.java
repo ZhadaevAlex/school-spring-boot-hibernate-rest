@@ -14,7 +14,6 @@ import ru.zhadaev.service.ISchoolManager;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class SchoolManager implements ISchoolManager {
     private static final Logger logger = LoggerFactory.getLogger(SchoolManager.class);
@@ -72,7 +71,7 @@ public class SchoolManager implements ISchoolManager {
         requiredNameNotNull(group);
 
         GroupRepository groupRepository = new GroupRepository(connectionManager);
-        List<Group> groupsDb = groupRepository.find(group).get();
+        List<Group> groupsDb = groupRepository.find(group);
 
         if (groupsDb.isEmpty()) {
             throw new NotFoundException("Groups not found");
@@ -87,7 +86,7 @@ public class SchoolManager implements ISchoolManager {
         requiredNameNotNull(course);
 
         CourseRepository courseRepository = new CourseRepository(connectionManager);
-        List<Course> coursesDb = courseRepository.find(course).get();
+        List<Course> coursesDb = courseRepository.find(course);
 
         if (coursesDb.isEmpty()) {
             throw new NotFoundException("Courses not found");
@@ -102,7 +101,7 @@ public class SchoolManager implements ISchoolManager {
         requiredNameNotNull(student);
 
         StudentRepository studentRepository = new StudentRepository(connectionManager);
-        List<Student> studentsDb = studentRepository.find(student).get();
+        List<Student> studentsDb = studentRepository.find(student);
         if (studentsDb.isEmpty()) {
             throw new NotFoundException("Students not found");
         }

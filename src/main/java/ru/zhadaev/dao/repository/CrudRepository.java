@@ -1,27 +1,25 @@
 package ru.zhadaev.dao.repository;
 
-import ru.zhadaev.exception.DAOException;
-
 import java.util.List;
 import java.util.Optional;
 
 public interface CrudRepository<T, ID> {
-        T save(T entity) throws DAOException;
+        T save(T entity) ;
 
-        Optional<T> findById(ID id) throws DAOException;
+        Optional<T> findById(ID id) ;
 
-        Optional<List<T>> find(T entity) throws DAOException;
+        List<T> find(T entity) ;
 
-        List<T> findAll() throws DAOException;
+        List<T> findAll();
 
-        boolean existsById(ID id) throws DAOException;
+        boolean existsById(ID id);
 
-        long count() throws DAOException;
+        long count();
 
-        void deleteById(ID id) throws DAOException;
+        void deleteById(ID id);
 
-        void delete(T entity) throws DAOException;
+        void delete(T entity);
 
-        void deleteAll() throws DAOException;
+        void deleteAll();
 }
 

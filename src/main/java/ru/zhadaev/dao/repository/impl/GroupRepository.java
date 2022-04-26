@@ -94,7 +94,7 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
     }
 
     @Override
-    public Optional<List<Group>> find(Group group) throws DAOException {
+    public List<Group> find(Group group) throws DAOException {
         List<Group> groupsDb = new ArrayList<>();
         Connection connection = connectionManager.getConnection();
         ResultSet resultSet = null;
@@ -122,8 +122,7 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
                 logger.error(e.getLocalizedMessage(), e);
             }
         }
-
-        return Optional.of(groupsDb);
+        return groupsDb;
     }
 
     @Override

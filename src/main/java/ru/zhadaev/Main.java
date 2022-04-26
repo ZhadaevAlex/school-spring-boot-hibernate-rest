@@ -1,6 +1,6 @@
 package ru.zhadaev;
 
-import ru.zhadaev.config.ConnectionCreator;
+import ru.zhadaev.config.ConnectionInitializer;
 import ru.zhadaev.config.ConnectionManager;
 import ru.zhadaev.dao.entitie.Course;
 import ru.zhadaev.dao.entitie.Group;
@@ -20,7 +20,6 @@ import ru.zhadaev.util.creation.StudentsCreator;
 import java.nio.file.NoSuchFileException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -49,8 +48,8 @@ public class Main {
                 SchoolInitData.MIN_COURSES,
                 SchoolInitData.MAX_COURSES).createSchool(students);
 
-        ConnectionCreator connectionCreator = new ConnectionCreator();
-        ConnectionManager connectionManager = connectionCreator.createConnection();
+        ConnectionInitializer initializer = new ConnectionInitializer();
+        ConnectionManager connectionManager = initializer.createConnection();
         SchoolInitializer schoolInitializer = new SchoolInitializer(connectionManager);
         schoolInitializer.initialize(school);
 

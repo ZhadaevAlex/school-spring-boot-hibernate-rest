@@ -2,8 +2,11 @@ package ru.zhadaev.dao.entitie;
 
 public class Course {
     private Integer id;
-    private final String name;
+    private String name;
     private String description;
+
+    public Course() {
+    }
 
     public Course(String name) {
         this.name = name;

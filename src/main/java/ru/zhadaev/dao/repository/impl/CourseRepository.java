@@ -38,7 +38,7 @@ public class CourseRepository implements CrudRepository<Course, Integer> {
     }
 
     @Override
-    public Course save(Course course) throws DAOException {
+    public Course save(Course course) {
         Course courseDb;
         Connection connection = connectionManager.getConnection();
         ResultSet resultSet = null;
@@ -71,7 +71,7 @@ public class CourseRepository implements CrudRepository<Course, Integer> {
     }
 
     @Override
-    public Optional<Course> findById(Integer id) throws DAOException {
+    public Optional<Course> findById(Integer id) {
         Course courseDb = null;
         Connection connection = connectionManager.getConnection();
         ResultSet resultSet = null;
@@ -102,7 +102,7 @@ public class CourseRepository implements CrudRepository<Course, Integer> {
     }
 
     @Override
-    public Optional<List<Course>> find(Course course) throws DAOException {
+    public List<Course> find(Course course) {
         List<Course> coursesDb = new ArrayList<>();
         Connection connection = connectionManager.getConnection();
         ResultSet resultSet = null;
@@ -132,12 +132,11 @@ public class CourseRepository implements CrudRepository<Course, Integer> {
                 logger.error(e.getLocalizedMessage());
             }
         }
-
-        return Optional.of(coursesDb);
+        return coursesDb;
     }
 
     @Override
-    public List<Course> findAll() throws DAOException {
+    public List<Course> findAll() {
         List<Course> coursesDb = new ArrayList<>();
         Connection connection = connectionManager.getConnection();
         ResultSet resultSet = null;
@@ -167,14 +166,14 @@ public class CourseRepository implements CrudRepository<Course, Integer> {
     }
 
     @Override
-    public boolean existsById(Integer id) throws DAOException {
+    public boolean existsById(Integer id) {
         Optional<Course> optCourse = this.findById(id);
 
         return optCourse.isPresent();
     }
 
     @Override
-    public long count() throws DAOException {
+    public long count() {
         Connection connection = connectionManager.getConnection();
         ResultSet resultSet = null;
 
@@ -200,7 +199,7 @@ public class CourseRepository implements CrudRepository<Course, Integer> {
     }
 
     @Override
-    public void deleteById(Integer id) throws DAOException {
+    public void deleteById(Integer id) {
         Connection connection = connectionManager.getConnection();
 
         try (PreparedStatement preStatement = connection.prepareStatement(DELETE_BY_ID_QUERY, Statement.RETURN_GENERATED_KEYS)) {
@@ -213,7 +212,7 @@ public class CourseRepository implements CrudRepository<Course, Integer> {
     }
 
     @Override
-    public void delete(Course course) throws DAOException {
+    public void delete(Course course) {
         Connection connection = connectionManager.getConnection();
 
         try (PreparedStatement preStatement = connection.prepareStatement(DELETE_QUERY, Statement.RETURN_GENERATED_KEYS)) {
@@ -226,7 +225,7 @@ public class CourseRepository implements CrudRepository<Course, Integer> {
     }
 
     @Override
-    public void deleteAll() throws DAOException {
+    public void deleteAll() {
         Connection connection = connectionManager.getConnection();
 
         try (Statement statement = connection.createStatement()) {

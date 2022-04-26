@@ -23,6 +23,7 @@ public class SchoolInitializer {
         this.connectionManager = connectionManager;
     }
 
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     public void initialize(School school) throws DAOException, NoSuchFileException, IsNotFileException {
         createTables();
 
@@ -34,7 +35,7 @@ public class SchoolInitializer {
                 Integer id = groupsDb.stream()
                         .filter(p -> p.getName()
                                 .equals(student.getGroup().getName()))
-                    .findFirst().get().getId();
+                        .findFirst().get().getId();
                 student.getGroup().setId(id);
             }
 
@@ -42,7 +43,7 @@ public class SchoolInitializer {
                 Integer id = coursesDb.stream()
                         .filter(p -> p.getName().equals(courseStudent.getName())
                                 && p.getDescription().equals(courseStudent.getDescription()))
-                        .findFirst()             .get().getId();
+                        .findFirst().get().getId();
 
                 courseStudent.setId(id);
             }

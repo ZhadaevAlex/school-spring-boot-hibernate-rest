@@ -5,9 +5,12 @@ import java.util.List;
 public class Student {
     private Integer id;
     private Group group;
-    private final String firstName;
-    private final String lastName;
+    private String firstName;
+    private String lastName;
     private List<Course> courses;
+
+    public Student() {
+    }
 
     public Student(String firstName, String lastName) {
         this.firstName = firstName;

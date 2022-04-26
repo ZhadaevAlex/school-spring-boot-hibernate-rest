@@ -1,6 +1,6 @@
 package ru.zhadaev.config;
 
-public class ConnectionCreator {
+public class ConnectionInitializer {
     private static final String FILE_PROP_NAME = "application.properties";
     private static final String URL_PROP_NAME = "URL";
     private static final String USER_PROP_NAME = "USER";
@@ -10,7 +10,7 @@ public class ConnectionCreator {
     private String user;
     private String password;
 
-    public ConnectionCreator() {
+    public ConnectionInitializer() {
         PropertiesReader propertiesReader = new PropertiesReader(FILE_PROP_NAME);
         this.url = propertiesReader.getProperty(URL_PROP_NAME);
         this.user = propertiesReader.getProperty(USER_PROP_NAME);
