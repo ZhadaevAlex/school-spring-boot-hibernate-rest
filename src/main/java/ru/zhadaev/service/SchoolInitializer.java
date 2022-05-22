@@ -1,5 +1,7 @@
 package ru.zhadaev.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.zhadaev.config.ConnectionManager;
 import ru.zhadaev.dao.TablesCreator;
 import ru.zhadaev.dao.entitie.Course;
@@ -16,9 +18,11 @@ import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component("schoolInitializer")
 public class SchoolInitializer {
     ConnectionManager connectionManager;
 
+    @Autowired
     public SchoolInitializer(ConnectionManager connectionManager) {
         this.connectionManager = connectionManager;
     }

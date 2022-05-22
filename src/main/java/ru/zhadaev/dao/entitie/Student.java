@@ -30,12 +30,12 @@ public class Student {
         this.id = id;
     }
 
-    public void setGroup(Group group) {
-        this.group = group;
-    }
-
     public Group getGroup() {
         return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
     }
 
     public void setCourses(List<Course> courses) {

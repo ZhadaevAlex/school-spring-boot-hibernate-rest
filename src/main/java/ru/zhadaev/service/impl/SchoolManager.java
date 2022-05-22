@@ -2,6 +2,8 @@ package ru.zhadaev.service.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.zhadaev.config.ConnectionManager;
 import ru.zhadaev.dao.entitie.Course;
 import ru.zhadaev.dao.entitie.Group;
@@ -14,12 +16,13 @@ import ru.zhadaev.service.ISchoolManager;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
+@Component
 public class SchoolManager implements ISchoolManager {
     private static final Logger logger = LoggerFactory.getLogger(SchoolManager.class);
     ConnectionManager connectionManager;
 
+    @Autowired
     public SchoolManager(ConnectionManager connectionManager) {
         this.connectionManager = connectionManager;
     }

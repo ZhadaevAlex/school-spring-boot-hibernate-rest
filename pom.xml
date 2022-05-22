@@ -17,6 +17,7 @@
         <junit.version>4.13.2</junit.version>
         <jetbrains.annotations.version>23.0.0</jetbrains.annotations.version>
         <slf4j.version>1.7.36</slf4j.version>
+        <springframevork.version>5.3.19</springframevork.version>
         <maven.surfire.plugin.version>2.22.2</maven.surfire.plugin.version>
     </properties>
 
@@ -59,12 +60,27 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.36</version>
+            <version>${slf4j.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.36</version>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${springframevork.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>${springframevork.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${springframevork.version}</version>
         </dependency>
     </dependencies>
 

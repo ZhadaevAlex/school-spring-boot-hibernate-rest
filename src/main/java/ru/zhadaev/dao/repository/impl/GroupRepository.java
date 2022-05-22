@@ -2,6 +2,8 @@ package ru.zhadaev.dao.repository.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.zhadaev.config.ConnectionManager;
 import ru.zhadaev.dao.entitie.Group;
 import ru.zhadaev.dao.repository.CrudRepository;
@@ -12,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Component
 public class GroupRepository implements CrudRepository<Group, Integer> {
     private static final Logger logger = LoggerFactory.getLogger(GroupRepository.class);
     private static final String GROUP_ID = "group_id";
@@ -28,6 +31,7 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
 
     private final ConnectionManager connectionManager;
 
+    @Autowired
     public GroupRepository(ConnectionManager connectionManager) {
         this.connectionManager = connectionManager;
     }

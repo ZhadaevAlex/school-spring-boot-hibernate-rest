@@ -2,6 +2,8 @@ package ru.zhadaev.dao.repository.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.zhadaev.config.ConnectionManager;
 import ru.zhadaev.dao.entitie.Course;
 import ru.zhadaev.dao.repository.CrudRepository;
@@ -12,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Component
 public class CourseRepository implements CrudRepository<Course, Integer> {
     private static final Logger logger = LoggerFactory.getLogger(CourseRepository.class);
     private static final String COURSE_ID = "course_id";
@@ -33,6 +36,7 @@ public class CourseRepository implements CrudRepository<Course, Integer> {
 
     private final ConnectionManager connectionManager;
 
+    @Autowired
     public CourseRepository(ConnectionManager connectionManager) {
         this.connectionManager = connectionManager;
     }

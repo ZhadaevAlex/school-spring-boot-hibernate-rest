@@ -1,6 +1,6 @@
 package ru.zhadaev.dao.entitie;
 
-public class Course {
+public class Course extends School {
     private Integer id;
     private final String name;
     private String description;
