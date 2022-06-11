@@ -8,9 +8,9 @@ import ru.zhadaev.config.ConnectionManager;
 import ru.zhadaev.dao.entitie.Course;
 import ru.zhadaev.dao.entitie.Group;
 import ru.zhadaev.dao.entitie.Student;
-import ru.zhadaev.dao.repository.impl.CourseRepository;
-import ru.zhadaev.dao.repository.impl.GroupRepository;
-import ru.zhadaev.dao.repository.impl.StudentRepository;
+import ru.zhadaev.dao.repository.impl.CourseDAO;
+import ru.zhadaev.dao.repository.impl.GroupDAO;
+import ru.zhadaev.dao.repository.impl.StudentDAO;
 import ru.zhadaev.exception.*;
 import ru.zhadaev.service.ISchoolManager;
 
@@ -29,11 +29,11 @@ public class SchoolManager implements ISchoolManager {
 
     @Override
     public List<Group> findGroupsByStudentsCount(long studentsCount) throws DAOException {
-        StudentRepository studentRepository = new StudentRepository(connectionManager);
-        GroupRepository groupRepository = new GroupRepository(connectionManager);
+        StudentDAO studentDAO = new StudentDAO(connectionManager);
+        GroupDAO groupDAO = new GroupDAO(connectionManager);
 
-        List<Student> studentsDb = studentRepository.findAll();
-        List<Group> groupsDb = groupRepository.findAll();
+        List<Student> studentsDb = studentDAO.findAll();
+        List<Group> groupsDb = groupDAO.findAll();
         List<Group> result = new ArrayList<>();
 
         for (Group group : groupsDb) {
@@ -53,8 +53,8 @@ public class SchoolManager implements ISchoolManager {
     public List<Student> findStudentsByCourseName(String courseName) throws DAOException {
         requiredNotNull(courseName);
 
-        StudentRepository studentRepository = new StudentRepository(connectionManager);
-        List<Student> studentsDb = studentRepository.findAll();
+        StudentDAO studentDAO = new StudentDAO(connectionManager);
+        List<Student> studentsDb = studentDAO.findAll();
         List<Student> result = new ArrayList<>();
 
         for (Student student : studentsDb) {
@@ -74,8 +74,8 @@ public class SchoolManager implements ISchoolManager {
         requiredNotNull(group);
         requiredNameNotNull(group);
 
-        GroupRepository groupRepository = new GroupRepository(connectionManager);
-        List<Group> groupsDb = groupRepository.find(group).get();
+        GroupDAO groupDAO = new GroupDAO(connectionManager);
+        List<Group> groupsDb = groupDAO.find(group).get();
 
         if (groupsDb.isEmpty()) {
             throw new NotFoundException("Groups not found");
@@ -89,8 +89,8 @@ public class SchoolManager implements ISchoolManager {
         requiredNotNull(course);
         requiredNameNotNull(course);
 
-        CourseRepository courseRepository = new CourseRepository(connectionManager);
-        List<Course> coursesDb = courseRepository.find(course).get();
+        CourseDAO courseDAO = new CourseDAO(connectionManager);
+        List<Course> coursesDb = courseDAO.find(course).get();
 
         if (coursesDb.isEmpty()) {
             throw new NotFoundException("Courses not found");
@@ -104,8 +104,8 @@ public class SchoolManager implements ISchoolManager {
         requiredNotNull(student);
         requiredNameNotNull(student);
 
-        StudentRepository studentRepository = new StudentRepository(connectionManager);
-        List<Student> studentsDb = studentRepository.find(student).get();
+        StudentDAO studentDAO = new StudentDAO(connectionManager);
+        List<Student> studentsDb = studentDAO.find(student).get();
         if (studentsDb.isEmpty()) {
             throw new NotFoundException("Students not found");
         }
@@ -123,20 +123,20 @@ public class SchoolManager implements ISchoolManager {
             requiredCourseIsExist(course);
         }
 
-        StudentRepository studentRepository = new StudentRepository(connectionManager);
+        StudentDAO studentDAO = new StudentDAO(connectionManager);
 
-        Student studentDb = studentRepository.save(student);
-        studentRepository.signOnCourses(studentDb, studentDb.getCourses());
+        Student studentDb = studentDAO.save(student);
+        studentDAO.signOnCourses(studentDb, studentDb.getCourses());
 
         return studentDb;
     }
 
     @Override
     public void deleteStudentById(int id) throws DAOException {
-        StudentRepository studentRepository = new StudentRepository(connectionManager);
+        StudentDAO studentDAO = new StudentDAO(connectionManager);
 
-        if (studentRepository.existsById(id)) {
-            studentRepository.deleteById(id);
+        if (studentDAO.existsById(id)) {
+            studentDAO.deleteById(id);
         } else {
             logger.error("Student not found by id");
             throw new NotFoundException("Student not found by id");
@@ -155,8 +155,8 @@ public class SchoolManager implements ISchoolManager {
             requiredStudentIsExist(student);
         }
 
-        StudentRepository studentRepository = new StudentRepository(connectionManager);
-        studentRepository.signOnCourses(student, courses);
+        StudentDAO studentDAO = new StudentDAO(connectionManager);
+        studentDAO.signOnCourses(student, courses);
     }
 
     @Override
@@ -169,8 +169,8 @@ public class SchoolManager implements ISchoolManager {
         requiredIdNotNull(course);
         requiredStudentIsExist(student);
 
-        StudentRepository studentRepository = new StudentRepository(connectionManager);
-        studentRepository.removeFromCourse(student, course);
+        StudentDAO studentDAO = new StudentDAO(connectionManager);
+        studentDAO.removeFromCourse(student, course);
     }
 
     private void requiredNotNull(String courseName) {
@@ -244,24 +244,24 @@ public class SchoolManager implements ISchoolManager {
     }
 
     private void requiredGroupIsExist(Student student) throws DAOException {
-        GroupRepository groupRepository = new GroupRepository(connectionManager);
-        if (!groupRepository.existsById(student.getGroup().getId())) {
+        GroupDAO groupDAO = new GroupDAO(connectionManager);
+        if (!groupDAO.existsById(student.getGroup().getId())) {
             logger.error("The student's group was not found in the database");
             throw new NotFoundException("The student's group was not found in the database");
         }
     }
 
     private void requiredCourseIsExist(Course course) throws DAOException {
-        CourseRepository courseRepository = new CourseRepository(connectionManager);
-        if (!courseRepository.existsById(course.getId())) {
+        CourseDAO courseDAO = new CourseDAO(connectionManager);
+        if (!courseDAO.existsById(course.getId())) {
             logger.error("The student's course was not found in the database");
             throw new NotFoundException("The student's course was not found in the database");
         }
     }
 
     private void requiredStudentIsExist(Student student) throws DAOException {
-        StudentRepository studentRepository = new StudentRepository(connectionManager);
-        if (!studentRepository.existsById(student.getId())) {
+        StudentDAO studentDAO = new StudentDAO(connectionManager);
+        if (!studentDAO.existsById(student.getId())) {
             logger.error("The student's course was not found in the database");
             throw new NotFoundException("The student's was not found in the database");
         }

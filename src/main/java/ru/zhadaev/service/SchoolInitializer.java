@@ -8,9 +8,9 @@ import ru.zhadaev.dao.entitie.Course;
 import ru.zhadaev.dao.entitie.Group;
 import ru.zhadaev.dao.entitie.School;
 import ru.zhadaev.dao.entitie.Student;
-import ru.zhadaev.dao.repository.impl.CourseRepository;
-import ru.zhadaev.dao.repository.impl.GroupRepository;
-import ru.zhadaev.dao.repository.impl.StudentRepository;
+import ru.zhadaev.dao.repository.impl.CourseDAO;
+import ru.zhadaev.dao.repository.impl.GroupDAO;
+import ru.zhadaev.dao.repository.impl.StudentDAO;
 import ru.zhadaev.exception.DAOException;
 import ru.zhadaev.exception.IsNotFileException;
 
@@ -63,20 +63,20 @@ public class SchoolInitializer {
     }
 
     List<Group> initializeGroup(List<Group> groups) throws DAOException {
-        GroupRepository groupRepository = new GroupRepository(connectionManager);
+        GroupDAO groupDAO = new GroupDAO(connectionManager);
         List<Group> groupsDb = new ArrayList<>();
         for (Group group : groups) {
-            groupsDb.add(groupRepository.save(group));
+            groupsDb.add(groupDAO.save(group));
         }
 
         return groupsDb;
     }
 
     List<Course> initializeCourses(List<Course> courses) throws DAOException {
-        CourseRepository courseRepository = new CourseRepository(connectionManager);
+        CourseDAO courseDAO = new CourseDAO(connectionManager);
         List<Course> coursesDb = new ArrayList<>();
         for (Course course : courses) {
-            coursesDb.add(courseRepository.save(course));
+            coursesDb.add(courseDAO.save(course));
         }
 
         return coursesDb;
@@ -84,18 +84,18 @@ public class SchoolInitializer {
 
     List<Student> initializeStudents(List<Student> students) throws DAOException {
         List<Student> studentsDb = new ArrayList<>();
-        StudentRepository studentRepository = new StudentRepository(connectionManager);
+        StudentDAO studentDAO = new StudentDAO(connectionManager);
         for (Student student : students) {
-            studentsDb.add(studentRepository.save(student));
+            studentsDb.add(studentDAO.save(student));
         }
 
         return studentsDb;
     }
 
     void signStudentsOnCourses(List<Student> students) throws DAOException {
-        StudentRepository studentRepository = new StudentRepository(connectionManager);
+        StudentDAO studentDAO = new StudentDAO(connectionManager);
         for (Student student : students) {
-            studentRepository.signOnCourses(student, student.getCourses());
+            studentDAO.signOnCourses(student, student.getCourses());
         }
     }
 }

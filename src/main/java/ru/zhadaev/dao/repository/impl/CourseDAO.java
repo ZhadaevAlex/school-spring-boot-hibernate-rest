@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public class CourseRepository implements CrudRepository<Course, Integer> {
-    private static final Logger logger = LoggerFactory.getLogger(CourseRepository.class);
+public class CourseDAO implements CrudRepository<Course, Integer> {
+    private static final Logger logger = LoggerFactory.getLogger(CourseDAO.class);
     private static final String COURSE_ID = "course_id";
     private static final String COURSE_NAME = "course_name";
     private static final String COURSE_DESCRIPTION = "course_description";
@@ -37,7 +37,7 @@ public class CourseRepository implements CrudRepository<Course, Integer> {
     private final ConnectionManager connectionManager;
 
     @Autowired
-    public CourseRepository(ConnectionManager connectionManager) {
+    public CourseDAO(ConnectionManager connectionManager) {
         this.connectionManager = connectionManager;
     }
 

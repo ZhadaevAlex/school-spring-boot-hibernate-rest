@@ -1,14 +1,13 @@
 package ru.zhadaev;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import ru.zhadaev.config.ConnectionManager;
 import ru.zhadaev.dao.entitie.Course;
 import ru.zhadaev.dao.entitie.Group;
 import ru.zhadaev.dao.entitie.School;
 import ru.zhadaev.dao.entitie.Student;
-import ru.zhadaev.dao.repository.impl.CourseRepository;
-import ru.zhadaev.dao.repository.impl.GroupRepository;
-import ru.zhadaev.dao.repository.impl.StudentRepository;
+import ru.zhadaev.dao.repository.impl.CourseDAO;
+import ru.zhadaev.dao.repository.impl.GroupDAO;
+import ru.zhadaev.dao.repository.impl.StudentDAO;
 import ru.zhadaev.exception.IsNotFileException;
 import ru.zhadaev.service.ISchoolManager;
 import ru.zhadaev.service.SchoolInitData;
@@ -55,49 +54,49 @@ public class Main {
 
         schoolInitializer.initialize(school);
 
-        GroupRepository groupRepository = context.getBean(
-                "groupRepository", GroupRepository.class);
-        CourseRepository courseRepository = context.getBean(
-                "courseRepository", CourseRepository.class);
-        StudentRepository studentRepository = context.getBean(
-                "studentRepository", StudentRepository.class);
-        ISchoolManager manager = context.getBean(
-                "schoolManager", SchoolManager.class);
-
-        List<Group> result1 = manager.findGroupsByStudentsCount(25);
-
-        List<Student> result2 = manager.findStudentsByCourseName("Economics");
-
-        List<Group> groups3 = groupRepository.findAll();
-        Group group3 = new Group(groups3.get(0).getName());
-        List<Group> result3 = manager.findGroup(group3);
-
-        Course course4 = new Course("Music");
-        course4.setDescription("Subject Music");
-        List<Course> coursesDb4 = manager.findCourse(course4);
-
-        List<Student> students5 = studentRepository.findAll();
-        Student student5 = new Student(students5.get(0).getFirstName(), students5.get(0).getLastName());
-        List<Student> result5 = manager.findStudent(student5);
-
-        Student student6 = new Student("Ivan", "Ivanov");
-        Group group61 = new Group(school.getGroups().get(0).getName());
-        group61.setId(school.getGroups().get(0).getId());
-        student6.setGroup(group61);
-        List<Course> coursesAll = courseRepository.findAll();
-        List<Course> courses6 = new ArrayList<>();
-        Collections.addAll(courses6, coursesAll.get(0), coursesAll.get(1), coursesAll.get(2));
-        student6.setCourses(courses6);
-        Student studentDb6 = manager.addNewStudent(student6);
-
-        manager.deleteStudentById(201);
-
-        Student student7 = new Student("Petr1", "Petr1");
-        student7.setGroup(group61);
-        Collections.addAll(courses6, coursesAll.get(3), coursesAll.get(4), coursesAll.get(5));
-        student7.setCourses(courses6);
-        Student studentDb7 = manager.addNewStudent(student7);
-
-        manager.removeStudentFromCourse(studentDb7, coursesAll.get(0));
+        GroupDAO groupDAO = context.getBean(
+                "groupRepository", GroupDAO.class);
+//        CourseDAO courseDAO = context.getBean(
+//                "courseRepository", CourseDAO.class);
+//        StudentDAO studentDAO = context.getBean(
+//                "studentRepository", StudentDAO.class);
+//        ISchoolManager manager = context.getBean(
+//                "schoolManager", SchoolManager.class);
+//
+//        List<Group> result1 = manager.findGroupsByStudentsCount(25);
+//
+//        List<Student> result2 = manager.findStudentsByCourseName("Economics");
+//
+//        List<Group> groups3 = groupDAO.findAll();
+//        Group group3 = new Group(groups3.get(0).getName());
+//        List<Group> result3 = manager.findGroup(group3);
+//
+//        Course course4 = new Course("Music");
+//        course4.setDescription("Subject Music");
+//        List<Course> coursesDb4 = manager.findCourse(course4);
+//
+//        List<Student> students5 = studentDAO.findAll();
+//        Student student5 = new Student(students5.get(0).getFirstName(), students5.get(0).getLastName());
+//        List<Student> result5 = manager.findStudent(student5);
+//
+//        Student student6 = new Student("Ivan", "Ivanov");
+//        Group group61 = new Group(school.getGroups().get(0).getName());
+//        group61.setId(school.getGroups().get(0).getId());
+//        student6.setGroup(group61);
+//        List<Course> coursesAll = courseDAO.findAll();
+//        List<Course> courses6 = new ArrayList<>();
+//        Collections.addAll(courses6, coursesAll.get(0), coursesAll.get(1), coursesAll.get(2));
+//        student6.setCourses(courses6);
+//        Student studentDb6 = manager.addNewStudent(student6);
+//
+//        manager.deleteStudentById(201);
+//
+//        Student student7 = new Student("Petr1", "Petr1");
+//        student7.setGroup(group61);
+//        Collections.addAll(courses6, coursesAll.get(3), coursesAll.get(4), coursesAll.get(5));
+//        student7.setCourses(courses6);
+//        Student studentDb7 = manager.addNewStudent(student7);
+//
+//        manager.removeStudentFromCourse(studentDb7, coursesAll.get(0));
     }
 }

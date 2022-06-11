@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public class GroupRepository implements CrudRepository<Group, Integer> {
-    private static final Logger logger = LoggerFactory.getLogger(GroupRepository.class);
+public class GroupDAO implements CrudRepository<Group, Integer> {
+    private static final Logger logger = LoggerFactory.getLogger(GroupDAO.class);
     private static final String GROUP_ID = "group_id";
     private static final String GROUP_NAME = "group_name";
     private static final String CREATE_QUERY = "insert into school.groups (group_name) values (?)";
@@ -32,7 +32,7 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
     private final ConnectionManager connectionManager;
 
     @Autowired
-    public GroupRepository(ConnectionManager connectionManager) {
+    public GroupDAO(ConnectionManager connectionManager) {
         this.connectionManager = connectionManager;
     }
 
@@ -49,8 +49,7 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
             resultSet = preStatement.getGeneratedKeys();
             resultSet.next();
 
-            groupDb = new Group(group.getName());
-            groupDb.setId(resultSet.getInt(GROUP_ID));
+            groupDb = new Group(resultSet.getInt(GROUP_ID), group.getName());
         } catch (SQLException e) {
             logger.error(e.getLocalizedMessage());
             throw new DAOException("Cannot save the group", e);
@@ -78,8 +77,7 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
 
             resultSet = preStatement.executeQuery();
             if (resultSet.next()) {
-                groupDb = new Group(resultSet.getString(GROUP_NAME));
-                groupDb.setId(resultSet.getInt(GROUP_ID));
+                groupDb = new Group(resultSet.getInt(GROUP_ID), resultSet.getString(GROUP_NAME));
             }
         } catch (SQLException e) {
             logger.error(e.getLocalizedMessage());
@@ -110,8 +108,7 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
 
             resultSet = preStatement.getResultSet();
             while (resultSet.next()) {
-                Group groupDb = new Group(resultSet.getString(GROUP_NAME));
-                groupDb.setId(resultSet.getInt(GROUP_ID));
+                Group groupDb = new Group(resultSet.getInt(GROUP_ID), resultSet.getString(GROUP_NAME));
                 groupsDb.add(groupDb);
             }
         } catch (SQLException e) {
@@ -139,8 +136,7 @@ public class GroupRepository implements CrudRepository<Group, Integer> {
         try (Statement statement = connection.createStatement()) {
             resultSet = statement.executeQuery(FIND_ALL_QUERY);
             while (resultSet.next()) {
-                Group groupDb = new Group(resultSet.getString(GROUP_NAME));
-                groupDb.setId(resultSet.getInt(GROUP_ID));
+                Group groupDb = new Group(resultSet.getInt(GROUP_ID), resultSet.getString(GROUP_NAME));
                 groupsDb.add(groupDb);
             }
         } catch (SQLException e) {

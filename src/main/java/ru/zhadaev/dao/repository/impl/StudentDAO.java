@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public class StudentRepository implements CrudRepository<Student, Integer> {
-    private static final Logger logger = LoggerFactory.getLogger(StudentRepository.class);
+public class StudentDAO implements CrudRepository<Student, Integer> {
+    private static final Logger logger = LoggerFactory.getLogger(StudentDAO.class);
     private static final String STUDENT_ID = "student_id";
     private static final String FIRST_NAME = "first_name";
     private static final String LAST_NAME = "last_name";
@@ -58,7 +58,7 @@ public class StudentRepository implements CrudRepository<Student, Integer> {
     private final ConnectionManager connectionManager;
 
     @Autowired
-    public StudentRepository(ConnectionManager connectionManager) {
+    public StudentDAO(ConnectionManager connectionManager) {
         this.connectionManager = connectionManager;
     }
 
@@ -118,8 +118,7 @@ public class StudentRepository implements CrudRepository<Student, Integer> {
                     studentDb = new Student(resultSet.getString(FIRST_NAME), resultSet.getString(LAST_NAME));
                     studentDb.setId(resultSet.getInt(STUDENT_ID));
 
-                    Group group = new Group(resultSet.getString(GROUP_NAME));
-                    group.setId(resultSet.getInt(GROUP_ID));
+                    Group group = new Group(resultSet.getInt(GROUP_ID), resultSet.getString(GROUP_NAME));
                     studentDb.setGroup(group);
 
                     firstLine = true;
@@ -176,8 +175,7 @@ public class StudentRepository implements CrudRepository<Student, Integer> {
 
                     studentDb = new Student(resultSet.getString(FIRST_NAME), resultSet.getString(LAST_NAME));
                     studentDb.setId(id);
-                    Group group = new Group(resultSet.getString(GROUP_NAME));
-                    group.setId(resultSet.getInt(GROUP_ID));
+                    Group group = new Group(resultSet.getInt(GROUP_ID), resultSet.getString(GROUP_NAME));
                     studentDb.setGroup(group);
                     courses = new ArrayList<>();
                 }
@@ -234,8 +232,7 @@ public class StudentRepository implements CrudRepository<Student, Integer> {
 
                     studentDb = new Student(resultSet.getString(FIRST_NAME), resultSet.getString(LAST_NAME));
                     studentDb.setId(id);
-                    Group group = new Group(resultSet.getString(GROUP_NAME));
-                    group.setId(resultSet.getInt(GROUP_ID));
+                    Group group = new Group(resultSet.getInt(GROUP_ID), resultSet.getString(GROUP_NAME));
                     studentDb.setGroup(group);
                     courses = new ArrayList<>();
                 }
