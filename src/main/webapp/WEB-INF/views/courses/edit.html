@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Group update</title>
+</head>
+<body>
+<form th:method="PATCH" th:action="@{/courses/{id}(id=${course.getId()})}" th:object="${course}">
+    <label for="name">Enter name: </label>
+    <input type="text" th:field="*{name}" id="name"/>
+    </br>
+    <input type="submit" value="Update"/>
+</form>
+</body>
+</html>

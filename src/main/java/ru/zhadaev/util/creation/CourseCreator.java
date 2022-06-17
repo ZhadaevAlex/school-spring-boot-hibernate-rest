@@ -1,6 +1,6 @@
 package ru.zhadaev.util.creation;
 
-import ru.zhadaev.dao.entitie.Course;
+import ru.zhadaev.dao.entities.Course;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,8 @@ public class CourseCreator {
         List<Course> courses = new ArrayList<>();
 
         for (Map.Entry<String, String> item : subjects.entrySet()) {
-            Course course = new Course(item.getKey());
+            Course course = new Course();
+            course.setName(item.getKey());
             course.setDescription(item.getValue());
             courses.add(course);
         }

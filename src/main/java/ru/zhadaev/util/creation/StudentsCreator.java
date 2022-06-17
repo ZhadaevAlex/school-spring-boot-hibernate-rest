@@ -1,6 +1,6 @@
 package ru.zhadaev.util.creation;
 
-import ru.zhadaev.dao.entitie.Student;
+import ru.zhadaev.dao.entities.Student;
 
 import java.util.*;
 
@@ -19,7 +19,9 @@ public class StudentsCreator {
         for (int i = 0; i < numberStudents; i++) {
             String firstName = firstNames.get(rnd.nextInt(lastNames.size()));
             String lastName = lastNames.get(rnd.nextInt(lastNames.size()));
-            Student student = new Student(firstName, lastName);
+            Student student = new Student();
+            student.setFirstName(firstName);
+            student.setLastName(lastName);
 
             students.add(student);
         }

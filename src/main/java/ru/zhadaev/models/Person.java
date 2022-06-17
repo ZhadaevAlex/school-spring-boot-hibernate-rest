@@ -1,23 +1,22 @@
-package ru.zhadaev.dao.entitie;
+package ru.zhadaev.models;
 
-public class Group {
-    private Integer id;
+public class Person {
+    private int id;
     private String name;
 
-    public Group() {
-
+    public Person() {
     }
 
-    public Group(Integer id, String name) {
+    public Person(int id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 

@@ -2,6 +2,7 @@ package ru.zhadaev.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -18,6 +19,8 @@ public class ConnectionManager {
         this.url = url;
         this.user = user;
         this.password = password;
+
+
     }
 
     public Connection getConnection() {
@@ -26,10 +29,11 @@ public class ConnectionManager {
                 return connection;
             }
 
+            Class.forName("org.postgresql.Driver");
             connection = DriverManager.getConnection(url, user, password);
             log.debug("New DB connection created");
             return connection;
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             log.error(e.getLocalizedMessage());
             throw new IllegalStateException(e);
         }

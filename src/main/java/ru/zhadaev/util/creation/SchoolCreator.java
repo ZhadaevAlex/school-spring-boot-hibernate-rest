@@ -1,8 +1,8 @@
 package ru.zhadaev.util.creation;
 
 import ru.zhadaev.util.StudentsDistributor;
-import ru.zhadaev.dao.entitie.School;
-import ru.zhadaev.dao.entitie.Student;
+import ru.zhadaev.dao.entities.School;
+import ru.zhadaev.dao.entities.Student;
 
 import java.util.*;
 

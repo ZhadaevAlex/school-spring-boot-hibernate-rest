@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.zhadaev.config.ConnectionManager;
-import ru.zhadaev.dao.entitie.Group;
+import ru.zhadaev.dao.entities.Group;
 import ru.zhadaev.dao.repository.CrudRepository;
 import ru.zhadaev.exception.DAOException;
 
@@ -20,6 +20,7 @@ public class GroupDAO implements CrudRepository<Group, Integer> {
     private static final String GROUP_ID = "group_id";
     private static final String GROUP_NAME = "group_name";
     private static final String CREATE_QUERY = "insert into school.groups (group_name) values (?)";
+    private static final String UPDATE_QUERY = "update school.groups set group_name = ? where group_id = ?";
     private static final String FIND_BY_ID_QUERY = "select * from school.groups where group_id = ?";
     private static final String FIND_QUERY = "select * from school.groups where group_name = ?";
     private static final String FIND_ALL_QUERY = "select * from school.groups";
@@ -38,7 +39,7 @@ public class GroupDAO implements CrudRepository<Group, Integer> {
 
     @Override
     public Group save(Group group) throws DAOException {
-        Group groupDb;
+        Group groupDb = new Group();
         Connection connection = connectionManager.getConnection();
         ResultSet resultSet = null;
 
@@ -49,10 +50,44 @@ public class GroupDAO implements CrudRepository<Group, Integer> {
             resultSet = preStatement.getGeneratedKeys();
             resultSet.next();
 
-            groupDb = new Group(resultSet.getInt(GROUP_ID), group.getName());
+            groupDb.setId(resultSet.getInt(GROUP_ID));
+            groupDb.setName(group.getName());
         } catch (SQLException e) {
             logger.error(e.getLocalizedMessage());
             throw new DAOException("Cannot save the group", e);
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (SQLException e) {
+                logger.error(CLOSE_ERROR_MSG, e.getLocalizedMessage());
+            }
+        }
+
+        return groupDb;
+    }
+
+    @Override
+    public Group update(Group group) throws SQLException {
+        Group groupDb = new Group();
+        Connection connection = connectionManager.getConnection();
+        ResultSet resultSet = null;
+
+        try (PreparedStatement preStatement = connection.prepareStatement(UPDATE_QUERY, Statement.RETURN_GENERATED_KEYS)) {
+            preStatement.setString(1, group.getName());
+            preStatement.setInt(2, group.getId());
+
+            preStatement.execute();
+
+            resultSet = preStatement.getGeneratedKeys();
+            resultSet.next();
+
+            groupDb.setId(resultSet.getInt(GROUP_ID));
+            groupDb.setName(group.getName());
+        } catch (SQLException e) {
+            logger.error(e.getLocalizedMessage());
+            throw new DAOException("Cannot update the group", e);
         } finally {
             try {
                 if (resultSet != null) {
@@ -77,7 +112,9 @@ public class GroupDAO implements CrudRepository<Group, Integer> {
 
             resultSet = preStatement.executeQuery();
             if (resultSet.next()) {
-                groupDb = new Group(resultSet.getInt(GROUP_ID), resultSet.getString(GROUP_NAME));
+                groupDb = new Group();
+                groupDb.setId(resultSet.getInt(GROUP_ID));
+                groupDb.setName(resultSet.getString(GROUP_NAME));
             }
         } catch (SQLException e) {
             logger.error(e.getLocalizedMessage());
@@ -108,7 +145,9 @@ public class GroupDAO implements CrudRepository<Group, Integer> {
 
             resultSet = preStatement.getResultSet();
             while (resultSet.next()) {
-                Group groupDb = new Group(resultSet.getInt(GROUP_ID), resultSet.getString(GROUP_NAME));
+                Group groupDb = new Group();
+                groupDb.setId(resultSet.getInt(GROUP_ID));
+                groupDb.setName(resultSet.getString(GROUP_NAME));
                 groupsDb.add(groupDb);
             }
         } catch (SQLException e) {
@@ -136,7 +175,9 @@ public class GroupDAO implements CrudRepository<Group, Integer> {
         try (Statement statement = connection.createStatement()) {
             resultSet = statement.executeQuery(FIND_ALL_QUERY);
             while (resultSet.next()) {
-                Group groupDb = new Group(resultSet.getInt(GROUP_ID), resultSet.getString(GROUP_NAME));
+                Group groupDb = new Group();
+                groupDb.setId(resultSet.getInt(GROUP_ID));
+                groupDb.setName(resultSet.getString(GROUP_NAME));
                 groupsDb.add(groupDb);
             }
         } catch (SQLException e) {

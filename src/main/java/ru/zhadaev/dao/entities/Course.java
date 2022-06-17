@@ -1,17 +1,9 @@
-package ru.zhadaev.dao.entitie;
+package ru.zhadaev.dao.entities;
 
 public class Course extends School {
     private Integer id;
-    private final String name;
+    private String name;
     private String description;
-
-    public Course(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
 
     public Integer getId() {
         return id;
@@ -19,6 +11,14 @@ public class Course extends School {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescription() {

@@ -2,6 +2,8 @@ package ru.zhadaev.dao;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.zhadaev.config.ConnectionManager;
 import ru.zhadaev.config.FileReader;
 import ru.zhadaev.config.PropertiesReader;
@@ -13,10 +15,12 @@ import java.nio.file.NoSuchFileException;
 import java.sql.*;
 import java.util.stream.Collectors;
 
+@Component
 public class TablesCreator {
     private static final Logger logger = LoggerFactory.getLogger(TablesCreator.class);
     private final ConnectionManager connectionManager;
 
+    @Autowired
     public TablesCreator(ConnectionManager connectionManager) {
         this.connectionManager = connectionManager;
     }

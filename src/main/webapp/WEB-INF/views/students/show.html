@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Course</title>
+</head>
+<body>
+<p th:text="'ID: ' + ${student.getId()}">VALUE</p>
+<p th:text="'First name: ' + ${student.getFirstName()}">VALUE</p>
+<p th:text="'Last name: ' + ${student.getLastName()}">VALUE</p>
+<p>
+    <a th:href="@{/groups/{id}(id=${student.getGroup.getId()})}" th:text="'Group name: ' + ${student.getGroup.getName()}">user</a>
+</p>
+<br/>
+<div th:each="course : ${student.getCourses()}">
+    <a th:href="@{/courses/{id}(id=${course.getId()})}" th:text="'Course name: ' + ${course.getName()}"></a>
+</div>
+<br/>
+<form th:method="DELETE" th:action="@{/students/{id}(id=${student.getId()})}">
+    <input type="submit" value="Delete">
+</form>
+</body>
+</html>

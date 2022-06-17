@@ -6,7 +6,16 @@
 </head>
 <body>
 <div th:each="group : ${groups}">
-    <a th:href="@{/group/{id}(id=${group.getId()})}" th:text="${group.getName()}">user</a>
+    <a th:href="@{/groups/{id}(id=${group.getId()})}" th:text="${group.getName()}">user</a>
 </div>
+<br/>
+<hr/>
+<p>
+    <a href="/groups/new">Create new group</a>
+</p>
+<br/>
+<form th:method="DELETE" th:action="@{/groups}">
+    <input type="submit" value="Delete All"/>
+</form>
 </body>
 </html>

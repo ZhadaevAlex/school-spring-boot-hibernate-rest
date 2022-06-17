@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Group</title>
+</head>
+<body>
+<p th:text="'ID: ' + ${group.getId()}">VALUE</p>
+<p th:text="'Name: ' + ${group.getName()}">VALUE</p>
+
+<form th:method="DELETE" th:action="@{/groups/{id}(id=${group.getId()})}">
+    <input type="submit" value="Delete">
+</form>
+
+<a th:href="@{/groups/{id}/edit(id=${group.getId()})}">Edit</a>
+
+</body>
+</html>

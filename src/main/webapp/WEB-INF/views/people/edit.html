@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Update person</title>
+</head>
+<body>
+<!--Thymeleaf автоматически возмет значение PATCH, создаст скрытое поле _method и это скрытое поле мы сможем прочитать на-->
+<!--стороне спринга с помощью фильтра-->
+<!--Как раз для этого используется th:object-->
+<form th:method="PATCH" th:action="@{/people/{id}(id=${person.getId()})}" th:object="${person}">
+    <!-- Все адреса в thymeleaf мы пишем через @ и фигурные скобки-->
+    <!-- Объект под этим ключом "person", который мы положили в молель. Для этого объекта будет создаваться форма-->
+    <label for="name">Enter name: </label>
+    <input type="text" th:field="*{name}" id="name"/>
+    </br>
+    <input type="submit" value="Update"/>
+
+</form>
+</body>
+</html>

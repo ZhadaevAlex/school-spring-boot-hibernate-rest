@@ -5,9 +5,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.zhadaev.config.ConnectionManager;
-import ru.zhadaev.dao.entitie.Course;
-import ru.zhadaev.dao.entitie.Group;
-import ru.zhadaev.dao.entitie.Student;
+import ru.zhadaev.dao.entities.Course;
+import ru.zhadaev.dao.entities.Group;
+import ru.zhadaev.dao.entities.Student;
 import ru.zhadaev.dao.repository.CrudRepository;
 import ru.zhadaev.exception.DAOException;
 
@@ -27,7 +27,8 @@ public class StudentDAO implements CrudRepository<Student, Integer> {
     private static final String COURSE_ID = "course_id";
     private static final String COURSE_NAME = "course_name";
     private static final String COURSE_DESCRIPTION = "course_description";
-    private static final String CREATE_QUERY = "insert into school.students (group_id, first_name, last_name) values (?, ?, ?)";
+    private static final String CREATE_QUERY = "insert into school.students (first_name, last_name, group_id) values (?, ?, ?)";
+    private static final String UPDATE_QUERY = "update school.students set (first_name, last_name, group_id) = (?, ?, ?) where student_id = ?";
     private static final String FIND_BY_ID_QUERY = "select s.*, g.group_name, c.* from school.students s\n" +
             "left join school.groups g on g.group_id = s.group_id\n" +
             "left join school.students_courses sc on s.student_id = sc.student_id\n" +
@@ -64,27 +65,28 @@ public class StudentDAO implements CrudRepository<Student, Integer> {
 
     @Override
     public Student save(Student student) throws DAOException {
-        Student studentResult;
+        Student studentDb = new Student();
         Connection connection = connectionManager.getConnection();
         ResultSet resultSet = null;
 
         try (PreparedStatement preStatement = connection.prepareStatement(CREATE_QUERY, Statement.RETURN_GENERATED_KEYS)) {
+            preStatement.setString(1, student.getFirstName());
+            preStatement.setString(2, student.getLastName());
             if (student.getGroup() == null) {
-                preStatement.setNull(1, Types.INTEGER);
+                preStatement.setNull(3, Types.INTEGER);
             } else {
-                preStatement.setInt(1, student.getGroup().getId());
+                preStatement.setInt(3, student.getGroup().getId());
             }
-            preStatement.setString(2, student.getFirstName());
-            preStatement.setString(3, student.getLastName());
             preStatement.execute();
 
             resultSet = preStatement.getGeneratedKeys();
             resultSet.next();
 
-            studentResult = new Student(student.getFirstName(), student.getLastName());
-            studentResult.setId(resultSet.getInt(STUDENT_ID));
-            studentResult.setGroup(student.getGroup());
-            studentResult.setCourses(student.getCourses());
+            studentDb.setId(resultSet.getInt(STUDENT_ID));
+            studentDb.setFirstName(student.getFirstName());
+            studentDb.setLastName(student.getLastName());
+            studentDb.setGroup(student.getGroup());
+            studentDb.setCourses(student.getCourses());
         } catch (SQLException e) {
             logger.error(e.getLocalizedMessage());
             throw new DAOException("Cannot save the student", e);
@@ -98,7 +100,47 @@ public class StudentDAO implements CrudRepository<Student, Integer> {
             }
         }
 
-        return studentResult;
+        return studentDb;
+    }
+
+    @Override
+    public Student update(Student student) throws SQLException {
+        Student studentDb = new Student();
+        Connection connection = connectionManager.getConnection();
+        ResultSet resultSet = null;
+
+        try (PreparedStatement preStatement = connection.prepareStatement(UPDATE_QUERY, Statement.RETURN_GENERATED_KEYS)) {
+            preStatement.setString(1, student.getFirstName());
+            preStatement.setString(2, student.getLastName());
+            if (student.getGroup() == null) {
+                preStatement.setNull(3, Types.INTEGER);
+            } else {
+                preStatement.setInt(3, student.getGroup().getId());
+            }
+            preStatement.execute();
+
+            resultSet = preStatement.getGeneratedKeys();
+            resultSet.next();
+
+            studentDb.setId(resultSet.getInt(STUDENT_ID));
+            studentDb.setFirstName(student.getFirstName());
+            studentDb.setLastName(student.getLastName());
+            studentDb.setGroup(student.getGroup());
+            studentDb.setCourses(student.getCourses());
+        } catch (SQLException e) {
+            logger.error(e.getLocalizedMessage());
+            throw new DAOException("Cannot update the student", e);
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (SQLException e) {
+                logger.error(CLOSE_ERROR_MSG, e.getLocalizedMessage());
+            }
+        }
+
+        return studentDb;
     }
 
     @Override
@@ -115,17 +157,22 @@ public class StudentDAO implements CrudRepository<Student, Integer> {
             boolean firstLine = false;
             while (resultSet.next()) {
                 if (!firstLine) {
-                    studentDb = new Student(resultSet.getString(FIRST_NAME), resultSet.getString(LAST_NAME));
+                    studentDb = new Student();
                     studentDb.setId(resultSet.getInt(STUDENT_ID));
+                    studentDb.setFirstName(resultSet.getString(FIRST_NAME));
+                    studentDb.setLastName(resultSet.getString(LAST_NAME));
 
-                    Group group = new Group(resultSet.getInt(GROUP_ID), resultSet.getString(GROUP_NAME));
+                    Group group = new Group();
+                    group.setId(resultSet.getInt(GROUP_ID));
+                    group.setName(resultSet.getString(GROUP_NAME));
                     studentDb.setGroup(group);
 
                     firstLine = true;
                 }
 
-                Course course = new Course(resultSet.getString(COURSE_NAME));
+                Course course = new Course();
                 course.setId(resultSet.getInt(COURSE_ID));
+                course.setName(resultSet.getString(COURSE_NAME));
                 course.setDescription(resultSet.getString(COURSE_DESCRIPTION));
                 courses.add(course);
             }
@@ -173,15 +220,20 @@ public class StudentDAO implements CrudRepository<Student, Integer> {
                         studentsDb.add(studentDb);
                     }
 
-                    studentDb = new Student(resultSet.getString(FIRST_NAME), resultSet.getString(LAST_NAME));
+                    studentDb = new Student();
                     studentDb.setId(id);
-                    Group group = new Group(resultSet.getInt(GROUP_ID), resultSet.getString(GROUP_NAME));
-                    studentDb.setGroup(group);
+                    studentDb.setFirstName(resultSet.getString(FIRST_NAME));
+                    studentDb.setLastName(resultSet.getString(LAST_NAME));
+
+                    Group group = new Group();
+                    group.setId(resultSet.getInt(GROUP_ID));
+                    group.setName(resultSet.getString(GROUP_NAME));                   studentDb.setGroup(group);
                     courses = new ArrayList<>();
                 }
 
-                Course course = new Course(resultSet.getString(COURSE_NAME));
+                Course course = new Course();
                 course.setId(resultSet.getInt(COURSE_ID));
+                course.setName(resultSet.getString(COURSE_NAME));
                 course.setDescription(resultSet.getString(COURSE_DESCRIPTION));
                 courses.add(course);
 
@@ -212,7 +264,7 @@ public class StudentDAO implements CrudRepository<Student, Integer> {
     }
 
     @Override
-    public List findAll() throws DAOException {
+    public List<Student> findAll() throws DAOException {
         List<Student> studentsDb = new ArrayList<>();
         Connection connection = connectionManager.getConnection();
         ResultSet resultSet = null;
@@ -230,15 +282,21 @@ public class StudentDAO implements CrudRepository<Student, Integer> {
                         studentsDb.add(studentDb);
                     }
 
-                    studentDb = new Student(resultSet.getString(FIRST_NAME), resultSet.getString(LAST_NAME));
+                    studentDb = new Student();
                     studentDb.setId(id);
-                    Group group = new Group(resultSet.getInt(GROUP_ID), resultSet.getString(GROUP_NAME));
+                    studentDb.setFirstName(resultSet.getString(FIRST_NAME));
+                    studentDb.setLastName(resultSet.getString(LAST_NAME));
+
+                    Group group = new Group();
+                    group.setId(resultSet.getInt(GROUP_ID));
+                    group.setName(resultSet.getString(GROUP_NAME));
                     studentDb.setGroup(group);
                     courses = new ArrayList<>();
                 }
 
-                Course course = new Course(resultSet.getString(COURSE_NAME));
+                Course course = new Course();
                 course.setId(resultSet.getInt(COURSE_ID));
+                course.setName(resultSet.getString(COURSE_NAME));
                 course.setDescription(resultSet.getString(COURSE_DESCRIPTION));
                 courses.add(course);
 
@@ -265,6 +323,7 @@ public class StudentDAO implements CrudRepository<Student, Integer> {
             }
         }
 
+        int a = 2;
         return studentsDb;
     }
 

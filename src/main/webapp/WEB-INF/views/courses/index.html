@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Courses</title>
+</head>
+<body>
+<div th:each="course : ${courses}">
+    <a th:href="@{/courses/{id}(id=${course.getId()})}" th:text="${course.getName()}">user</a>
+</div>
+<br/>
+<hr/>
+<p>
+    <a href="/courses/new">Create new course</a>
+</p>
+<br/>
+<form th:method="DELETE" th:action="@{/courses}">
+    <input type="submit" value="Delete All"/>
+</form>
+</body>
+</html>

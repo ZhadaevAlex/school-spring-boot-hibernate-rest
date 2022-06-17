@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.zhadaev.config.ConnectionManager;
-import ru.zhadaev.dao.entitie.Course;
+import ru.zhadaev.dao.entities.Course;
 import ru.zhadaev.dao.repository.CrudRepository;
 import ru.zhadaev.exception.DAOException;
 
@@ -21,6 +21,7 @@ public class CourseDAO implements CrudRepository<Course, Integer> {
     private static final String COURSE_NAME = "course_name";
     private static final String COURSE_DESCRIPTION = "course_description";
     private static final String CREATE_QUERY = "insert into school.courses (course_name, course_description) values (?, ?)";
+    private static final String UPDATE_QUERY = "update school.courses set (course_name, course_description) = (?, ?) where course_id = ?";
     private static final String FIND_BY_ID_QUERY = "select * from school.courses where course_id = ?";
     private static final String FIND_QUERY = "select * from school.courses where" +
             " course_name = ? AND" +
@@ -43,7 +44,7 @@ public class CourseDAO implements CrudRepository<Course, Integer> {
 
     @Override
     public Course save(Course course) throws DAOException {
-        Course courseDb;
+        Course courseDb = new Course();
         Connection connection = connectionManager.getConnection();
         ResultSet resultSet = null;
 
@@ -55,12 +56,46 @@ public class CourseDAO implements CrudRepository<Course, Integer> {
             resultSet = preStatement.getGeneratedKeys();
             resultSet.next();
 
-            courseDb = new Course(course.getName());
             courseDb.setId(resultSet.getInt(COURSE_ID));
+            courseDb.setName(course.getName());
             courseDb.setDescription(course.getDescription());
         } catch (SQLException e) {
             logger.error(e.getLocalizedMessage());
             throw new DAOException("Cannot save the course", e);
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (SQLException e) {
+                logger.error(CLOSE_ERROR_MSG, e.getLocalizedMessage());
+            }
+        }
+
+        return courseDb;
+    }
+
+    @Override
+    public Course update(Course course) throws SQLException {
+        Course courseDb = new Course();
+        Connection connection = connectionManager.getConnection();
+        ResultSet resultSet = null;
+
+        try (PreparedStatement preStatement = connection.prepareStatement(UPDATE_QUERY, Statement.RETURN_GENERATED_KEYS)) {
+            preStatement.setString(1, course.getName());
+            preStatement.setString(2, course.getDescription());
+            preStatement.setInt(3, course.getId());
+            preStatement.execute();
+
+            resultSet = preStatement.getGeneratedKeys();
+            resultSet.next();
+
+            courseDb.setId(resultSet.getInt(COURSE_ID));
+            courseDb.setName(course.getName());
+            courseDb.setDescription(course.getDescription());
+        } catch (SQLException e) {
+            logger.error(e.getLocalizedMessage());
+            throw new DAOException("Cannot update the course", e);
         } finally {
             try {
                 if (resultSet != null) {
@@ -85,8 +120,9 @@ public class CourseDAO implements CrudRepository<Course, Integer> {
 
             resultSet = preStatement.executeQuery();
             if (resultSet.next()) {
-                courseDb = new Course(resultSet.getString(COURSE_NAME));
+                courseDb = new Course();
                 courseDb.setId(resultSet.getInt(COURSE_ID));
+                courseDb.setName(resultSet.getString(COURSE_NAME));
                 courseDb.setDescription(resultSet.getString(COURSE_DESCRIPTION));
             }
         } catch (SQLException e) {
@@ -118,15 +154,16 @@ public class CourseDAO implements CrudRepository<Course, Integer> {
             preStatement.execute();
 
             resultSet = preStatement.getResultSet();
-            while(resultSet.next()) {
-                Course courseDb = new Course(resultSet.getString(COURSE_NAME));
+            while (resultSet.next()) {
+                Course courseDb = new Course();
                 courseDb.setId(resultSet.getInt(COURSE_ID));
+                courseDb.setName(resultSet.getString(COURSE_NAME));
                 courseDb.setDescription(resultSet.getString(COURSE_DESCRIPTION));
                 coursesDb.add(courseDb);
             }
         } catch (SQLException e) {
             logger.error(e.getLocalizedMessage());
-            throw new DAOException("The group cannot be found in groups", e);
+            throw new DAOException("The course cannot be found in courses", e);
         } finally {
             try {
                 if (resultSet != null) {
@@ -149,10 +186,11 @@ public class CourseDAO implements CrudRepository<Course, Integer> {
         try (Statement statement = connection.createStatement()) {
             resultSet = statement.executeQuery(FIND_ALL_QUERY);
             while (resultSet.next()) {
-                Course courseResult = new Course(resultSet.getString(COURSE_NAME));
-                courseResult.setId(resultSet.getInt(COURSE_ID));
-                courseResult.setDescription(resultSet.getString(COURSE_DESCRIPTION));
-                coursesDb.add(courseResult);
+                Course courseDb = new Course();
+                courseDb.setId(resultSet.getInt(COURSE_ID));
+                courseDb.setName(resultSet.getString(COURSE_NAME));
+                courseDb.setDescription(resultSet.getString(COURSE_DESCRIPTION));
+                coursesDb.add(courseDb);
             }
         } catch (SQLException e) {
             logger.error(e.getLocalizedMessage());
@@ -225,7 +263,7 @@ public class CourseDAO implements CrudRepository<Course, Integer> {
             preStatement.execute();
         } catch (SQLException e) {
             logger.error(e.getLocalizedMessage());
-            throw new DAOException("Cannot be deleted in the groups", e);
+            throw new DAOException("Cannot be deleted in the courses", e);
         }
     }
 

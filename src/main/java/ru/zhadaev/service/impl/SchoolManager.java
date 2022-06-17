@@ -4,10 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.zhadaev.config.ConnectionManager;
-import ru.zhadaev.dao.entitie.Course;
-import ru.zhadaev.dao.entitie.Group;
-import ru.zhadaev.dao.entitie.Student;
+import ru.zhadaev.dao.entities.Course;
+import ru.zhadaev.dao.entities.Group;
+import ru.zhadaev.dao.entities.Student;
 import ru.zhadaev.dao.repository.impl.CourseDAO;
 import ru.zhadaev.dao.repository.impl.GroupDAO;
 import ru.zhadaev.dao.repository.impl.StudentDAO;
@@ -20,18 +19,21 @@ import java.util.List;
 @Component
 public class SchoolManager implements ISchoolManager {
     private static final Logger logger = LoggerFactory.getLogger(SchoolManager.class);
-    ConnectionManager connectionManager;
+    private final GroupDAO groupDAO;
+    private final CourseDAO courseDAO;
+    private final StudentDAO studentDAO;
 
     @Autowired
-    public SchoolManager(ConnectionManager connectionManager) {
-        this.connectionManager = connectionManager;
+    public SchoolManager(GroupDAO groupDAO,
+                         CourseDAO courseDAO,
+                         StudentDAO studentDAO) {
+        this.groupDAO = groupDAO;
+        this.courseDAO = courseDAO;
+        this.studentDAO = studentDAO;
     }
 
     @Override
     public List<Group> findGroupsByStudentsCount(long studentsCount) throws DAOException {
-        StudentDAO studentDAO = new StudentDAO(connectionManager);
-        GroupDAO groupDAO = new GroupDAO(connectionManager);
-
         List<Student> studentsDb = studentDAO.findAll();
         List<Group> groupsDb = groupDAO.findAll();
         List<Group> result = new ArrayList<>();
@@ -53,7 +55,6 @@ public class SchoolManager implements ISchoolManager {
     public List<Student> findStudentsByCourseName(String courseName) throws DAOException {
         requiredNotNull(courseName);
 
-        StudentDAO studentDAO = new StudentDAO(connectionManager);
         List<Student> studentsDb = studentDAO.findAll();
         List<Student> result = new ArrayList<>();
 
@@ -74,7 +75,6 @@ public class SchoolManager implements ISchoolManager {
         requiredNotNull(group);
         requiredNameNotNull(group);
 
-        GroupDAO groupDAO = new GroupDAO(connectionManager);
         List<Group> groupsDb = groupDAO.find(group).get();
 
         if (groupsDb.isEmpty()) {
@@ -89,7 +89,6 @@ public class SchoolManager implements ISchoolManager {
         requiredNotNull(course);
         requiredNameNotNull(course);
 
-        CourseDAO courseDAO = new CourseDAO(connectionManager);
         List<Course> coursesDb = courseDAO.find(course).get();
 
         if (coursesDb.isEmpty()) {
@@ -104,7 +103,6 @@ public class SchoolManager implements ISchoolManager {
         requiredNotNull(student);
         requiredNameNotNull(student);
 
-        StudentDAO studentDAO = new StudentDAO(connectionManager);
         List<Student> studentsDb = studentDAO.find(student).get();
         if (studentsDb.isEmpty()) {
             throw new NotFoundException("Students not found");
@@ -123,8 +121,6 @@ public class SchoolManager implements ISchoolManager {
             requiredCourseIsExist(course);
         }
 
-        StudentDAO studentDAO = new StudentDAO(connectionManager);
-
         Student studentDb = studentDAO.save(student);
         studentDAO.signOnCourses(studentDb, studentDb.getCourses());
 
@@ -133,8 +129,6 @@ public class SchoolManager implements ISchoolManager {
 
     @Override
     public void deleteStudentById(int id) throws DAOException {
-        StudentDAO studentDAO = new StudentDAO(connectionManager);
-
         if (studentDAO.existsById(id)) {
             studentDAO.deleteById(id);
         } else {
@@ -155,7 +149,6 @@ public class SchoolManager implements ISchoolManager {
             requiredStudentIsExist(student);
         }
 
-        StudentDAO studentDAO = new StudentDAO(connectionManager);
         studentDAO.signOnCourses(student, courses);
     }
 
@@ -169,7 +162,6 @@ public class SchoolManager implements ISchoolManager {
         requiredIdNotNull(course);
         requiredStudentIsExist(student);
 
-        StudentDAO studentDAO = new StudentDAO(connectionManager);
         studentDAO.removeFromCourse(student, course);
     }
 
@@ -244,7 +236,6 @@ public class SchoolManager implements ISchoolManager {
     }
 
     private void requiredGroupIsExist(Student student) throws DAOException {
-        GroupDAO groupDAO = new GroupDAO(connectionManager);
         if (!groupDAO.existsById(student.getGroup().getId())) {
             logger.error("The student's group was not found in the database");
             throw new NotFoundException("The student's group was not found in the database");
@@ -252,7 +243,6 @@ public class SchoolManager implements ISchoolManager {
     }
 
     private void requiredCourseIsExist(Course course) throws DAOException {
-        CourseDAO courseDAO = new CourseDAO(connectionManager);
         if (!courseDAO.existsById(course.getId())) {
             logger.error("The student's course was not found in the database");
             throw new NotFoundException("The student's course was not found in the database");
@@ -260,7 +250,6 @@ public class SchoolManager implements ISchoolManager {
     }
 
     private void requiredStudentIsExist(Student student) throws DAOException {
-        StudentDAO studentDAO = new StudentDAO(connectionManager);
         if (!studentDAO.existsById(student.getId())) {
             logger.error("The student's course was not found in the database");
             throw new NotFoundException("The student's was not found in the database");

@@ -1,6 +1,6 @@
 package ru.zhadaev.util.creation;
 
-import ru.zhadaev.dao.entitie.Group;
+import ru.zhadaev.dao.entities.Group;
 
 import java.util.*;
 

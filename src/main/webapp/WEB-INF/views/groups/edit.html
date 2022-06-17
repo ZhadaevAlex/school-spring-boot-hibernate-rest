@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Group update</title>
+</head>
+<body>
+<form th:method="PUT" th:action="@{/groups/{id}(id=${group.getId()})}" th:object="${group}">
+    <label for="name">Enter name: </label>
+    <input type="text" th:field="*{name}" id="name"/>
+    </br>
+    <input type="submit" value="Update"/>
+</form>
+</body>
+</html>
