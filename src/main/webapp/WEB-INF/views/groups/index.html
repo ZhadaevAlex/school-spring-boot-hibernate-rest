@@ -2,20 +2,189 @@
 <html lang="en" xmlns:th="http://thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css">
     <title>Groups</title>
+
+    <style>
+        tbody {
+            counter-reset: heading;
+        }
+
+        .count:before {
+            counter-increment: heading;
+            content: counter(heading);
+        }
+    </style>
 </head>
 <body>
-<div th:each="group : ${groups}">
-    <a th:href="@{/groups/{id}(id=${group.getId()})}" th:text="${group.getName()}">user</a>
+<div class="container-fluid">
+    <div class="table-title">
+        <div class="row row-col-auto">
+            <div class="col">
+                <h2>Groups</h2>
+            </div>
+            <div class="col-lg-auto">
+<!--                <a href="#addGroup" class="btn btn-outline-success" data-toggle="modal">-->
+<!--                    <i class="bi bi-plus-circle"></i>-->
+<!--                    <span>Add New Group</span>-->
+<!--                </a>-->
+                <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#addNewGroup">
+                    <i class="bi bi-plus-circle"></i>
+                    <span>Add New Group</span></a>
+                </button>
+            </div>
+            <div class="col-lg-auto">
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAllGroups">
+                    <i class="bi bi-trash"></i>
+                    <span>Delete All Groups</span></a>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive-xl">
+        <table class="table table-hover table-bordered border-primary">
+            <div class="table-wrapper">
+                <thead class="table-secondary">
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="group : ${groups}">
+                    <td class="count"/>
+                    <td th:text="${group.getName()}">group</td>
+                    <td>
+                        <button type="button" class="btn btn-outline-warning" data-bs-toggle="modal"
+                                data-bs-target="#editGroup" th:attr="data-bs-target=${'#editModal'+group.id}"
+                                data-row="${group}">
+                            <i class="bi bi-pen"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal"
+                                data-bs-target="#deleteGroup" th:attr="data-bs-target=${'#deleteModal'+group.id}"
+                                data-row="${group}">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </div>
+        </table>
+    </div>
+
+    <div th:each="group : ${groups}">
+        <a th:href="@{/groups/{id}(id=${group.getId()})}" th:text="${group.getName()}">user</a>
+    </div>
+    <br/>
+    <hr/>
+    <p>
+        <a href="/groups/new">Create new group</a>
+    </p>
+    <br/>
+    <form th:method="DELETE" th:action="@{/groups}">
+        <button type="submit" class="btn btn-outline-warning">
+            <i class="bi bi-pen"></i>
+        </button>
+    </form>
 </div>
-<br/>
-<hr/>
-<p>
-    <a href="/groups/new">Create new group</a>
-</p>
-<br/>
-<form th:method="DELETE" th:action="@{/groups}">
-    <input type="submit" value="Delete All"/>
-</form>
+
+<div class="modal fade" id="addNewGroup" tabindex="-1" aria-labelledby="addNewGroupLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addNewGroupLabel">Add New Group</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:method="POST" th:action="@{/groups}" th:object="${group}">
+                    <div class="mb-3">
+                        <label for="newName" class="col-form-label">Name:</label>
+                        <input type="text" class="form-control" name="name"  id="newName"/>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Create</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteAllGroups" tabindex="-1" aria-labelledby="deleteAllGroupsLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteAllGroupsLabel">Delete All Groups</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete these Records?</p>
+                <p class="text-warning"><small>This action cannot be undone.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form th:method="DELETE" th:action="@{/groups}">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editGroup" tabindex="-1" aria-labelledby="editGroupLabel" aria-hidden="true"
+     th:each="group : ${groups}" th:attr="id=${'editModal' + group.id}">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editGroupLabel">Edit a group</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:method="PATCH" th:action="@{/groups/{id}(id=${group.getId()})}" th:object="${group}">
+                    <div class="mb-3">
+                        <label for="name" class="col-form-label">Name:</label>
+                        <input type="text" class="form-control" id="name" name="name" th:value="*{name}"/>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteGroup" tabindex="-1" aria-labelledby="deleteGroupLabel" aria-hidden="true"
+     th:each="group : ${groups}" th:attr="id=${'deleteModal' + group.getId()}">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteGroupLabel">Delete a group</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this record?</p>
+                <p class="text-warning"><small>This action cannot be undone.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form th:method="DELETE" th:action="@{/groups/{id}(id=${group.getId()})}">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+        crossorigin="anonymous"></script>
 </body>
 </html>

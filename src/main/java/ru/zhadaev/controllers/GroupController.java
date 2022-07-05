@@ -61,7 +61,7 @@ public class GroupController {
         return "groups/edit";
     }
 
-    @PutMapping("{/id}")
+    @PatchMapping("/{id}")
     public String update(@ModelAttribute("group") Group group, @PathVariable("id") int id) throws SQLException {
         group.setId(id);
         groupDAO.update(group);
