@@ -37,7 +37,7 @@ public class SchoolManager {
                     .filter(p -> p.getGroup() != null && p.getGroup().getId().equals(group.getId()))
                     .count();
 
-            if (numberStudentsInGroup >= numberStudents) {
+            if (numberStudentsInGroup <= numberStudents) {
                 result.add(group);
             }
         }
