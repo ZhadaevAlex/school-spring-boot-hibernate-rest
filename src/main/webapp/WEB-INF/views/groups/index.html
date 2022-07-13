@@ -23,24 +23,47 @@
 <div class="container-fluid">
     <div class="table-title">
         <div class="row row-col-auto">
-            <div class="col">
-                <h2>Groups</h2>
+            <div class="col my-2">
+                <form method="GET" action="/">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-arrow-left"></i>
+                        <span>Main</span>
+                    </button>
+                </form>
             </div>
-            <div class="col-lg-auto">
-<!--                <a href="#addGroup" class="btn btn-outline-success" data-toggle="modal">-->
-<!--                    <i class="bi bi-plus-circle"></i>-->
-<!--                    <span>Add New Group</span>-->
-<!--                </a>-->
-                <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#addNewGroup">
-                    <i class="bi bi-plus-circle"></i>
-                    <span>Add New Group</span></a>
+            <div class="col-lg-auto my-2">
+                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+                        data-bs-target="#filterGroups">
+                    <i class="bi bi-funnel"></i>
+                    <span>Filter groups</span></a>
                 </button>
             </div>
-            <div class="col-lg-auto">
+            <div class="col-lg-auto my-2">
+                <form method="GET" th:action="@{/groups}">
+                    <button type="submit" class="btn btn-outline-primary">
+                        <i class="bi bi-funnel"></i>
+                        <i class="bi bi-x"></i>
+                        <span>Reset filter</span>
+                    </button>
+                </form>
+            </div>
+            <div class="col-lg-auto my-2">
+                <button type="button" class="btn btn-outline-success" data-bs-toggle="modal"
+                        data-bs-target="#addNewGroup">
+                    <i class="bi bi-plus-circle"></i>
+                    <span>Add New Group</span>
+                </button>
+            </div>
+            <div class="col-lg-auto my-2">
                 <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAllGroups">
                     <i class="bi bi-trash"></i>
-                    <span>Delete All Groups</span></a>
+                    <span>Delete All Groups</span>
                 </button>
+            </div>
+        </div>
+        <div class="row row-col-auto">
+            <div class="col my-2">
+                <h2>Groups</h2>
             </div>
         </div>
     </div>
@@ -58,16 +81,21 @@
                 <tbody>
                 <tr th:each="group : ${groups}">
                     <td class="count"/>
-                    <td th:text="${group.getName()}">group</td>
+                    <td>
+                        <a class="link-primary" th:href="@{/groups/{id}(id=${group.id})}"
+                           th:text="${group.name}"/>
+                    </td>
                     <td>
                         <button type="button" class="btn btn-outline-warning" data-bs-toggle="modal"
-                                data-bs-target="#editGroup" th:attr="data-bs-target=${'#editModal'+group.id}"
-                                data-row="${group}">
+                                data-bs-target="#editGroup" th:attr="data-bs-target=${'#editGroup'+group.id}"
+                                data-row="${group}"
+                                title="Edit">
                             <i class="bi bi-pen"></i>
                         </button>
                         <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal"
-                                data-bs-target="#deleteGroup" th:attr="data-bs-target=${'#deleteModal'+group.id}"
-                                data-row="${group}">
+                                data-bs-target="#deleteGroup" th:attr="data-bs-target=${'#deleteGroup'+group.id}"
+                                data-row="${group}"
+                                title="Delete">
                             <i class="bi bi-trash"></i>
                         </button>
                     </td>
@@ -76,37 +104,31 @@
             </div>
         </table>
     </div>
-
-    <div th:each="group : ${groups}">
-        <a th:href="@{/groups/{id}(id=${group.getId()})}" th:text="${group.getName()}">user</a>
-    </div>
-    <br/>
-    <hr/>
-    <p>
-        <a href="/groups/new">Create new group</a>
-    </p>
-    <br/>
-    <form th:method="DELETE" th:action="@{/groups}">
-        <button type="submit" class="btn btn-outline-warning">
-            <i class="bi bi-pen"></i>
-        </button>
-    </form>
 </div>
 
-<div class="modal fade" id="addNewGroup" tabindex="-1" aria-labelledby="addNewGroupLabel" aria-hidden="true">
+<div class="modal fade" id="filterGroups">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addNewGroupLabel">Add New Group</h5>
+                <h5 class="modal-title">Groups with less or equals student count</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form th:method="POST" th:action="@{/groups}" th:object="${group}">
+                <form method="GET"
+                      action="/groups/filter">
                     <div class="mb-3">
-                        <label for="newName" class="col-form-label">Name:</label>
-                        <input type="text" class="form-control" name="name"  id="newName"/>
+                        <div class="row">
+                            <div class="col-auto">
+                                <label for="numberStudents" class="col-form-label">Number of students:</label>
+                            </div>
+                            <div class="col-auto">
+                                <input type="number" id="numberStudents" class="form-control" name="numberStudents">
+                            </div>
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-primary">Create</button>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -116,11 +138,44 @@
     </div>
 </div>
 
-<div class="modal fade" id="deleteAllGroups" tabindex="-1" aria-labelledby="deleteAllGroupsLabel" aria-hidden="true">
+<div class="modal fade" id="addNewGroup">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="deleteAllGroupsLabel">Delete All Groups</h5>
+                <h5 class="modal-title">Add New Group</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <form th:method="POST" th:action="@{/groups}" th:object="${group}">
+                        <div class="mb-3">
+                            <div class="row">
+                                <div class="col-auto">
+                                    <label for="newName" class="col-form-label">Name:</label>
+                                </div>
+                                <div class="col-auto">
+                                    <input type="text" class="form-control" name="name" id="newName"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Create</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteAllGroups">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete All Groups</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -137,21 +192,23 @@
     </div>
 </div>
 
-<div class="modal fade" id="editGroup" tabindex="-1" aria-labelledby="editGroupLabel" aria-hidden="true"
-     th:each="group : ${groups}" th:attr="id=${'editModal' + group.id}">
+<div class="modal fade" id="editGroup"
+     th:each="group : ${groups}" th:attr="id=${'editGroup' + group.id}">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="editGroupLabel">Edit a group</h5>
+                <h5 class="modal-title">Edit a group</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form th:method="PATCH" th:action="@{/groups/{id}(id=${group.getId()})}" th:object="${group}">
+                <form th:method="PATCH" th:action="@{/groups/{id}(id=${group.id})}" th:object="${group}">
                     <div class="mb-3">
                         <label for="name" class="col-form-label">Name:</label>
                         <input type="text" class="form-control" id="name" name="name" th:value="*{name}"/>
                     </div>
-                    <button type="submit" class="btn btn-primary">Update</button>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -161,12 +218,12 @@
     </div>
 </div>
 
-<div class="modal fade" id="deleteGroup" tabindex="-1" aria-labelledby="deleteGroupLabel" aria-hidden="true"
-     th:each="group : ${groups}" th:attr="id=${'deleteModal' + group.getId()}">
+<div class="modal fade" id="deleteGroup"
+     th:each="group : ${groups}" th:attr="id=${'deleteGroup' + group.id}">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="deleteGroupLabel">Delete a group</h5>
+                <h5 class="modal-title">Delete a group</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -175,7 +232,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <form th:method="DELETE" th:action="@{/groups/{id}(id=${group.getId()})}">
+                <form th:method="DELETE" th:action="@{/groups/{id}(id=${group.id})}">
                     <button type="submit" class="btn btn-danger">Delete</button>
                 </form>
             </div>
@@ -187,4 +244,4 @@
         integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
         crossorigin="anonymous"></script>
 </body>
-</html>
+</html>`

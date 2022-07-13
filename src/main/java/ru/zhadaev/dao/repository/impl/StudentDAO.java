@@ -43,7 +43,7 @@ public class StudentDAO implements CrudRepository<Student, Integer> {
     private static final String FIND_ALL_QUERY = "select s.*, g.group_name, c.* from school.students s\n" +
             "left join school.groups g on g.group_id = s.group_id\n" +
             "left join school.students_courses sc on s.student_id = sc.student_id\n" +
-            "left join school.courses c on sc.course_id = c.course_id";
+            "left join school.courses c on sc.course_id = c.course_id order by student_id";
     private static final String COUNT_QUERY = "select count(*) from school.students";
     private static final String DELETE_BY_ID_QUERY = "delete from school.students where student_id = ?";
     private static final String DELETE_QUERY = "delete from school.students where" +
@@ -52,6 +52,9 @@ public class StudentDAO implements CrudRepository<Student, Integer> {
     private static final String DELETE_ALL_QUERY = "delete from school.students";
     private static final String CREATE_STUDENTS_COURSES_QUERY = "insert into school.students_courses (student_id, course_id) values (?, ?)";
     private static final String DELETE_STUDENTS_COURSES_QUERY = "delete from school.students_courses where" +
+            " student_id = ? AND" +
+            " course_id = ?";
+    private static final String FIND_BY_ID_STUDENT_COURSE_QUERY = "select * from school.students_courses where" +
             " student_id = ? AND" +
             " course_id = ?";
     private static final String CLOSE_ERROR_MSG = "ResultSet close error";
@@ -104,7 +107,7 @@ public class StudentDAO implements CrudRepository<Student, Integer> {
     }
 
     @Override
-    public Student update(Student student) throws SQLException {
+    public Student update(Student student) throws DAOException {
         Student studentDb = new Student();
         Connection connection = connectionManager.getConnection();
         ResultSet resultSet = null;
@@ -117,6 +120,7 @@ public class StudentDAO implements CrudRepository<Student, Integer> {
             } else {
                 preStatement.setInt(3, student.getGroup().getId());
             }
+            preStatement.setInt(4, student.getId());
             preStatement.execute();
 
             resultSet = preStatement.getGeneratedKeys();
@@ -144,7 +148,7 @@ public class StudentDAO implements CrudRepository<Student, Integer> {
     }
 
     @Override
-    public Optional findById(Integer id) throws DAOException {
+    public Optional<Student> findById(Integer id) throws DAOException {
         Student studentDb = null;
         Connection connection = connectionManager.getConnection();
         ResultSet resultSet = null;
@@ -227,7 +231,8 @@ public class StudentDAO implements CrudRepository<Student, Integer> {
 
                     Group group = new Group();
                     group.setId(resultSet.getInt(GROUP_ID));
-                    group.setName(resultSet.getString(GROUP_NAME));                   studentDb.setGroup(group);
+                    group.setName(resultSet.getString(GROUP_NAME));
+                    studentDb.setGroup(group);
                     courses = new ArrayList<>();
                 }
 
@@ -400,31 +405,57 @@ public class StudentDAO implements CrudRepository<Student, Integer> {
         }
     }
 
-    public void signOnCourses(Student student, List<Course> courses) throws DAOException {
+    public void signOnCourse(Integer studentId, Integer courseId) throws DAOException {
         Connection connection = connectionManager.getConnection();
 
-        for (Course course : courses) {
-            try (PreparedStatement preStatement = connection.prepareStatement(CREATE_STUDENTS_COURSES_QUERY, Statement.RETURN_GENERATED_KEYS)) {
-                preStatement.setInt(1, student.getId());
-                preStatement.setInt(2, course.getId());
-                preStatement.execute();
-            } catch (SQLException e) {
-                logger.error(e.getLocalizedMessage());
-                throw new DAOException("Cannot save the student_courses", e);
-            }
+        try (PreparedStatement preStatement = connection.prepareStatement(CREATE_STUDENTS_COURSES_QUERY, Statement.RETURN_GENERATED_KEYS)) {
+            preStatement.setInt(1, studentId);
+            preStatement.setInt(2, courseId);
+            preStatement.execute();
+        } catch (SQLException e) {
+            logger.error(e.getLocalizedMessage());
+            throw new DAOException("Cannot save the student_courses", e);
         }
     }
 
-    public void removeFromCourse(Student student, Course course) throws DAOException {
+    public void removeFromCourse(Integer studentId, Integer courseId) throws DAOException {
         Connection connection = connectionManager.getConnection();
 
         try (PreparedStatement preStatement = connection.prepareStatement(DELETE_STUDENTS_COURSES_QUERY, Statement.RETURN_GENERATED_KEYS)) {
-            preStatement.setInt(1, student.getId());
-            preStatement.setInt(2, course.getId());
+            preStatement.setInt(1, studentId);
+            preStatement.setInt(2, courseId);
             preStatement.execute();
         } catch (SQLException e) {
             logger.error(e.getLocalizedMessage());
             throw new DAOException("Cannot delete from the student_courses", e);
+        }
+    }
+
+    public boolean studentCourseIsExist(Integer studentId, Integer courseId) throws DAOException {
+        Connection connection = connectionManager.getConnection();
+        ResultSet resultSet = null;
+
+        try (PreparedStatement preStatement = connection.prepareStatement(FIND_BY_ID_STUDENT_COURSE_QUERY, Statement.RETURN_GENERATED_KEYS)) {
+            preStatement.setInt(1, studentId);
+            preStatement.setInt(2, courseId);
+
+            resultSet = preStatement.executeQuery();
+            if (resultSet.next()) {
+                return true;
+            }
+
+            return false;
+        } catch (SQLException e) {
+            logger.error(e.getLocalizedMessage());
+            throw new DAOException("Cannot be found by id in the student_courses", e);
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (SQLException e) {
+                logger.error(CLOSE_ERROR_MSG, e.getLocalizedMessage());
+            }
         }
     }
 }

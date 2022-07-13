@@ -2,16 +2,59 @@
 <html lang="en" xmlns:th="http://thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css">
+
     <title>Course</title>
 </head>
 <body>
-<p th:text="'ID: ' + ${course.getId()}">VALUE</p>
-<p th:text="'Name: ' + ${course.getName()}">VALUE</p>
-<p th:text="'Description: ' + ${course.getDescription}">VALUE</p>
-<form th:method="DELETE" th:action="@{/courses/{id}(id=${course.getId()})}">
-    <input type="submit" value="Delete">
-</form>
-<a th:href="@{/courses/{id}/edit(id=${course.getId()})}">Edit</a>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col my-2">
+            <form method="GET" action="/courses">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-arrow-left"></i>
+                    <span>BACK</span>
+                </button>
+            </form>
+        </div>
+    </div>
 
+    <div class="row">
+        <div class="col-lg-2 my-2">
+            <span>ID:</span>
+        </div>
+
+        <div class="col-lg-auto">
+            <span th:text="${course.id}"/></span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-2 my-2">
+            <span>Name:</span>
+        </div>
+
+        <div class="col-lg-auto">
+            <span th:text="${course.name}"/></span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-2 my-2">
+            <span>Description:</span>
+        </div>
+
+        <div class="col-lg-auto my-2">
+            <span th:text="${course.description}"/></span>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+        crossorigin="anonymous"></script>
 </body>
 </html>

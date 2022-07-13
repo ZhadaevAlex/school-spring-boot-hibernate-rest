@@ -23,7 +23,7 @@ public class GroupDAO implements CrudRepository<Group, Integer> {
     private static final String UPDATE_QUERY = "update school.groups set group_name = ? where group_id = ?";
     private static final String FIND_BY_ID_QUERY = "select * from school.groups where group_id = ?";
     private static final String FIND_QUERY = "select * from school.groups where group_name = ?";
-    private static final String FIND_ALL_QUERY = "select * from school.groups";
+    private static final String FIND_ALL_QUERY = "select * from school.groups order by group_id";
     private static final String COUNT_QUERY = "select count(*) from school.groups";
     private static final String DELETE_BY_ID_QUERY = "delete from school.groups where group_id = ?";
     private static final String DELETE_QUERY = "delete from school.groups where group_name = ?";

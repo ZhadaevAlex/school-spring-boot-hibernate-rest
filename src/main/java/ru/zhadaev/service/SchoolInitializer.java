@@ -7,9 +7,6 @@ import ru.zhadaev.dao.entities.Course;
 import ru.zhadaev.dao.entities.Group;
 import ru.zhadaev.dao.entities.School;
 import ru.zhadaev.dao.entities.Student;
-import ru.zhadaev.dao.repository.impl.CourseDAO;
-import ru.zhadaev.dao.repository.impl.GroupDAO;
-import ru.zhadaev.dao.repository.impl.StudentDAO;
 import ru.zhadaev.exception.DAOException;
 import ru.zhadaev.exception.IsNotFileException;
 
@@ -19,19 +16,19 @@ import java.util.List;
 
 @Component
 public class SchoolInitializer {
-    private GroupDAO groupDAO;
-    private CourseDAO courseDAO;
-    private StudentDAO studentDAO;
-    private TablesCreator tablesCreator;
+    private final GroupService groupService;
+    private final CourseService courseService;
+    private final StudentService studentService;
+    private final TablesCreator tablesCreator;
 
     @Autowired
-    public SchoolInitializer(GroupDAO groupDAO,
-                             CourseDAO courseDAO,
-                             StudentDAO studentDAO,
+    public SchoolInitializer(GroupService groupService,
+                             CourseService courseService,
+                             StudentService studentService,
                              TablesCreator tablesCreator) {
-        this.groupDAO = groupDAO;
-        this.courseDAO = courseDAO;
-        this.studentDAO = studentDAO;
+        this.groupService = groupService;
+        this.courseService = courseService;
+        this.studentService = studentService;
         this.tablesCreator = tablesCreator;
     }
 
@@ -46,7 +43,7 @@ public class SchoolInitializer {
                 Integer id = groupsDb.stream()
                         .filter(p -> p.getName()
                                 .equals(student.getGroup().getName()))
-                    .findFirst().get().getId();
+                        .findFirst().get().getId();
                 student.getGroup().setId(id);
             }
 
@@ -54,7 +51,7 @@ public class SchoolInitializer {
                 Integer id = coursesDb.stream()
                         .filter(p -> p.getName().equals(courseStudent.getName())
                                 && p.getDescription().equals(courseStudent.getDescription()))
-                        .findFirst()             .get().getId();
+                        .findFirst().get().getId();
 
                 courseStudent.setId(id);
             }
@@ -69,36 +66,43 @@ public class SchoolInitializer {
         tablesCreator.createTables();
     }
 
-    List<Group> initializeGroup(List<Group> groups) throws DAOException {
+    private List<Group> initializeGroup(List<Group> groups) throws DAOException {
         List<Group> groupsDb = new ArrayList<>();
         for (Group group : groups) {
-            groupsDb.add(groupDAO.save(group));
+            groupsDb.add(groupService.save(group));
         }
 
         return groupsDb;
     }
 
-    List<Course> initializeCourses(List<Course> courses) throws DAOException {
+    private List<Course> initializeCourses(List<Course> courses) throws DAOException {
         List<Course> coursesDb = new ArrayList<>();
         for (Course course : courses) {
-            coursesDb.add(courseDAO.save(course));
+            coursesDb.add(courseService.save(course));
         }
 
         return coursesDb;
     }
 
-    List<Student> initializeStudents(List<Student> students) throws DAOException {
+    private List<Student> initializeStudents(List<Student> students) throws DAOException {
         List<Student> studentsDb = new ArrayList<>();
         for (Student student : students) {
-            studentsDb.add(studentDAO.save(student));
+            studentsDb.add(studentService.save(student));
         }
 
         return studentsDb;
     }
 
-    void signStudentsOnCourses(List<Student> students) throws DAOException {
+    private void signStudentsOnCourses(List<Student> students) throws DAOException {
+
         for (Student student : students) {
-            studentDAO.signOnCourses(student, student.getCourses());
+            List<Integer> coursesId = new ArrayList<>();
+
+            for (Course course : student.getCourses()) {
+                coursesId.add(course.getId());
+            }
+
+            studentService.signOnCourses(student.getId(), coursesId);
         }
     }
 }

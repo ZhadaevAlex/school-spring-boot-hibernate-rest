@@ -23,47 +23,42 @@ public class CourseController {
     @GetMapping()
     public String findAll(Model model) throws DAOException {
         model.addAttribute("courses", courseDAO.findAll());
-        return "courses/index";
-    }
 
-    @GetMapping("/new")
-    public String newCourse(@ModelAttribute("course") Course course) {
-        return "courses/new";
+        return "courses/index";
     }
 
     @PostMapping()
     public String save(@ModelAttribute("course") Course course) throws DAOException {
         courseDAO.save(course);
+
         return "redirect:/courses";
     }
 
     @GetMapping("/{id}")
     public String findById(@PathVariable("id") Integer id, Model model) throws DAOException {
         model.addAttribute("course", courseDAO.findById(id).get());
+
         return "courses/show";
     }
 
     @DeleteMapping("/{id}")
     public String deleteById(@PathVariable("id") Integer id) throws DAOException {
         courseDAO.deleteById(id);
+
         return "redirect:/courses";
     }
 
     @DeleteMapping()
     public String deleteAll() throws DAOException {
         courseDAO.deleteAll();
+
         return "redirect:/courses";
     }
 
-    @GetMapping("/{id}/edit")
-    public String edit(Model model, @PathVariable("id") int id) throws DAOException {
-        model.addAttribute("course", courseDAO.findById(id).get());
-        return "courses/edit";
-    }
-
-    @PatchMapping("{/id}")
+    @PatchMapping("/{id}")
     public String update(@ModelAttribute("group") Course course, @PathVariable("id") int id) throws SQLException {
         courseDAO.update(course);
+
         return "redirect:/courses";
     }
 }
