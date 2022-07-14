@@ -9,8 +9,6 @@ import ru.zhadaev.exception.DAOException;
 import ru.zhadaev.service.GroupService;
 import ru.zhadaev.service.SchoolManager;
 
-import java.sql.SQLException;
-
 @Controller
 @RequestMapping("/groups")
 public class GroupController {
@@ -59,7 +57,7 @@ public class GroupController {
     }
     
     @PatchMapping("/{id}")
-    public String update(@ModelAttribute("group") Group group, @PathVariable("id") int id) throws SQLException {
+    public String update(@ModelAttribute("group") Group group, @PathVariable("id") int id) throws DAOException {
         group.setId(id);
         groupService.update(group);
 

@@ -76,7 +76,7 @@ public class CourseDAO implements CrudRepository<Course, Integer> {
     }
 
     @Override
-    public Course update(Course course) throws SQLException {
+    public Course update(Course course) throws DAOException {
         Course courseDb = new Course();
         Connection connection = connectionManager.getConnection();
         ResultSet resultSet = null;

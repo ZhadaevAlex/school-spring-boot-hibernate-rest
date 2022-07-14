@@ -69,7 +69,7 @@ public class GroupDAO implements CrudRepository<Group, Integer> {
     }
 
     @Override
-    public Group update(Group group) throws SQLException {
+    public Group update(Group group) throws DAOException {
         Group groupDb = new Group();
         Connection connection = connectionManager.getConnection();
         ResultSet resultSet = null;

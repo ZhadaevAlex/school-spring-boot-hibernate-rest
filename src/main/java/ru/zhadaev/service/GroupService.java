@@ -31,7 +31,7 @@ public class GroupService {
         return groupDAO.save(group);
     }
 
-    public Group update(Group group) throws SQLException {
+    public Group update(Group group) throws DAOException {
         requiredNotNull(group);
 
         return groupDAO.update(group);

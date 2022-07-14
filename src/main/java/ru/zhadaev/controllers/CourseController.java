@@ -8,8 +8,6 @@ import ru.zhadaev.dao.entities.Course;
 import ru.zhadaev.dao.repository.impl.CourseDAO;
 import ru.zhadaev.exception.DAOException;
 
-import java.sql.SQLException;
-
 @Controller
 @RequestMapping("/courses")
 public class CourseController {
@@ -56,7 +54,7 @@ public class CourseController {
     }
 
     @PatchMapping("/{id}")
-    public String update(@ModelAttribute("group") Course course, @PathVariable("id") int id) throws SQLException {
+    public String update(@ModelAttribute("group") Course course, @PathVariable("id") int id) throws DAOException {
         courseDAO.update(course);
 
         return "redirect:/courses";

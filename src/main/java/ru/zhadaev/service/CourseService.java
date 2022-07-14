@@ -31,7 +31,7 @@ public class CourseService {
         return courseDAO.save(course);
     }
 
-    public Course update(Course course) throws SQLException {
+    public Course update(Course course) throws DAOException {
         requiredNotNull(course);
 
         return courseDAO.update(course);

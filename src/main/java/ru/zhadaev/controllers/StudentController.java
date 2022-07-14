@@ -12,8 +12,6 @@ import ru.zhadaev.service.GroupService;
 import ru.zhadaev.service.SchoolManager;
 import ru.zhadaev.service.StudentService;
 
-import java.sql.SQLException;
-
 @Controller
 @RequestMapping("/students")
 public class StudentController {
@@ -72,7 +70,7 @@ public class StudentController {
 
     @PatchMapping("/{id}")
     public String update(@ModelAttribute("student") Student student,
-                         @PathVariable("id") int id) throws SQLException {
+                         @PathVariable("id") int id) throws DAOException {
 
         student.setId(id);
         student.setGroup(groupService.findById(student.getGroup().getId()));
@@ -83,7 +81,7 @@ public class StudentController {
 
     @DeleteMapping("/{id}/courses")
     public String removeFromCourses(@ModelAttribute("wrapperCoursesId") WrapperCoursesId wrapperCoursesId,
-                                    @PathVariable("id") int id) throws SQLException {
+                                    @PathVariable("id") int id) throws DAOException {
 
         studentService.removeFromCourses(id, wrapperCoursesId.getCoursesId());
 
@@ -92,7 +90,7 @@ public class StudentController {
 
     @PatchMapping("/{id}/courses")
     public String signOnCourses(@ModelAttribute("wrapperCoursesId") WrapperCoursesId wrapperCoursesId,
-                                @PathVariable("id") int id) throws SQLException {
+                                @PathVariable("id") int id) throws DAOException {
 
         studentService.signOnCourses(id, wrapperCoursesId.getCoursesId());
 
@@ -101,7 +99,7 @@ public class StudentController {
 
     @GetMapping("/filter")
     public String findAllFilter(@ModelAttribute("wrapperCoursesId") WrapperCoursesId wrapperCoursesId,
-                                Model model) throws SQLException {
+                                Model model) throws DAOException {
 
         model.addAttribute("students", schoolManager.findStudentsByCoursesName(wrapperCoursesId.getCoursesId()));
 
