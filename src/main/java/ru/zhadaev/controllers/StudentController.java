@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import ru.zhadaev.dao.entities.Group;
 import ru.zhadaev.dao.entities.Student;
 import ru.zhadaev.model.WrapperCoursesId;
 import ru.zhadaev.exception.DAOException;
@@ -69,11 +70,7 @@ public class StudentController {
     }
 
     @PatchMapping("/{id}")
-    public String update(@ModelAttribute("student") Student student,
-                         @PathVariable("id") int id) throws DAOException {
-
-        student.setId(id);
-        student.setGroup(groupService.findById(student.getGroup().getId()));
+    public String update(@ModelAttribute("student") Student student) throws DAOException {
         studentService.update(student);
 
         return "redirect:/students";

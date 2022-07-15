@@ -57,8 +57,7 @@ public class GroupController {
     }
     
     @PatchMapping("/{id}")
-    public String update(@ModelAttribute("group") Group group, @PathVariable("id") int id) throws DAOException {
-        group.setId(id);
+    public String update(@ModelAttribute("group") Group group) throws DAOException {
         groupService.update(group);
 
         return "redirect:/groups";

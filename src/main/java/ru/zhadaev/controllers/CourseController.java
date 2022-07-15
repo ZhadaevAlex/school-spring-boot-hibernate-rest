@@ -54,7 +54,7 @@ public class CourseController {
     }
 
     @PatchMapping("/{id}")
-    public String update(@ModelAttribute("group") Course course, @PathVariable("id") int id) throws DAOException {
+    public String update(@ModelAttribute("group") Course course) throws DAOException {
         courseDAO.update(course);
 
         return "redirect:/courses";
