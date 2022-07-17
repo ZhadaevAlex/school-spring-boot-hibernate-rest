@@ -8,7 +8,10 @@ import ru.zhadaev.dao.entities.Course;
 import ru.zhadaev.dao.entities.Student;
 import ru.zhadaev.dao.repository.impl.CourseDAO;
 import ru.zhadaev.dao.repository.impl.StudentDAO;
-import ru.zhadaev.exception.*;
+import ru.zhadaev.exception.DAOException;
+import ru.zhadaev.exception.NotFoundException;
+import ru.zhadaev.exception.NotValidCourseException;
+import ru.zhadaev.exception.NotValidStudentException;
 
 import java.util.List;
 
@@ -61,7 +64,7 @@ public class StudentService {
         return studentDb;
     }
 
-    public List<Student> findAll() throws DAOException{
+    public List<Student> findAll() throws DAOException {
         return studentDAO.findAll();
     }
 
@@ -141,6 +144,7 @@ public class StudentService {
             throw new NotValidStudentException("Student required is not null!");
         }
     }
+
     private void requiredNotNull(Course course) {
         if (course == null) {
             logger.error("Course required is not null!");
@@ -154,6 +158,7 @@ public class StudentService {
             throw new NotValidStudentException("Student ID required is not null!");
         }
     }
+
     private void requiredIdNotNull(Course course) {
         if (course.getId() == null) {
             logger.error("Course ID required is not null");
@@ -167,18 +172,21 @@ public class StudentService {
             throw new NotFoundException("The student's was not found in the database");
         }
     }
+
     private void requiredStudentIsExist(Integer id) throws DAOException {
         if (!studentDAO.existsById(id)) {
             logger.error("The student's course was not found in the database");
             throw new NotFoundException("The student's was not found in the database");
         }
     }
+
     private void requiredCourseIsExist(Course course) throws DAOException {
         if (!courseDAO.existsById(course.getId())) {
             logger.error("The student's course was not found in the database");
             throw new NotFoundException("The student's course was not found in the database");
         }
     }
+
     private void requiredCourseIsExist(Integer id) throws DAOException {
         if (!courseDAO.existsById(id)) {
             logger.error("The student's course was not found in the database");
