@@ -37,16 +37,10 @@ public class StudentService {
         return studentDAO.update(student);
     }
 
-    public Student findById(Integer id) throws DAOException {
+    public Student findById(Integer id) {
         requiredIdIsValid(id);
-
-        Student studentDb = studentDAO.findById(id).get();
-
-        if (studentDb == null) {
-            throw new NotFoundException("Student not found");
-        }
-
-        return studentDb;
+        return studentDAO.findById(id)
+                .orElseThrow(() -> new NotFoundException("Student not found"));
     }
 
     public List<Student> find(Student student) throws DAOException {
