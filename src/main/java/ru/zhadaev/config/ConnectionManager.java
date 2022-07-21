@@ -2,7 +2,6 @@ package ru.zhadaev.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -19,8 +18,6 @@ public class ConnectionManager {
         this.url = url;
         this.user = user;
         this.password = password;
-
-
     }
 
     public Connection getConnection() {

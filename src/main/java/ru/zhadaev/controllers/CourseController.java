@@ -5,57 +5,56 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.zhadaev.dao.entities.Course;
-import ru.zhadaev.dao.repository.impl.CourseDAO;
-import ru.zhadaev.exception.DAOException;
+import ru.zhadaev.service.CourseService;
 
 @Controller
 @RequestMapping("/courses")
 public class CourseController {
-    private final CourseDAO courseDAO;
+    private final CourseService courseService;
 
     @Autowired
-    public CourseController(CourseDAO courseDAO) {
-        this.courseDAO = courseDAO;
+    public CourseController(CourseService courseService) {
+        this.courseService = courseService;
     }
 
     @GetMapping()
-    public String findAll(Model model) throws DAOException {
-        model.addAttribute("courses", courseDAO.findAll());
+    public String findAll(Model model) {
+        model.addAttribute("courses", courseService.findAll());
 
         return "courses/index";
     }
 
     @PostMapping()
-    public String save(@ModelAttribute("course") Course course) throws DAOException {
-        courseDAO.save(course);
+    public String save(@ModelAttribute("course") Course course) {
+        courseService.save(course);
 
         return "redirect:/courses";
     }
 
     @GetMapping("/{id}")
-    public String findById(@PathVariable("id") Integer id, Model model) throws DAOException {
-        model.addAttribute("course", courseDAO.findById(id).get());
+    public String findById(@PathVariable("id") Integer id, Model model) {
+        model.addAttribute("course", courseService.findById(id));
 
         return "courses/show";
     }
 
     @DeleteMapping("/{id}")
-    public String deleteById(@PathVariable("id") Integer id) throws DAOException {
-        courseDAO.deleteById(id);
+    public String deleteById(@PathVariable("id") Integer id) {
+        courseService.deleteById(id);
 
         return "redirect:/courses";
     }
 
     @DeleteMapping()
-    public String deleteAll() throws DAOException {
-        courseDAO.deleteAll();
+    public String deleteAll() {
+        courseService.deleteAll();
 
         return "redirect:/courses";
     }
 
     @PatchMapping("/{id}")
-    public String update(@ModelAttribute("group") Course course) throws DAOException {
-        courseDAO.update(course);
+    public String update(@ModelAttribute("group") Course course) {
+        courseService.update(course);
 
         return "redirect:/courses";
     }

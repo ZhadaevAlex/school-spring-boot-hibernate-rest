@@ -8,9 +8,7 @@ import ru.zhadaev.dao.entities.Group;
 import ru.zhadaev.dao.entities.School;
 import ru.zhadaev.dao.entities.Student;
 import ru.zhadaev.exception.DAOException;
-import ru.zhadaev.exception.IsNotFileException;
 
-import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,14 +30,14 @@ public class SchoolInitializer {
         this.tablesCreator = tablesCreator;
     }
 
-    public void initialize(School school) throws DAOException, NoSuchFileException, IsNotFileException {
+    public void initialize(School school) {
         createTables();
 
-        List<Group> groupsDb = initializeGroup(school.getGroups());
+        List<Group> groupsDb = initializeGroups(school.getGroups());
         List<Course> coursesDb = initializeCourses(school.getCourses());
 
         for (Student student : school.getStudents()) {
-            if (student.getGroup() != null) {
+             if (student.getGroup() != null) {
                 Integer id = groupsDb.stream()
                         .filter(p -> p.getName()
                                 .equals(student.getGroup().getName()))
@@ -62,11 +60,11 @@ public class SchoolInitializer {
         signStudentsOnCourses(studentsDb);
     }
 
-    private void createTables() throws DAOException, NoSuchFileException, IsNotFileException {
+    private void createTables() {
         tablesCreator.createTables();
     }
 
-    private List<Group> initializeGroup(List<Group> groups) throws DAOException {
+    private List<Group> initializeGroups(List<Group> groups) {
         List<Group> groupsDb = new ArrayList<>();
         for (Group group : groups) {
             groupsDb.add(groupService.save(group));
@@ -75,7 +73,7 @@ public class SchoolInitializer {
         return groupsDb;
     }
 
-    private List<Course> initializeCourses(List<Course> courses) throws DAOException {
+    private List<Course> initializeCourses(List<Course> courses) {
         List<Course> coursesDb = new ArrayList<>();
         for (Course course : courses) {
             coursesDb.add(courseService.save(course));
@@ -84,7 +82,7 @@ public class SchoolInitializer {
         return coursesDb;
     }
 
-    private List<Student> initializeStudents(List<Student> students) throws DAOException {
+    private List<Student> initializeStudents(List<Student> students) {
         List<Student> studentsDb = new ArrayList<>();
         for (Student student : students) {
             studentsDb.add(studentService.save(student));
@@ -93,7 +91,7 @@ public class SchoolInitializer {
         return studentsDb;
     }
 
-    private void signStudentsOnCourses(List<Student> students) throws DAOException {
+    private void signStudentsOnCourses(List<Student> students) {
 
         for (Student student : students) {
             List<Integer> coursesId = new ArrayList<>();

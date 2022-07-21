@@ -3,9 +3,9 @@ package ru.zhadaev.service;
 import java.util.*;
 
 public class SchoolInitData {
-    private Map<String, String> subjects = new HashMap<>();
-    private List<String> firstNames = new ArrayList<>();
-    private List<String> lastNames = new ArrayList<>();
+    private final Map<String, String> subjects = new HashMap<>();
+    private final List<String> firstNames = new ArrayList<>();
+    private final List<String> lastNames = new ArrayList<>();
     public static final Integer NUMBER_STUDENTS = 200;
     public static final Integer NUMBER_GROUPS = 10;
     public static final Integer MIN_STUDENTS_IN_GROUP = 10;

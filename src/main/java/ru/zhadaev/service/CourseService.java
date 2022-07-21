@@ -11,12 +11,11 @@ import ru.zhadaev.exception.NotFoundException;
 import ru.zhadaev.exception.NotValidCourseException;
 import ru.zhadaev.exception.NotValidStudentException;
 
-import java.sql.*;
 import java.util.List;
 
 @Component
 public class CourseService {
-    private static final Logger logger = LoggerFactory.getLogger(SchoolManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(CourseService.class);
 
     private final CourseDAO courseDAO;
 
@@ -25,31 +24,25 @@ public class CourseService {
         this.courseDAO = courseDAO;
     }
 
-    public Course save(Course course) throws DAOException {
+    public Course save(Course course) {
         requiredNotNull(course);
 
         return courseDAO.save(course);
     }
 
-    public Course update(Course course) throws DAOException {
+    public Course update(Course course) {
         requiredNotNull(course);
 
         return courseDAO.update(course);
     }
 
-    public Course findById(Integer id) throws DAOException {
+    public Course findById(Integer id) {
         requiredIdIsValid(id);
 
-        Course courseDb = courseDAO.findById(id).get();
-
-        if (courseDb == null) {
-            throw new NotFoundException("Course not found");
-        }
-
-        return courseDb;
+        return courseDAO.findById(id).orElseThrow(() -> new NotFoundException("Course not found"));
     }
 
-    public List<Course> find(Course course) throws DAOException {
+    public List<Course> find(Course course) {
         requiredNotNull(course);
 
         List<Course> courseDb = courseDAO.find(course).get();
@@ -61,21 +54,21 @@ public class CourseService {
         return courseDb;
     }
 
-    public List<Course> findAll() throws DAOException {
+    public List<Course> findAll() {
         return courseDAO.findAll();
     }
 
-    public boolean existsById(Integer id) throws DAOException {
+    public boolean existsById(Integer id) {
         requiredIdIsValid(id);
 
         return courseDAO.existsById(id);
     }
 
-    public long count() throws DAOException {
+    public long count() {
         return courseDAO.count();
     }
 
-    public void deleteById(Integer id) throws DAOException {
+    public void deleteById(Integer id) {
         requiredIdIsValid(id);
 
         if (courseDAO.existsById(id)) {
@@ -88,13 +81,13 @@ public class CourseService {
         courseDAO.deleteById(id);
     }
 
-    public void delete(Course course) throws DAOException {
+    public void delete(Course course) {
         requiredNotNull(course);
 
         courseDAO.delete(course);
     }
 
-    public void deleteAll() throws DAOException {
+    public void deleteAll() {
         courseDAO.deleteAll();
     }
 

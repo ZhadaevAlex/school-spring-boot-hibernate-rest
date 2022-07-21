@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.zhadaev.dao.entities.Group;
 import ru.zhadaev.dao.entities.Student;
-import ru.zhadaev.exception.DAOException;
 import ru.zhadaev.exception.NotValidStudentException;
 
 import java.util.ArrayList;
@@ -17,17 +16,15 @@ public class SchoolManager {
     private static final Logger logger = LoggerFactory.getLogger(SchoolManager.class);
 
     private final GroupService groupService;
-    private final CourseService courseService;
     private final StudentService studentService;
 
     @Autowired
-    public SchoolManager(GroupService groupService, CourseService courseService, StudentService studentService) {
+    public SchoolManager(GroupService groupService, StudentService studentService) {
         this.groupService = groupService;
-        this.courseService = courseService;
         this.studentService = studentService;
     }
 
-    public List<Group> findGroupsByNumberStudents(long numberStudents) throws DAOException {
+    public List<Group> findGroupsByNumberStudents(long numberStudents) {
         List<Student> studentsDb = studentService.findAll();
         List<Group> groupsDb = groupService.findAll();
         List<Group> result = new ArrayList<>();
@@ -45,7 +42,7 @@ public class SchoolManager {
         return result;
     }
 
-    public List<Student> findStudentsByCourse(Integer courseId) throws DAOException {
+    public List<Student> findStudentsByCourse(Integer courseId) {
         requiredIdIsValid(courseId);
 
         List<Student> studentsDb = studentService.findAll();
@@ -63,7 +60,7 @@ public class SchoolManager {
         return studentsByCourse;
     }
 
-    public List<Student> findStudentsByCoursesName(List<Integer> coursesId) throws DAOException {
+    public List<Student> findStudentsByCoursesName(List<Integer> coursesId) {
         List<Student> students = new ArrayList<>();
 
         for (Integer courseId : coursesId) {

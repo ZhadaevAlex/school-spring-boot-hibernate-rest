@@ -11,12 +11,11 @@ import ru.zhadaev.exception.NotFoundException;
 import ru.zhadaev.exception.NotValidGroupException;
 import ru.zhadaev.exception.NotValidStudentException;
 
-import java.sql.*;
 import java.util.List;
 
 @Component
 public class GroupService {
-    private static final Logger logger = LoggerFactory.getLogger(SchoolManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(GroupService.class);
 
     private final GroupDAO groupDAO;
 
@@ -25,31 +24,25 @@ public class GroupService {
         this.groupDAO = groupDAO;
     }
 
-    public Group save(Group group) throws DAOException {
+    public Group save(Group group) {
         requiredNotNull(group);
 
         return groupDAO.save(group);
     }
 
-    public Group update(Group group) throws DAOException {
+    public Group update(Group group) {
         requiredNotNull(group);
 
         return groupDAO.update(group);
     }
 
-    public Group findById(Integer id) throws DAOException {
+    public Group findById(Integer id) {
         requiredIdIsValid(id);
 
-        Group groupDb = groupDAO.findById(id).get();
-
-        if (groupDb == null) {
-            throw new NotFoundException("Group not found");
-        }
-
-        return groupDb;
+        return groupDAO.findById(id).orElseThrow(() -> new NotFoundException("Group not found"));
     }
 
-    public List<Group> find(Group group) throws DAOException {
+    public List<Group> find(Group group) {
         requiredNotNull(group);
 
         List<Group> groupsDb = groupDAO.find(group).get();
@@ -61,11 +54,11 @@ public class GroupService {
         return groupsDb;
     }
 
-    public List<Group> findAll() throws DAOException {
+    public List<Group> findAll() {
         return groupDAO.findAll();
     }
 
-    public boolean existsById(Integer id) throws DAOException {
+    public boolean existsById(Integer id) {
         requiredIdIsValid(id);
 
         return groupDAO.existsById(id);
@@ -75,7 +68,7 @@ public class GroupService {
         return groupDAO.count();
     }
 
-    public void deleteById(Integer id) throws DAOException {
+    public void deleteById(Integer id) {
         requiredIdIsValid(id);
 
         if (groupDAO.existsById(id)) {
@@ -88,13 +81,13 @@ public class GroupService {
         groupDAO.deleteById(id);
     }
 
-    public void delete(Group group) throws DAOException {
+    public void delete(Group group) {
         requiredNotNull(group);
 
         groupDAO.delete(group);
     }
 
-    public void deleteAll() throws DAOException {
+    public void deleteAll() {
         groupDAO.deleteAll();
     }
 

@@ -8,10 +8,8 @@ import ru.zhadaev.config.ConnectionManager;
 import ru.zhadaev.config.FileReader;
 import ru.zhadaev.config.PropertiesReader;
 import ru.zhadaev.exception.DAOException;
-import ru.zhadaev.exception.IsNotFileException;
 
 import java.io.File;
-import java.nio.file.NoSuchFileException;
 import java.sql.*;
 import java.util.stream.Collectors;
 
@@ -25,7 +23,7 @@ public class TablesCreator {
         this.connectionManager = connectionManager;
     }
 
-    public void createTables() throws DAOException, NoSuchFileException, IsNotFileException {
+    public void createTables() {
         Connection connection = connectionManager.getConnection();
 
         PropertiesReader propertiesReader = new PropertiesReader("application.properties");

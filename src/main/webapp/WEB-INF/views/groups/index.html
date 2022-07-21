@@ -114,8 +114,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form method="GET"
-                      action="/groups/filter">
+                <form method="GET" action="/groups/filter">
                     <div class="mb-3">
                         <div class="row">
                             <div class="col-auto">
@@ -147,7 +146,7 @@
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <form th:method="POST" th:action="@{/groups}" th:object="${group}">
+                    <form th:method="POST" th:action="@{/groups}">
                         <div class="mb-3">
                             <div class="row">
                                 <div class="col-auto">

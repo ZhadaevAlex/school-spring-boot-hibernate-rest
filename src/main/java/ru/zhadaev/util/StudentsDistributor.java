@@ -8,7 +8,7 @@ import java.security.SecureRandom;
 import java.util.*;
 
 public class StudentsDistributor {
-    private Random rnd = new SecureRandom();
+    private final Random rnd = new SecureRandom();
     public List<Student> distributionByCourses(List<Student> students, List<Course> courses, int minNumberCourses, int maxNumberCourses) {
         requiredNotNull(students);
         requiredNotNull(courses);

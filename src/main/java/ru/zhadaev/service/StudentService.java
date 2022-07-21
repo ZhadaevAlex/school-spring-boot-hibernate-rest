@@ -4,23 +4,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.zhadaev.dao.entities.Course;
 import ru.zhadaev.dao.entities.Student;
 import ru.zhadaev.dao.repository.impl.CourseDAO;
 import ru.zhadaev.dao.repository.impl.StudentDAO;
-import ru.zhadaev.exception.DAOException;
-import ru.zhadaev.exception.NotFoundException;
-import ru.zhadaev.exception.NotValidCourseException;
-import ru.zhadaev.exception.NotValidStudentException;
+import ru.zhadaev.exception.*;
 
 import java.util.List;
 
 @Component
 public class StudentService {
-    private static final Logger logger = LoggerFactory.getLogger(SchoolManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(StudentService.class);
 
     private final CourseDAO courseDAO;
-    private StudentDAO studentDAO;
+    private final StudentDAO studentDAO;
 
     @Autowired
     public StudentService(CourseDAO courseDAO, StudentDAO studentDAO) {
@@ -28,31 +24,25 @@ public class StudentService {
         this.studentDAO = studentDAO;
     }
 
-    public Student save(Student student) throws DAOException {
+    public Student save(Student student) {
         requiredNotNull(student);
 
         return studentDAO.save(student);
     }
 
-    public Student update(Student student) throws DAOException {
+    public Student update(Student student) {
         requiredNotNull(student);
 
         return studentDAO.update(student);
     }
 
-    public Student findById(Integer id) throws DAOException {
+    public Student findById(Integer id) {
         requiredIdIsValid(id);
 
-        Student studentDb = studentDAO.findById(id).get();
-
-        if (studentDb == null) {
-            throw new NotFoundException("Student not found");
-        }
-
-        return studentDb;
+        return studentDAO.findById(id).orElseThrow(() -> new NotFoundException("Student not found"));
     }
 
-    public List<Student> find(Student student) throws DAOException {
+    public List<Student> find(Student student) {
         requiredNotNull(student);
 
         List<Student> studentDb = studentDAO.find(student).get();
@@ -64,11 +54,11 @@ public class StudentService {
         return studentDb;
     }
 
-    public List<Student> findAll() throws DAOException {
+    public List<Student> findAll() {
         return studentDAO.findAll();
     }
 
-    public boolean existsById(Integer id) throws DAOException {
+    public boolean existsById(Integer id) {
         requiredIdIsValid(id);
 
         return studentDAO.existsById(id);
@@ -78,7 +68,7 @@ public class StudentService {
         return studentDAO.count();
     }
 
-    public void deleteById(Integer id) throws DAOException {
+    public void deleteById(Integer id) {
         requiredIdIsValid(id);
 
         if (studentDAO.existsById(id)) {
@@ -91,17 +81,17 @@ public class StudentService {
         studentDAO.deleteById(id);
     }
 
-    public void delete(Student student) throws DAOException {
+    public void delete(Student student) {
         requiredNotNull(student);
 
         studentDAO.delete(student);
     }
 
-    public void deleteAll() throws DAOException {
+    public void deleteAll() {
         studentDAO.deleteAll();
     }
 
-    public void signOnCourses(Integer studentId, List<Integer> coursesId) throws DAOException {
+    public void signOnCourses(Integer studentId, List<Integer> coursesId) {
         requiredIdIsValid(studentId);
         requiredStudentIsExist(studentId);
 
@@ -114,7 +104,7 @@ public class StudentService {
         }
     }
 
-    public void removeFromCourses(Integer studentId, List<Integer> coursesId) throws DAOException {
+    public void removeFromCourses(Integer studentId, List<Integer> coursesId) {
         requiredIdIsValid(studentId);
         requiredStudentIsExist(studentId);
 
@@ -125,17 +115,13 @@ public class StudentService {
         }
     }
 
-    public boolean studentCourseIsExist(Integer studentId, Integer courseId) throws DAOException {
+    public boolean studentCourseIsExist(Integer studentId, Integer courseId) {
         requiredIdIsValid(studentId);
         requiredStudentIsExist(studentId);
         requiredIdIsValid(courseId);
         requiredCourseIsExist(courseId);
 
-        if (studentDAO.studentCourseIsExist(studentId, courseId)) {
-            return true;
-        }
-
-        return false;
+        return studentDAO.studentCourseIsExist(studentId, courseId);
     }
 
     private void requiredNotNull(Student student) {
@@ -144,56 +130,18 @@ public class StudentService {
             throw new NotValidStudentException("Student required is not null!");
         }
     }
-
-    private void requiredNotNull(Course course) {
-        if (course == null) {
-            logger.error("Course required is not null!");
-            throw new NotValidCourseException("Course required is not null!");
-        }
-    }
-
-    private void requiredIdNotNull(Student student) {
-        if (student.getId() == null) {
-            logger.error("Student ID required is not null!");
-            throw new NotValidStudentException("Student ID required is not null!");
-        }
-    }
-
-    private void requiredIdNotNull(Course course) {
-        if (course.getId() == null) {
-            logger.error("Course ID required is not null");
-            throw new NotValidStudentException("Course ID required is not null");
-        }
-    }
-
-    private void requiredStudentIsExist(Student student) throws DAOException {
-        if (!studentDAO.existsById(student.getId())) {
-            logger.error("The student's course was not found in the database");
-            throw new NotFoundException("The student's was not found in the database");
-        }
-    }
-
-    private void requiredStudentIsExist(Integer id) throws DAOException {
+    private void requiredStudentIsExist(Integer id) {
         if (!studentDAO.existsById(id)) {
             logger.error("The student's course was not found in the database");
             throw new NotFoundException("The student's was not found in the database");
         }
     }
-
-    private void requiredCourseIsExist(Course course) throws DAOException {
-        if (!courseDAO.existsById(course.getId())) {
-            logger.error("The student's course was not found in the database");
-            throw new NotFoundException("The student's course was not found in the database");
-        }
-    }
-
-    private void requiredCourseIsExist(Integer id) throws DAOException {
+    private void requiredCourseIsExist(Integer id) {
         if (!courseDAO.existsById(id)) {
             logger.error("The student's course was not found in the database");
             throw new NotFoundException("The student's course was not found in the database");
         }
     }
-
     private void requiredIdIsValid(Integer id) {
         if (id == null || id < 1) {
             logger.error("The id value must be non-null and greater than 0");

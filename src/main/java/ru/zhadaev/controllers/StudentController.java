@@ -4,10 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import ru.zhadaev.dao.entities.Group;
 import ru.zhadaev.dao.entities.Student;
 import ru.zhadaev.model.WrapperCoursesId;
-import ru.zhadaev.exception.DAOException;
 import ru.zhadaev.service.CourseService;
 import ru.zhadaev.service.GroupService;
 import ru.zhadaev.service.SchoolManager;
@@ -30,47 +28,46 @@ public class StudentController {
     }
 
     @GetMapping()
-    public String findAll(Model model) throws DAOException {
-        WrapperCoursesId wrapperCoursesId = new WrapperCoursesId();
+    public String findAll(@ModelAttribute WrapperCoursesId wrapperCoursesId,
+                          Model model) {
 
         model.addAttribute("groups", groupService.findAll());
         model.addAttribute("courses", courseService.findAll());
         model.addAttribute("students", studentService.findAll());
-        model.addAttribute("wrapperCoursesId", wrapperCoursesId);
 
         return "students/index";
     }
 
     @PostMapping()
-    public String save(@ModelAttribute("student") Student student) throws DAOException {
+    public String save(@ModelAttribute("student") Student student) {
         studentService.save(student);
 
         return "redirect:/students";
     }
 
     @GetMapping("/{id}")
-    public String findById(@PathVariable("id") Integer id, Model model) throws DAOException {
+    public String findById(@PathVariable("id") Integer id, Model model) {
         model.addAttribute("student", studentService.findById(id));
 
         return "/students/show";
     }
 
     @DeleteMapping("/{id}")
-    public String deleteById(@PathVariable("id") Integer id) throws DAOException {
+    public String deleteById(@PathVariable("id") Integer id) {
         studentService.deleteById(id);
 
         return "redirect:/students";
     }
 
     @DeleteMapping()
-    public String deleteAll() throws DAOException {
+    public String deleteAll() {
         studentService.deleteAll();
 
         return "redirect:/students";
     }
 
     @PatchMapping("/{id}")
-    public String update(@ModelAttribute("student") Student student) throws DAOException {
+    public String update(@ModelAttribute("student") Student student) {
         studentService.update(student);
 
         return "redirect:/students";
@@ -78,7 +75,7 @@ public class StudentController {
 
     @DeleteMapping("/{id}/courses")
     public String removeFromCourses(@ModelAttribute("wrapperCoursesId") WrapperCoursesId wrapperCoursesId,
-                                    @PathVariable("id") int id) throws DAOException {
+                                    @PathVariable("id") int id) {
 
         studentService.removeFromCourses(id, wrapperCoursesId.getCoursesId());
 
@@ -87,7 +84,7 @@ public class StudentController {
 
     @PatchMapping("/{id}/courses")
     public String signOnCourses(@ModelAttribute("wrapperCoursesId") WrapperCoursesId wrapperCoursesId,
-                                @PathVariable("id") int id) throws DAOException {
+                                @PathVariable("id") int id) {
 
         studentService.signOnCourses(id, wrapperCoursesId.getCoursesId());
 
@@ -96,7 +93,7 @@ public class StudentController {
 
     @GetMapping("/filter")
     public String findAllFilter(@ModelAttribute("wrapperCoursesId") WrapperCoursesId wrapperCoursesId,
-                                Model model) throws DAOException {
+                                Model model) {
 
         model.addAttribute("students", schoolManager.findStudentsByCoursesName(wrapperCoursesId.getCoursesId()));
 

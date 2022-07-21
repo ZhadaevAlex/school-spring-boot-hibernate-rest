@@ -328,7 +328,6 @@ public class StudentDAO implements CrudRepository<Student, Integer> {
             }
         }
 
-        int a = 2;
         return studentsDb;
     }
 
@@ -440,11 +439,7 @@ public class StudentDAO implements CrudRepository<Student, Integer> {
             preStatement.setInt(2, courseId);
 
             resultSet = preStatement.executeQuery();
-            if (resultSet.next()) {
-                return true;
-            }
-
-            return false;
+            return resultSet.next();
         } catch (SQLException e) {
             logger.error(e.getLocalizedMessage());
             throw new DAOException("Cannot be found by id in the student_courses", e);

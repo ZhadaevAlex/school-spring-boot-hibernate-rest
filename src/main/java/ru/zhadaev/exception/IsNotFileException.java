@@ -1,8 +1,6 @@
 package ru.zhadaev.exception;
 
-import java.nio.file.FileSystemException;
-
-public class IsNotFileException extends FileSystemException {
+public class IsNotFileException extends RuntimeException {
     public IsNotFileException(String file) {
         super(file);
     }

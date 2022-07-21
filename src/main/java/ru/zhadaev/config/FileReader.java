@@ -2,18 +2,18 @@ package ru.zhadaev.config;
 
 import ru.zhadaev.exception.FileOpenException;
 import ru.zhadaev.exception.IsNotFileException;
+import ru.zhadaev.exception.NoSuchFileException;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class FileReader {
-    public List<String> read(String fileName) throws NoSuchFileException, IsNotFileException {
+    public List<String> read(String fileName) {
         requiredNonNull(fileName);
         requiredExistenceFile(fileName);
         requiredIsFile(fileName);
@@ -34,15 +34,15 @@ public class FileReader {
         }
     }
 
-    private void requiredExistenceFile (String fileName) throws NoSuchFileException {
+    private void requiredExistenceFile (String fileName) {
         if (!new File(fileName).exists()) {
             throw new NoSuchFileException(String.format("File %s not found", fileName));
         }
     }
 
-    private void requiredIsFile (String fileName) throws IsNotFileException {
+    private void requiredIsFile (String fileName) {
         if (!new File(fileName).isFile()) {
-            throw new IsNotFileException(String.format("%s is not file", fileName));
+            throw new IsNotFileException(String.format("%s not file", fileName));
         }
     }
 }
