@@ -1,24 +1,22 @@
 package ru.zhadaev.dao.repository.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import ru.zhadaev.config.ConnectionManager;
 import ru.zhadaev.dao.entities.Group;
+import ru.zhadaev.dao.mappers.GroupMapper;
 import ru.zhadaev.dao.repository.CrudRepository;
 import ru.zhadaev.exception.DAOException;
 
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Component
 public class GroupDAO implements CrudRepository<Group, Integer> {
-    private static final Logger logger = LoggerFactory.getLogger(GroupDAO.class);
     private static final String GROUP_ID = "group_id";
-    private static final String GROUP_NAME = "group_name";
     private static final String CREATE_QUERY = "insert into school.groups (group_name) values (?)";
     private static final String UPDATE_QUERY = "update school.groups set group_name = ? where group_id = ?";
     private static final String FIND_BY_ID_QUERY = "select * from school.groups where group_id = ?";
@@ -28,176 +26,62 @@ public class GroupDAO implements CrudRepository<Group, Integer> {
     private static final String DELETE_BY_ID_QUERY = "delete from school.groups where group_id = ?";
     private static final String DELETE_QUERY = "delete from school.groups where group_name = ?";
     private static final String DELETE_ALL_QUERY = "delete from school.groups";
-    private static final String CLOSE_ERROR_MSG = "ResultSet close error";
+    private static final Integer INTEGER = 4;
+    private static final Integer VARCHAR = 12;
 
-    private final ConnectionManager connectionManager;
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public GroupDAO(ConnectionManager connectionManager) {
-        this.connectionManager = connectionManager;
+    public GroupDAO(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
-    public Group save(Group group) throws DAOException {
-        Group groupDb = new Group();
-        Connection connection = connectionManager.getConnection();
-        ResultSet resultSet = null;
-
-        try (PreparedStatement preStatement = connection.prepareStatement(CREATE_QUERY, Statement.RETURN_GENERATED_KEYS)) {
-            preStatement.setString(1, group.getName());
-            preStatement.execute();
-
-            resultSet = preStatement.getGeneratedKeys();
-            resultSet.next();
-
-            groupDb.setId(resultSet.getInt(GROUP_ID));
-            groupDb.setName(group.getName());
-        } catch (SQLException e) {
-            logger.error(e.getLocalizedMessage());
-            throw new DAOException("Cannot save the group", e);
-        } finally {
-            try {
-                if (resultSet != null) {
-                    resultSet.close();
-                }
-            } catch (SQLException e) {
-                logger.error(CLOSE_ERROR_MSG, e.getLocalizedMessage());
-            }
-        }
-
-        return groupDb;
+    public Group save(Group group) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(
+                connection -> {
+                    PreparedStatement ps = connection.prepareStatement(CREATE_QUERY, new String[] {GROUP_ID});
+                    ps.setString(1, group.getName());
+                    return ps;
+                }, keyHolder);
+        int id = keyHolder.getKey().intValue();
+        group.setId(id);
+        return group;
     }
 
     @Override
-    public Group update(Group group) throws DAOException {
-        Group groupDb = new Group();
-        Connection connection = connectionManager.getConnection();
-        ResultSet resultSet = null;
-
-        try (PreparedStatement preStatement = connection.prepareStatement(UPDATE_QUERY, Statement.RETURN_GENERATED_KEYS)) {
-            preStatement.setString(1, group.getName());
-            preStatement.setInt(2, group.getId());
-
-            preStatement.execute();
-
-            resultSet = preStatement.getGeneratedKeys();
-            resultSet.next();
-
-            groupDb.setId(resultSet.getInt(GROUP_ID));
-            groupDb.setName(group.getName());
-        } catch (SQLException e) {
-            logger.error(e.getLocalizedMessage());
-            throw new DAOException("Cannot update the group", e);
-        } finally {
-            try {
-                if (resultSet != null) {
-                    resultSet.close();
-                }
-            } catch (SQLException e) {
-                logger.error(CLOSE_ERROR_MSG, e.getLocalizedMessage());
-            }
-        }
-
-        return groupDb;
+    public Group update(Group group) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(
+                connection -> {
+                    PreparedStatement ps = connection.prepareStatement(UPDATE_QUERY, new String[] {GROUP_ID});
+                    ps.setString(1, group.getName());
+                    ps.setInt(2, group.getId());
+                    return ps;
+                }, keyHolder);
+        int id = keyHolder.getKey().intValue();
+        group.setId(id);
+        return group;
     }
 
     @Override
-    public Optional<Group> findById(Integer id) throws DAOException {
-        Group groupDb = null;
-        Connection connection = connectionManager.getConnection();
-        ResultSet resultSet = null;
-
-        try (PreparedStatement preStatement = connection.prepareStatement(FIND_BY_ID_QUERY, Statement.RETURN_GENERATED_KEYS)) {
-            preStatement.setInt(1, id);
-
-            resultSet = preStatement.executeQuery();
-            if (resultSet.next()) {
-                groupDb = new Group();
-                groupDb.setId(resultSet.getInt(GROUP_ID));
-                groupDb.setName(resultSet.getString(GROUP_NAME));
-            }
-        } catch (SQLException e) {
-            logger.error(e.getLocalizedMessage());
-            throw new DAOException("Cannot be found by id in the groups", e);
-        } finally {
-            try {
-                if (resultSet != null) {
-                    resultSet.close();
-                }
-            } catch (SQLException e) {
-                logger.error(CLOSE_ERROR_MSG, e.getLocalizedMessage());
-            }
-        }
-
-        return Optional.ofNullable(groupDb);
+    public Optional<Group> findById(Integer id) {
+        return jdbcTemplate.query(FIND_BY_ID_QUERY, new Object[]{id}, new int[]{INTEGER}, new GroupMapper()).stream().findAny();
     }
 
     @Override
-    public Optional<List<Group>> find(Group group) throws DAOException {
-        List<Group> groupsDb = new ArrayList<>();
-        Connection connection = connectionManager.getConnection();
-        ResultSet resultSet = null;
-
-        try (PreparedStatement preStatement = connection.prepareStatement(FIND_QUERY, Statement.RETURN_GENERATED_KEYS)) {
-            preStatement.setString(1, group.getName());
-            preStatement.getGeneratedKeys();
-            preStatement.execute();
-
-            resultSet = preStatement.getResultSet();
-            while (resultSet.next()) {
-                Group groupDb = new Group();
-                groupDb.setId(resultSet.getInt(GROUP_ID));
-                groupDb.setName(resultSet.getString(GROUP_NAME));
-                groupsDb.add(groupDb);
-            }
-        } catch (SQLException e) {
-            logger.error(e.getLocalizedMessage());
-            throw new DAOException("The group cannot be found in groups", e);
-        } finally {
-            try {
-                if (resultSet != null) {
-                    resultSet.close();
-                }
-            } catch (SQLException e) {
-                logger.error(e.getLocalizedMessage(), e);
-            }
-        }
-
-        return Optional.of(groupsDb);
+    public Optional<List<Group>> find(Group group) {
+        return Optional.of(jdbcTemplate.query(FIND_QUERY, new Object[]{group.getName()}, new int[]{VARCHAR}, new GroupMapper()));
     }
 
     @Override
-    public List<Group> findAll() throws DAOException {
-        List<Group> groupsDb = new ArrayList<>();
-        Connection connection = connectionManager.getConnection();
-        ResultSet resultSet = null;
-
-        try (Statement statement = connection.createStatement()) {
-            resultSet = statement.executeQuery(FIND_ALL_QUERY);
-            while (resultSet.next()) {
-                Group groupDb = new Group();
-                groupDb.setId(resultSet.getInt(GROUP_ID));
-                groupDb.setName(resultSet.getString(GROUP_NAME));
-                groupsDb.add(groupDb);
-            }
-        } catch (SQLException e) {
-            logger.error(e.getLocalizedMessage());
-            throw new DAOException("All groups in groups cannot be found", e);
-        } finally {
-            try {
-                if (resultSet != null) {
-                    resultSet.close();
-                }
-            } catch (SQLException e) {
-                logger.error(CLOSE_ERROR_MSG, e.getLocalizedMessage());
-            }
-        }
-
-        return groupsDb;
+    public List<Group> findAll() {
+        return jdbcTemplate.query(FIND_ALL_QUERY, new GroupMapper());
     }
 
     @Override
-    public boolean existsById(Integer id) throws DAOException {
+    public boolean existsById(Integer id) {
         Optional<Group> optGroup = this.findById(id);
 
         return optGroup.isPresent();
@@ -205,66 +89,21 @@ public class GroupDAO implements CrudRepository<Group, Integer> {
 
     @Override
     public long count() throws DAOException {
-        Connection connection = connectionManager.getConnection();
-        ResultSet resultSet = null;
-
-        try (Statement statement = connection.createStatement()) {
-            resultSet = statement.executeQuery(COUNT_QUERY);
-
-            if (resultSet.next()) {
-                return resultSet.getInt(1);
-            } else {
-                throw new DAOException("Cannot to count a groups");
-            }
-        } catch (SQLException e) {
-            logger.error(e.getLocalizedMessage());
-            throw new DAOException("Cannot to count a groups", e);
-        } finally {
-            try {
-                if (resultSet != null) {
-                    resultSet.close();
-                }
-            } catch (SQLException e) {
-                logger.error(CLOSE_ERROR_MSG, e.getLocalizedMessage());
-            }
-        }
+        return this.jdbcTemplate.queryForObject(COUNT_QUERY, Integer.class);
     }
 
     @Override
-    public void deleteById(Integer id) throws DAOException {
-        Connection connection = connectionManager.getConnection();
-
-        try (PreparedStatement preStatement = connection.prepareStatement(DELETE_BY_ID_QUERY, Statement.RETURN_GENERATED_KEYS)) {
-            preStatement.setInt(1, id);
-            preStatement.execute();
-        } catch (SQLException e) {
-            logger.error(e.getLocalizedMessage());
-            throw new DAOException("Cannot be deleted by id in the groups", e);
-        }
+    public void deleteById(Integer id) {
+        jdbcTemplate.update(DELETE_BY_ID_QUERY, id);
     }
 
     @Override
-    public void delete(Group group) throws DAOException {
-        Connection connection = connectionManager.getConnection();
-
-        try (PreparedStatement preStatement = connection.prepareStatement(DELETE_QUERY, Statement.RETURN_GENERATED_KEYS)) {
-            preStatement.setString(1, group.getName());
-            preStatement.execute();
-        } catch (SQLException e) {
-            logger.error(e.getLocalizedMessage());
-            throw new DAOException("Cannot be deleted in the groups", e);
-        }
+    public void delete(Group group) {
+        jdbcTemplate.update(DELETE_QUERY, group.getName());
     }
 
     @Override
-    public void deleteAll() throws DAOException {
-        Connection connection = connectionManager.getConnection();
-
-        try (Statement statement = connection.createStatement()) {
-            statement.execute(DELETE_ALL_QUERY);
-        } catch (SQLException e) {
-            logger.error(e.getLocalizedMessage());
-            throw new DAOException("Cannot be deleted all in the groups", e);
-        }
+    public void deleteAll() {
+        jdbcTemplate.update(DELETE_ALL_QUERY);
     }
 }

@@ -48,7 +48,7 @@ public class StudentService {
         List<Student> studentDb = studentDAO.find(student).get();
 
         if (studentDb.isEmpty()) {
-            throw new NotFoundException("Groups not found");
+            throw new NotFoundException("Students not found");
         }
 
         return studentDb;

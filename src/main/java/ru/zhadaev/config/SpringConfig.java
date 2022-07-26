@@ -5,6 +5,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -16,6 +18,7 @@ import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 @ComponentScan("ru.zhadaev")
 @EnableWebMvc
 public class SpringConfig implements WebMvcConfigurer {
+    private static final String DRIVER = "org.postgresql.Driver";
     private static final String FILE_PROP_NAME = "application.properties";
     private static final String URL_PROP_NAME = "URL";
     private static final String USER_PROP_NAME = "USER";
@@ -31,16 +34,6 @@ public class SpringConfig implements WebMvcConfigurer {
     @Bean
     PropertiesReader propertiesReader() {
         return new PropertiesReader(FILE_PROP_NAME);
-    }
-
-    @Bean
-    ConnectionManager connectionManager(PropertiesReader propertiesReader) {
-
-        String url = propertiesReader.getProperty(URL_PROP_NAME);
-        String user = propertiesReader.getProperty(USER_PROP_NAME);
-        String password = propertiesReader.getProperty(PASSWORD_PROP_NAME);
-
-        return new ConnectionManager(url, user, password);
     }
 
     @Bean
@@ -65,5 +58,21 @@ public class SpringConfig implements WebMvcConfigurer {
         ThymeleafViewResolver resolver = new ThymeleafViewResolver();
         resolver.setTemplateEngine(templateEngine());
         registry.viewResolver(resolver);
+    }
+
+    @Bean
+    public SingleConnectionDataSource dataSource() {
+        SingleConnectionDataSource dataSource = new SingleConnectionDataSource();
+        dataSource.setDriverClassName(DRIVER);
+        dataSource.setUrl(propertiesReader().getProperty(URL_PROP_NAME));
+        dataSource.setUsername(propertiesReader().getProperty(USER_PROP_NAME));
+        dataSource.setPassword(propertiesReader().getProperty(PASSWORD_PROP_NAME));
+
+        return dataSource;
+    }
+
+    @Bean
+    public JdbcTemplate jdbcTemplate() {
+        return new JdbcTemplate(dataSource());
     }
 }
