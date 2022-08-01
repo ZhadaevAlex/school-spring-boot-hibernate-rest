@@ -7,7 +7,8 @@ import org.springframework.stereotype.Component;
 import ru.zhadaev.dao.entities.Student;
 import ru.zhadaev.dao.repository.impl.CourseDAO;
 import ru.zhadaev.dao.repository.impl.StudentDAO;
-import ru.zhadaev.exception.*;
+import ru.zhadaev.exception.NotFoundException;
+import ru.zhadaev.exception.NotValidStudentException;
 
 import java.util.List;
 
@@ -64,7 +65,7 @@ public class StudentService {
         return studentDAO.existsById(id);
     }
 
-    public long count() throws DAOException {
+    public long count() {
         return studentDAO.count();
     }
 

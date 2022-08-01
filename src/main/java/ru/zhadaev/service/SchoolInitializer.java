@@ -2,12 +2,10 @@ package ru.zhadaev.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.zhadaev.dao.TablesCreator;
 import ru.zhadaev.dao.entities.Course;
 import ru.zhadaev.dao.entities.Group;
 import ru.zhadaev.dao.entities.School;
 import ru.zhadaev.dao.entities.Student;
-import ru.zhadaev.exception.DAOException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,22 +15,17 @@ public class SchoolInitializer {
     private final GroupService groupService;
     private final CourseService courseService;
     private final StudentService studentService;
-    private final TablesCreator tablesCreator;
 
     @Autowired
     public SchoolInitializer(GroupService groupService,
                              CourseService courseService,
-                             StudentService studentService,
-                             TablesCreator tablesCreator) {
+                             StudentService studentService) {
         this.groupService = groupService;
         this.courseService = courseService;
         this.studentService = studentService;
-        this.tablesCreator = tablesCreator;
     }
 
     public void initialize(School school) {
-        createTables();
-
         List<Group> groupsDb = initializeGroups(school.getGroups());
         List<Course> coursesDb = initializeCourses(school.getCourses());
 
@@ -58,10 +51,6 @@ public class SchoolInitializer {
         List<Student> studentsDb = initializeStudents(school.getStudents());
 
         signStudentsOnCourses(studentsDb);
-    }
-
-    private void createTables() {
-        tablesCreator.createTables();
     }
 
     private List<Group> initializeGroups(List<Group> groups) {

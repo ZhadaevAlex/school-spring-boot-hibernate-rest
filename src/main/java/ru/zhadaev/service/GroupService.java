@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.zhadaev.dao.entities.Group;
 import ru.zhadaev.dao.repository.impl.GroupDAO;
-import ru.zhadaev.exception.DAOException;
 import ru.zhadaev.exception.NotFoundException;
 import ru.zhadaev.exception.NotValidGroupException;
 import ru.zhadaev.exception.NotValidStudentException;
@@ -64,7 +63,7 @@ public class GroupService {
         return groupDAO.existsById(id);
     }
 
-    public long count() throws DAOException {
+    public long count() {
         return groupDAO.count();
     }
 

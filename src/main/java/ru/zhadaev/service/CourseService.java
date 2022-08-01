@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.zhadaev.dao.entities.Course;
 import ru.zhadaev.dao.repository.impl.CourseDAO;
-import ru.zhadaev.exception.DAOException;
 import ru.zhadaev.exception.NotFoundException;
 import ru.zhadaev.exception.NotValidCourseException;
 import ru.zhadaev.exception.NotValidStudentException;
