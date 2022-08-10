@@ -7,14 +7,15 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import ru.zhadaev.config.ConnectionManager;
 import ru.zhadaev.dao.entities.Course;
 import ru.zhadaev.dao.entities.Group;
 import ru.zhadaev.dao.entities.Student;
 import ru.zhadaev.dao.repository.CrudRepository;
 import ru.zhadaev.exception.DAOException;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -85,7 +86,7 @@ public class StudentDAO implements CrudRepository<Student, Integer> {
                     }
                     return ps;
                 }, keyHolder);
-        int id = keyHolder.getKey().intValue();
+        int id = extractId(keyHolder);
         student.setId(id);
         return student;
     }
@@ -106,7 +107,7 @@ public class StudentDAO implements CrudRepository<Student, Integer> {
                     ps.setInt(4, student.getId());
                     return ps;
                 }, keyHolder);
-        int id = keyHolder.getKey().intValue();
+        int id = extractId(keyHolder);
         student.setId(id);
         return student;
     }
@@ -265,8 +266,9 @@ public class StudentDAO implements CrudRepository<Student, Integer> {
     }
 
     @Override
-    public long count()  {
-        return this.jdbcTemplate.queryForObject(COUNT_QUERY, Integer.class);
+    public long count() {
+        Integer count = jdbcTemplate.queryForObject(COUNT_QUERY, Integer.class);
+        return count == null ? 0 : count;
     }
 
     @Override
@@ -293,9 +295,8 @@ public class StudentDAO implements CrudRepository<Student, Integer> {
     }
 
     public boolean studentCourseIsExist(Integer studentId, Integer courseId) {
-        int rows = jdbcTemplate.queryForObject(FIND_BY_ID_STUDENT_COURSE_QUERY,
+        Integer rows = jdbcTemplate.queryForObject(FIND_BY_ID_STUDENT_COURSE_QUERY,
                 new Object[]{studentId, courseId}, new int[]{INTEGER, INTEGER}, Integer.class);
-
-        return rows > 0;
+        return rows != null && rows > 0;
     }
 }

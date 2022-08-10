@@ -8,9 +8,8 @@ import org.springframework.stereotype.Component;
 import ru.zhadaev.dao.entities.Group;
 import ru.zhadaev.dao.mappers.GroupMapper;
 import ru.zhadaev.dao.repository.CrudRepository;
-import ru.zhadaev.exception.DAOException;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,11 +40,11 @@ public class GroupDAO implements CrudRepository<Group, Integer> {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
                 connection -> {
-                    PreparedStatement ps = connection.prepareStatement(CREATE_QUERY, new String[] {GROUP_ID});
+                    PreparedStatement ps = connection.prepareStatement(CREATE_QUERY, new String[]{GROUP_ID});
                     ps.setString(1, group.getName());
                     return ps;
                 }, keyHolder);
-        int id = keyHolder.getKey().intValue();
+        int id = extractId(keyHolder);
         group.setId(id);
         return group;
     }
@@ -55,12 +54,12 @@ public class GroupDAO implements CrudRepository<Group, Integer> {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
                 connection -> {
-                    PreparedStatement ps = connection.prepareStatement(UPDATE_QUERY, new String[] {GROUP_ID});
+                    PreparedStatement ps = connection.prepareStatement(UPDATE_QUERY, new String[]{GROUP_ID});
                     ps.setString(1, group.getName());
                     ps.setInt(2, group.getId());
                     return ps;
                 }, keyHolder);
-        int id = keyHolder.getKey().intValue();
+        int id = extractId(keyHolder);
         group.setId(id);
         return group;
     }
@@ -88,7 +87,7 @@ public class GroupDAO implements CrudRepository<Group, Integer> {
     }
 
     @Override
-    public long count() throws DAOException {
+    public long count() {
         return this.jdbcTemplate.queryForObject(COUNT_QUERY, Integer.class);
     }
 

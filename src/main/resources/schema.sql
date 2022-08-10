@@ -1,3 +1,5 @@
+create schema if not exists school;
+
 drop table if exists school.students_courses;
 
 drop table if exists school.students;
