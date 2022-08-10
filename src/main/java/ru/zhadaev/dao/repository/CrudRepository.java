@@ -1,30 +1,36 @@
 package ru.zhadaev.dao.repository;
 
-import ru.zhadaev.exception.DAOException;
+import org.springframework.jdbc.support.KeyHolder;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Optional.ofNullable;
+
 public interface CrudRepository<T, ID> {
-        T save(T entity) throws SQLException;
+    T save(T entity);
 
-        T update(T entity) throws SQLException;
+    T update(T entity);
 
-        Optional<T> findById(ID id) throws DAOException;
+    Optional<T> findById(ID id);
 
-        Optional<List<T>> find(T entity) throws DAOException;
+    Optional<List<T>> find(T entity);
 
-        List<T> findAll() throws DAOException;
+    List<T> findAll();
 
-        boolean existsById(ID id) throws DAOException;
+    boolean existsById(ID id);
 
-        long count() throws DAOException;
+    long count();
 
-        void deleteById(ID id) throws DAOException;
+    void deleteById(ID id);
 
-        void delete(T entity) throws DAOException;
+    void delete(T entity);
 
-        void deleteAll() throws DAOException;
+    void deleteAll();
+
+    default int extractId(KeyHolder keyHolder) {
+        return ofNullable(keyHolder.getKey()).map(Number::intValue)
+                .orElseThrow(() -> new RuntimeException("ID-generation failed"));
+    }
 }
 
