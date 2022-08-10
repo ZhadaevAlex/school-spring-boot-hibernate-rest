@@ -1,12 +1,9 @@
 package ru.zhadaev.dao.entities;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.List;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class Student {
     private Integer id;
     private Group group;
