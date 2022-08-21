@@ -1,5 +1,6 @@
 package ru.zhadaev.dao.repository.impl;
 
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -29,10 +30,12 @@ public class GroupDAO implements CrudRepository<Group, Integer> {
     private static final Integer VARCHAR = 12;
 
     private final JdbcTemplate jdbcTemplate;
+    private final SessionFactory sessionFactory;
 
     @Autowired
-    public GroupDAO(JdbcTemplate jdbcTemplate) {
+    public GroupDAO(JdbcTemplate jdbcTemplate, SessionFactory sessionFactory) {
         this.jdbcTemplate = jdbcTemplate;
+        this.sessionFactory = sessionFactory;
     }
 
     @Override
