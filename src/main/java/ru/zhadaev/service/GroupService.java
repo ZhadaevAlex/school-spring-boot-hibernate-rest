@@ -76,8 +76,6 @@ public class GroupService {
             logger.error("Group delete error. Group not found by id");
             throw new NotFoundException("Group delete error. Group not found by id");
         }
-
-        groupDAO.deleteById(id);
     }
 
     public void delete(Group group) {

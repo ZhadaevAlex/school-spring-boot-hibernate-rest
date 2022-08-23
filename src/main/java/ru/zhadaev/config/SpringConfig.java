@@ -5,6 +5,7 @@ import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import ru.zhadaev.dao.entities.Course;
@@ -20,13 +21,20 @@ public class SpringConfig {
     private final String USERNAME = "hibernate.connection.username";
     private final String PASSWORD = "hibernate.connection.password";
 
+    private final HibernateProperties hibernateProperties;
+
+    @Autowired
+    public SpringConfig(HibernateProperties hibernateProperties) {
+        this.hibernateProperties = hibernateProperties;
+    }
+
     @Bean
     public SessionFactory createSessionFactory() {
         Map<String, Object> settings = new HashMap<>();
-        settings.put(DRIVER_CLASS, new HibernateProperties().getDriverClass());
-        settings.put(URL, new HibernateProperties().getUrl());
-        settings.put(USERNAME, new HibernateProperties().getUsername());
-        settings.put(PASSWORD, new HibernateProperties().getPassword());
+        settings.put(DRIVER_CLASS, hibernateProperties.getDriverClass());
+        settings.put(URL, hibernateProperties.getUrl());
+        settings.put(USERNAME, hibernateProperties.getUsername());
+        settings.put(PASSWORD, hibernateProperties.getPassword());
 
         StandardServiceRegistry standardServiceRegistry = new StandardServiceRegistryBuilder()
                 .applySettings(settings)
@@ -37,9 +45,9 @@ public class SpringConfig {
         metadataSources.addAnnotatedClass(Course.class);
         metadataSources.addAnnotatedClass(Student.class);
 
-        Metadata metadata = metadataSources.buildMetadata();
+        Metadata metadata = metadataSources.getMetadataBuilder().build();
 
-        SessionFactory sessionFactory = metadata.buildSessionFactory();
+        SessionFactory sessionFactory = metadata.getSessionFactoryBuilder().build();
 
         return sessionFactory;
     }

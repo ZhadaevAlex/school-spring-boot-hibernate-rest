@@ -77,7 +77,7 @@ public class CourseService {
             throw new NotFoundException("Course delete error. Course not found by id");
         }
 
-        courseDAO.deleteById(id);
+//        courseDAO.deleteById(id);
     }
 
     public void delete(Course course) {
