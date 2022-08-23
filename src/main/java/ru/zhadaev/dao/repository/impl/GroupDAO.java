@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.zhadaev.dao.entities.Group;
 import ru.zhadaev.dao.repository.CrudRepository;
-import ru.zhadaev.service.SchoolManager;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
@@ -23,7 +22,7 @@ import java.util.Optional;
 
 @Component
 public class GroupDAO implements CrudRepository<Group, Integer> {
-    private static final Logger logger = LoggerFactory.getLogger(SchoolManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(GroupDAO.class);
     private final SessionFactory sessionFactory;
 
     @Autowired
@@ -77,7 +76,7 @@ public class GroupDAO implements CrudRepository<Group, Integer> {
 
     @Override
     public Optional<Group> findById(Integer id) {
-        Optional<Group> groupOpt = null;
+        Optional<Group> groupOpt;
         Session session = null;
 
         try {
@@ -96,7 +95,7 @@ public class GroupDAO implements CrudRepository<Group, Integer> {
     @Override
     public Optional<List<Group>> find(Group group) {
         Session session = null;
-        Optional<List<Group>> groupsOpt = null;
+        Optional<List<Group>> groupsOpt;
 
         try {
             session = sessionFactory.openSession();
@@ -119,7 +118,7 @@ public class GroupDAO implements CrudRepository<Group, Integer> {
     @Override
     public List<Group> findAll() {
         Session session = null;
-        List<Group> groups = null;
+        List<Group> groups;
 
         try {
             session = sessionFactory.openSession();
@@ -149,7 +148,7 @@ public class GroupDAO implements CrudRepository<Group, Integer> {
     @Override
     public long count() {
         Session session = null;
-        Long result = null;
+        Long result;
 
         try {
             session = sessionFactory.openSession();

@@ -16,10 +16,10 @@ import java.util.Map;
 
 @Configuration
 public class SpringConfig {
-    private final String DRIVER_CLASS = "hibernate.connection.driver_class";
-    private final String URL = "hibernate.connection.url";
-    private final String USERNAME = "hibernate.connection.username";
-    private final String PASSWORD = "hibernate.connection.password";
+    private static final String DRIVER_CLASS = "hibernate.connection.driver_class";
+    private static final String URL = "hibernate.connection.url";
+    private static final String USERNAME = "hibernate.connection.username";
+    private static final String PASSWORD = "hibernate.connection.password";
 
     private final HibernateProperties hibernateProperties;
 
@@ -47,8 +47,6 @@ public class SpringConfig {
 
         Metadata metadata = metadataSources.getMetadataBuilder().build();
 
-        SessionFactory sessionFactory = metadata.getSessionFactoryBuilder().build();
-
-        return sessionFactory;
+        return metadata.getSessionFactoryBuilder().build();
     }
 }
