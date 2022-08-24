@@ -174,7 +174,8 @@ public class GroupDAO implements CrudRepository<Group, Integer> {
             session = sessionFactory.openSession();
             transaction = session.getTransaction();
             transaction.begin();
-            Group group = session.get(Group.class, id);
+            Group group = new Group();
+            group.setId(id);
             session.delete(group);
             transaction.commit();
         } catch (Exception ex) {
