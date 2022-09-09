@@ -75,7 +75,7 @@ public class CourseDAO implements CrudRepository<Course, Integer> {
     }
 
     @Override
-    public Optional<List<Course>> find(Course course) {
+    public Optional<List<Course>> findLike(Course course) {
         return Optional.of(jdbcTemplate.query(FIND_QUERY, new Object[]{course.getName()}, new int[]{VARCHAR}, new CourseMapper()));
     }
 

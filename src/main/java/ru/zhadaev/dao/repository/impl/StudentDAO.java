@@ -154,7 +154,7 @@ public class StudentDAO implements CrudRepository<Student, Integer> {
     }
 
     @Override
-    public Optional<List<Student>> find(Student student) {
+    public Optional<List<Student>> findLike(Student student) {
         return Optional.ofNullable(jdbcTemplate.query(FIND_QUERY, new Object[]{student.getFirstName(), student.getLastName()},
                 new int[]{VARCHAR, VARCHAR}, rs -> {
                     List<Student> studentsDb = new ArrayList<>();

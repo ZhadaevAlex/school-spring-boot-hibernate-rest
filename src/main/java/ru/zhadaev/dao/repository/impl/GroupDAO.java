@@ -1,10 +1,8 @@
 package ru.zhadaev.dao.repository.impl;
 
-import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.criterion.Projections;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,10 +11,6 @@ import org.springframework.stereotype.Component;
 import ru.zhadaev.dao.entities.Group;
 import ru.zhadaev.dao.repository.CrudRepository;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import java.util.List;
 import java.util.Optional;
 
@@ -93,18 +87,15 @@ public class GroupDAO implements CrudRepository<Group, Integer> {
     }
 
     @Override
-    public Optional<List<Group>> find(Group group) {
+    public Optional<List<Group>> findLike(Group group) {
         Session session = null;
         Optional<List<Group>> groupsOpt;
 
         try {
             session = sessionFactory.openSession();
-            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-            CriteriaQuery<Group> criteriaQuery = criteriaBuilder.createQuery(Group.class);
-            Root<Group> root = criteriaQuery.from(Group.class);
-            criteriaQuery.select(root).where(criteriaBuilder.like(root.get("name"), group.getName()));
-            Query<Group> query = session.createQuery(criteriaQuery);
-            groupsOpt = Optional.of(query.getResultList());
+            Query<Group> query = session.createQuery("from Group where name = :name", Group.class);
+            query.setParameter("name", group.getName());
+            groupsOpt = Optional.of(query.list());
         } catch (Exception ex) {
             logger.error("Find group error");
             throw ex;
@@ -122,12 +113,7 @@ public class GroupDAO implements CrudRepository<Group, Integer> {
 
         try {
             session = sessionFactory.openSession();
-            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-            CriteriaQuery<Group> criteriaQuery = criteriaBuilder.createQuery(Group.class);
-            Root<Group> root = criteriaQuery.from(Group.class);
-            criteriaQuery.select(root);
-            Query<Group> query = session.createQuery(criteriaQuery);
-            groups = query.getResultList();
+            groups = session.createQuery("from Group", Group.class).list();
         } catch (Exception ex) {
             logger.error("Find all groups error");
             throw ex;
@@ -152,9 +138,7 @@ public class GroupDAO implements CrudRepository<Group, Integer> {
 
         try {
             session = sessionFactory.openSession();
-            Criteria criteria = session.createCriteria(Group.class);
-            criteria.setProjection(Projections.rowCount());
-            result = (Long) criteria.uniqueResult();
+            result = (Long) session.createQuery("select count(*) from Group").getSingleResult();
         } catch (Exception ex) {
             logger.error("Error counting rows");
             throw ex;
@@ -189,26 +173,7 @@ public class GroupDAO implements CrudRepository<Group, Integer> {
 
     @Override
     public void delete(Group group) {
-        Session session = null;
-        Transaction transaction = null;
-
-        try {
-            session = sessionFactory.openSession();
-            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-            CriteriaDelete<Group> criteriaDelete = criteriaBuilder.createCriteriaDelete(Group.class);
-            Root<Group> root = criteriaDelete.from(Group.class);
-            criteriaDelete.where(criteriaBuilder.like(root.get("name"), group.getName()));
-            transaction = session.getTransaction();
-            transaction.begin();
-            session.createQuery(criteriaDelete).executeUpdate();
-            transaction.commit();
-        } catch (Exception ex) {
-            transactionRollback(transaction);
-            logger.error("Delete group error");
-            throw ex;
-        } finally {
-            sessionClose(session);
-        }
+        deleteById(group.getId());
     }
 
     @Override
@@ -218,12 +183,10 @@ public class GroupDAO implements CrudRepository<Group, Integer> {
 
         try {
             session = sessionFactory.openSession();
-            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-            CriteriaDelete<Group> criteriaDelete = criteriaBuilder.createCriteriaDelete(Group.class);
-            criteriaDelete.from(Group.class);
+            Query<Group> query = session.createQuery("delete from Group", Group.class);
             transaction = session.getTransaction();
             transaction.begin();
-            session.createQuery(criteriaDelete).executeUpdate();
+            query.executeUpdate();
             transaction.commit();
         } catch (Exception ex) {
             transactionRollback(transaction);

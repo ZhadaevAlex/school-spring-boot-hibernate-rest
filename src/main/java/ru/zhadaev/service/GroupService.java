@@ -44,7 +44,7 @@ public class GroupService {
     public List<Group> find(Group group) {
         requiredNotNull(group);
 
-        List<Group> groupsDb = groupDAO.find(group).get();
+        List<Group> groupsDb = groupDAO.findLike(group).get();
 
         if (groupsDb.isEmpty()) {
             throw new NotFoundException("Groups not found");
