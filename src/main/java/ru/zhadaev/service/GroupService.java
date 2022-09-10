@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import ru.zhadaev.dao.entities.Group;
 import ru.zhadaev.dao.repository.impl.GroupDAO;
 import ru.zhadaev.exception.NotFoundException;
@@ -23,8 +24,13 @@ public class GroupService {
         this.groupDAO = groupDAO;
     }
 
+    @Transactional
     public Group save(Group group) {
         requiredNotNull(group);
+        Group group1 = new Group(null, "group1");
+        Group group2 = new Group(null, "group2");
+        groupDAO.save(group1);
+        groupDAO.save(group2);
 
         return groupDAO.save(group);
     }

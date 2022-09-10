@@ -27,16 +27,17 @@ public class GroupDAO implements CrudRepository<Group, Integer> {
     @Override
     public Group save(Group group) {
         Session session = null;
-        Transaction transaction = null;
+        //Transaction transaction = null;
 
         try {
             session = sessionFactory.openSession();
-            transaction = session.getTransaction();
-            transaction.begin();
+            //session = sessionFactory.getCurrentSession();
+            //transaction = session.getTransaction();
+            //transaction.begin();
             session.save(group);
-            transaction.commit();
+            //transaction.commit();
         } catch (Exception ex) {
-            transactionRollback(transaction);
+            //transactionRollback(transaction);
             logger.error("Save group error");
             throw ex;
         } finally {
