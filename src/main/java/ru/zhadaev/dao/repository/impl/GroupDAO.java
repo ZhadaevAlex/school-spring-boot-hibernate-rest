@@ -26,24 +26,25 @@ public class GroupDAO implements CrudRepository<Group, Integer> {
 
     @Override
     public Group save(Group group) {
-        Session session = null;
-        //Transaction transaction = null;
-
-        try {
-            session = sessionFactory.openSession();
-            //session = sessionFactory.getCurrentSession();
-            //transaction = session.getTransaction();
-            //transaction.begin();
-            session.save(group);
-            //transaction.commit();
-        } catch (Exception ex) {
-            //transactionRollback(transaction);
-            logger.error("Save group error");
-            throw ex;
-        } finally {
-            sessionClose(session);
-        }
-
+        getCurrentSession().save(group);
+        //hibernateTemplate.save(group);
+//        Session session = null;
+//        Transaction transaction = null;
+//
+//        try {
+//            session = sessionFactory.openSession();
+//            transaction = session.getTransaction();
+//            transaction.begin();
+//            session.save(group);
+//            transaction.commit();
+//        } catch (Exception ex) {
+//            transactionRollback(transaction);
+//            logger.error("Save group error");
+//            throw ex;
+//        } finally {
+//            sessionClose(session);
+//        }
+//
         return group;
     }
 
@@ -208,5 +209,13 @@ public class GroupDAO implements CrudRepository<Group, Integer> {
         if (session != null) {
             session.close();
         }
+    }
+
+    private void exc() {
+        throw new RuntimeException();
+    }
+
+    protected final Session getCurrentSession(){
+        return sessionFactory.getCurrentSession();
     }
 }
