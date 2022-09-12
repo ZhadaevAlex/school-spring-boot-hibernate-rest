@@ -1,4 +1,4 @@
-package ru.zhadaev.config;
+package ru.zhadaev.config.properties;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;

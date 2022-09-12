@@ -1,11 +1,12 @@
 package ru.zhadaev.util.creation;
 
 import ru.zhadaev.dao.entities.Student;
+import ru.zhadaev.service.SchoolInitData;
 
 import java.util.*;
 
-public class StudentsCreator {
-    private Random rnd;
+public class StudentsCreator extends SchoolInitData {
+    private final Random random = new Random();
 
     public List<Student> createStudents(int numberStudents, List<String> firstNames, List<String> lastNames) {
         requiredNotNull(firstNames);
@@ -15,10 +16,9 @@ public class StudentsCreator {
         requiredEqualityNumberRows(firstNames, lastNames);
 
         List<Student> students = new ArrayList<>();
-        rnd = new Random();
         for (int i = 0; i < numberStudents; i++) {
-            String firstName = firstNames.get(rnd.nextInt(lastNames.size()));
-            String lastName = lastNames.get(rnd.nextInt(lastNames.size()));
+            String firstName = firstNames.get(random.nextInt(lastNames.size()));
+            String lastName = lastNames.get(random.nextInt(lastNames.size()));
             Student student = new Student();
             student.setFirstName(firstName);
             student.setLastName(lastName);

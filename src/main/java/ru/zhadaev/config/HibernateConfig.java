@@ -8,12 +8,13 @@ import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.transaction.TransactionManager;
+import ru.zhadaev.config.properties.HibernateProperties;
 
 import javax.sql.DataSource;
 
 @Configuration
 @RequiredArgsConstructor
-public class SpringConfig {
+public class HibernateConfig {
     private final HibernateProperties properties;
 
     @Bean

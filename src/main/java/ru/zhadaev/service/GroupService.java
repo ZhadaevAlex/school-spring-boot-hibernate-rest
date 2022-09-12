@@ -14,8 +14,8 @@ import ru.zhadaev.exception.NotValidStudentException;
 import java.util.List;
 
 @Service
-@Transactional(rollbackFor=Exception.class)
 @RequiredArgsConstructor
+@Transactional(rollbackFor = Exception.class)
 public class GroupService {
     private static final Logger logger = LoggerFactory.getLogger(GroupService.class);
 
@@ -23,31 +23,26 @@ public class GroupService {
 
     public Group save(Group group) {
         requiredNotNull(group);
-
         return groupDAO.save(group);
     }
 
     public Group update(Group group) {
         requiredNotNull(group);
-
         return groupDAO.update(group);
     }
 
     public Group findById(Integer id) {
         requiredIdIsValid(id);
-
-        return groupDAO.findById(id).orElseThrow(() -> new NotFoundException("Group not found"));
+        return groupDAO.findById(id)
+                .orElseThrow(() -> new NotFoundException("Group not found"));
     }
 
     public List<Group> find(Group group) {
         requiredNotNull(group);
-
         List<Group> groupsDb = groupDAO.findLike(group);
-
         if (groupsDb.isEmpty()) {
             throw new NotFoundException("Groups not found");
         }
-
         return groupsDb;
     }
 
@@ -57,7 +52,6 @@ public class GroupService {
 
     public boolean existsById(Integer id) {
         requiredIdIsValid(id);
-
         return groupDAO.existsById(id);
     }
 
@@ -67,7 +61,6 @@ public class GroupService {
 
     public void deleteById(Integer id) {
         requiredIdIsValid(id);
-
         if (groupDAO.existsById(id)) {
             groupDAO.deleteById(id);
         } else {
@@ -78,7 +71,6 @@ public class GroupService {
 
     public void delete(Group group) {
         requiredNotNull(group);
-
         groupDAO.delete(group);
     }
 
