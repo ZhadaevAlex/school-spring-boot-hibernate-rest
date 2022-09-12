@@ -44,7 +44,7 @@ public class CourseService {
     public List<Course> find(Course course) {
         requiredNotNull(course);
 
-        List<Course> courseDb = courseDAO.findLike(course).get();
+        List<Course> courseDb = courseDAO.findLike(course);
 
         if (courseDb.isEmpty()) {
             throw new NotFoundException("Courses not found");

@@ -46,7 +46,7 @@ public class StudentService {
     public List<Student> find(Student student) {
         requiredNotNull(student);
 
-        List<Student> studentDb = studentDAO.findLike(student).get();
+        List<Student> studentDb = studentDAO.findLike(student);
 
         if (studentDb.isEmpty()) {
             throw new NotFoundException("Students not found");

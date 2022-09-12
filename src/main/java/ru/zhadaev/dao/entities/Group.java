@@ -1,16 +1,12 @@
 package ru.zhadaev.dao.entities;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+@Data
 @Entity
 @Table(schema = "school", name = "groups")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

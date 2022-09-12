@@ -1,9 +1,8 @@
 package ru.zhadaev.service;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.zhadaev.dao.entities.Group;
@@ -14,19 +13,14 @@ import ru.zhadaev.exception.NotValidStudentException;
 
 import java.util.List;
 
-@Component
 @Service
+@Transactional(rollbackFor=Exception.class)
+@RequiredArgsConstructor
 public class GroupService {
     private static final Logger logger = LoggerFactory.getLogger(GroupService.class);
 
     private final GroupDAO groupDAO;
 
-    @Autowired
-    public GroupService(GroupDAO groupDAO) {
-        this.groupDAO = groupDAO;
-    }
-
-    @Transactional
     public Group save(Group group) {
         requiredNotNull(group);
 
@@ -48,7 +42,7 @@ public class GroupService {
     public List<Group> find(Group group) {
         requiredNotNull(group);
 
-        List<Group> groupsDb = groupDAO.findLike(group).get();
+        List<Group> groupsDb = groupDAO.findLike(group);
 
         if (groupsDb.isEmpty()) {
             throw new NotFoundException("Groups not found");

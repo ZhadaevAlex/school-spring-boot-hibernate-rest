@@ -1,46 +1,44 @@
 package ru.zhadaev.config;
 
-import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.hibernate.SessionFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
-import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionManager;
 
 import javax.sql.DataSource;
 
 @Configuration
+@RequiredArgsConstructor
 public class SpringConfig {
-    private final DataSourceProperties dataSourceProperties;
-
-    @Autowired
-    public SpringConfig(DataSourceProperties dataSourceProperties) {
-        this.dataSourceProperties = dataSourceProperties;
-    }
+    private final HibernateProperties properties;
 
     @Bean
     public DataSource dataSource() {
-        BasicDataSource dataSource = new BasicDataSource();
-        dataSource.setDriverClassName(dataSourceProperties.getDriverClass());
-        dataSource.setUrl(dataSourceProperties.getUrl());
-        dataSource.setUsername(dataSourceProperties.getUsername());
-        dataSource.setPassword(dataSourceProperties.getPassword());
+        SingleConnectionDataSource dataSource = new SingleConnectionDataSource(properties.getUrl(), true);
+        dataSource.setDriverClassName(properties.getDriverClass());
+        dataSource.setUsername(properties.getUsername());
+        dataSource.setPassword(properties.getPassword());
         return dataSource;
     }
 
     @Bean
-    public LocalSessionFactoryBean sessionFactory() {
+    public LocalSessionFactoryBean sessionFactory(DataSource dataSource) {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
-        sessionFactory.setDataSource(dataSource());
-        sessionFactory.setPackagesToScan("ru.zhadaev");
+        sessionFactory.setDataSource(dataSource);
+        sessionFactory.setPackagesToScan("ru.zhadaev.dao.entities");
+        sessionFactory.setHibernateProperties(properties.getHibernateProperties());
         return sessionFactory;
     }
 
+
     @Bean
-    public PlatformTransactionManager hibernateTransactionManager() {
+    public TransactionManager hibernateTransactionManager(SessionFactory sessionFactory) {
         HibernateTransactionManager transactionManager = new HibernateTransactionManager();
-        transactionManager.setSessionFactory(sessionFactory().getObject());
+        transactionManager.setSessionFactory(sessionFactory);
         return transactionManager;
     }
 }

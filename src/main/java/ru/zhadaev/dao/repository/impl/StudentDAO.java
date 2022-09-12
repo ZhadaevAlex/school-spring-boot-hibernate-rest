@@ -154,8 +154,8 @@ public class StudentDAO implements CrudRepository<Student, Integer> {
     }
 
     @Override
-    public Optional<List<Student>> findLike(Student student) {
-        return Optional.ofNullable(jdbcTemplate.query(FIND_QUERY, new Object[]{student.getFirstName(), student.getLastName()},
+    public List<Student> findLike(Student student) {
+        return jdbcTemplate.query(FIND_QUERY, new Object[]{student.getFirstName(), student.getLastName()},
                 new int[]{VARCHAR, VARCHAR}, rs -> {
                     List<Student> studentsDb = new ArrayList<>();
                     try {
@@ -201,9 +201,8 @@ public class StudentDAO implements CrudRepository<Student, Integer> {
                         logger.error(e.getLocalizedMessage());
                         throw new DAOException("The students cannot be found in students", e);
                     }
-
                     return studentsDb;
-                }));
+                });
     }
 
     @Override

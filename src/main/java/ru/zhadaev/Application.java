@@ -6,8 +6,8 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 @SpringBootApplication
 @ConfigurationPropertiesScan("ru.zhadaev")
-public class SqlJdbcSchoolApplication {
+public class Application {
     public static void main(String[] args) {
-        SpringApplication.run(SqlJdbcSchoolApplication.class, args);
+        SpringApplication.run(Application.class, args);
     }
 }
