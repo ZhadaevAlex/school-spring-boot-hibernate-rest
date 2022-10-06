@@ -8,17 +8,17 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.Properties;
 
-@Data
 @Configuration
-@RequiredArgsConstructor
 @ConfigurationProperties(prefix = "spring.jpa.properties.hibernate.connection")
+@Data
+@RequiredArgsConstructor
 public class HibernateProperties {
     private final JpaProperties properties;
 
+    private String driverClass;
     private String url;
     private String username;
     private String password;
-    private String driverClass;
 
     public Properties getHibernateProperties(){
         Properties props = new Properties();

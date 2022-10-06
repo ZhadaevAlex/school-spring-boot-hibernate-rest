@@ -4,8 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import ru.zhadaev.dao.entities.Group;
 import ru.zhadaev.dao.repository.CrudRepository;
@@ -18,7 +16,6 @@ import static java.util.Optional.ofNullable;
 @Repository
 @RequiredArgsConstructor
 public class GroupDAO implements CrudRepository<Group, Integer> {
-    private static final Logger logger = LoggerFactory.getLogger(GroupDAO.class);
     private final SessionFactory sessionFactory;
 
     @Override
@@ -55,8 +52,7 @@ public class GroupDAO implements CrudRepository<Group, Integer> {
 
     @Override
     public boolean existsById(Integer id) {
-        Optional<Group> optGroup = this.findById(id);
-        return optGroup.isPresent();
+        return this.findById(id).isPresent();
     }
 
     @Override
@@ -66,7 +62,7 @@ public class GroupDAO implements CrudRepository<Group, Integer> {
 
     @Override
     public void deleteById(Integer id) {
-        Query query = getSession().createQuery("delete from Group where id = :id");
+        Query query = getSession().createQuery("delete from Group where id =:id");
         query.setParameter("id", id);
         query.executeUpdate();
     }

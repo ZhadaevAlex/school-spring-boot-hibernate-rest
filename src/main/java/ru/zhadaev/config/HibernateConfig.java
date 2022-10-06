@@ -15,14 +15,14 @@ import javax.sql.DataSource;
 @Configuration
 @RequiredArgsConstructor
 public class HibernateConfig {
-    private final HibernateProperties properties;
+    private final HibernateProperties hibernateProperties;
 
     @Bean
     public DataSource dataSource() {
-        SingleConnectionDataSource dataSource = new SingleConnectionDataSource(properties.getUrl(), true);
-        dataSource.setDriverClassName(properties.getDriverClass());
-        dataSource.setUsername(properties.getUsername());
-        dataSource.setPassword(properties.getPassword());
+        SingleConnectionDataSource dataSource = new SingleConnectionDataSource(hibernateProperties.getUrl(), true);
+        dataSource.setDriverClassName(hibernateProperties.getDriverClass());
+        dataSource.setUsername(hibernateProperties.getUsername());
+        dataSource.setPassword(hibernateProperties.getPassword());
         return dataSource;
     }
 
@@ -31,10 +31,9 @@ public class HibernateConfig {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
         sessionFactory.setDataSource(dataSource);
         sessionFactory.setPackagesToScan("ru.zhadaev.dao.entities");
-        sessionFactory.setHibernateProperties(properties.getHibernateProperties());
+        sessionFactory.setHibernateProperties(hibernateProperties.getHibernateProperties());
         return sessionFactory;
     }
-
 
     @Bean
     public TransactionManager hibernateTransactionManager(SessionFactory sessionFactory) {

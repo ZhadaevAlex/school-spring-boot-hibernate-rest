@@ -1,12 +1,15 @@
 package ru.zhadaev.util.creation;
 
+import lombok.RequiredArgsConstructor;
 import ru.zhadaev.dao.entities.Student;
-import ru.zhadaev.service.SchoolInitData;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
-public class StudentsCreator extends SchoolInitData {
-    private final Random random = new Random();
+@RequiredArgsConstructor
+public class StudentsCreator {
+    private final Random random;
 
     public List<Student> createStudents(int numberStudents, List<String> firstNames, List<String> lastNames) {
         requiredNotNull(firstNames);

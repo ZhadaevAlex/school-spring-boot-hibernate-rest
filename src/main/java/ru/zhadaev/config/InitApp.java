@@ -12,23 +12,20 @@ import javax.annotation.PostConstruct;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class InitApp extends StudentsCreator {
+public class InitApp {
     private final SchoolInitializer schoolInitializer;
+    private final SchoolInitData schoolInitData;
+    private final StudentsCreator studentCreator;
+    private final SchoolCreator schoolCreator;
 
     @PostConstruct
     public void initApp() {
-        List<Student> students = createStudents(
+        List<Student> students = studentCreator.createStudents(
                 SchoolInitData.NUMBER_STUDENTS,
-                getFirstNames(),
-                getLastNames());
+                schoolInitData.getFirstNames(),
+                schoolInitData.getLastNames());
 
-        School school = new SchoolCreator(
-                SchoolInitData.NUMBER_GROUPS,
-                SchoolInitData.MIN_STUDENTS_IN_GROUP,
-                SchoolInitData.MAX_STUDENTS_IN_GROUP,
-                getSubjects(),
-                SchoolInitData.MIN_COURSES,
-                SchoolInitData.MAX_COURSES).createSchool(students);
+        School school = schoolCreator.createSchool(students);
 
         schoolInitializer.initialize(school);
     }
