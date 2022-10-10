@@ -1,12 +1,14 @@
 package ru.zhadaev.dao.repository.impl;
 
+import lombok.RequiredArgsConstructor;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import ru.zhadaev.dao.entities.Course;
 import ru.zhadaev.dao.entities.Group;
 import ru.zhadaev.dao.entities.Student;
@@ -16,11 +18,10 @@ import ru.zhadaev.exception.DAOException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
-@Component
+@Repository
+@RequiredArgsConstructor
 public class StudentDAO implements CrudRepository<Student, Integer> {
     private static final Logger logger = LoggerFactory.getLogger(StudentDAO.class);
     private static final String STUDENT_ID = "student_id";
@@ -65,14 +66,11 @@ public class StudentDAO implements CrudRepository<Student, Integer> {
     private static final Integer VARCHAR = 12;
 
     private final JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    public StudentDAO(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    private final SessionFactory sessionFactory;
 
     @Override
     public Student save(Student student) {
+//        getSession().save(student);
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
                 connection -> {
@@ -93,6 +91,8 @@ public class StudentDAO implements CrudRepository<Student, Integer> {
 
     @Override
     public Student update(Student student) {
+//        getSession().persist(student);
+//        return student;
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
                 connection -> {
@@ -116,7 +116,7 @@ public class StudentDAO implements CrudRepository<Student, Integer> {
     public Optional<Student> findById(Integer id) {
         return Optional.ofNullable(jdbcTemplate.query(FIND_BY_ID_QUERY, new Object[]{id}, new int[]{INTEGER}, rs -> {
             Student studentDb = null;
-            List<Course> courses = new ArrayList<>();
+            Set<Course> courses = new HashSet<>();
             boolean firstLine = false;
             try {
                 while (rs.next()) {
@@ -160,7 +160,7 @@ public class StudentDAO implements CrudRepository<Student, Integer> {
                     List<Student> studentsDb = new ArrayList<>();
                     try {
                         int prevId = 0;
-                        List<Course> courses = new ArrayList<>();
+                        Set<Course> courses = new HashSet<>();
                         Student studentDb = null;
                         while (rs.next()) {
                             int id = rs.getInt(STUDENT_ID);
@@ -178,7 +178,7 @@ public class StudentDAO implements CrudRepository<Student, Integer> {
                                 group.setId(rs.getInt(GROUP_ID));
                                 group.setName(rs.getString(GROUP_NAME));
                                 studentDb.setGroup(group);
-                                courses = new ArrayList<>();
+                                courses = new HashSet<>();
                             }
 
                             Course course = new Course();
@@ -211,7 +211,7 @@ public class StudentDAO implements CrudRepository<Student, Integer> {
             List<Student> studentsDb = new ArrayList<>();
             try {
                 int prevId = 0;
-                List<Course> courses = new ArrayList<>();
+                Set<Course> courses = new HashSet<>();
                 Student studentDb = null;
                 while (rs.next()) {
                     int id = rs.getInt(STUDENT_ID);
@@ -229,7 +229,7 @@ public class StudentDAO implements CrudRepository<Student, Integer> {
                         group.setId(rs.getInt(GROUP_ID));
                         group.setName(rs.getString(GROUP_NAME));
                         studentDb.setGroup(group);
-                        courses = new ArrayList<>();
+                        courses = new HashSet<>();
                     }
 
                     Course course = new Course();
@@ -297,5 +297,9 @@ public class StudentDAO implements CrudRepository<Student, Integer> {
         Integer rows = jdbcTemplate.queryForObject(FIND_BY_ID_STUDENT_COURSE_QUERY,
                 new Object[]{studentId, courseId}, new int[]{INTEGER, INTEGER}, Integer.class);
         return rows != null && rows > 0;
+    }
+
+    private Session getSession() {
+        return sessionFactory.isClosed() ? sessionFactory.openSession() : sessionFactory.getCurrentSession();
     }
 }

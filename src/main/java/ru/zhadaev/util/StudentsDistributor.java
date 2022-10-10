@@ -6,11 +6,7 @@ import ru.zhadaev.dao.entities.Group;
 import ru.zhadaev.dao.entities.Student;
 
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Collection;
+import java.util.*;
 
 @RequiredArgsConstructor
 public class StudentsDistributor {
@@ -31,7 +27,7 @@ public class StudentsDistributor {
                 countCourses = coursesForStudents.size();
             }
 
-            student.setCourses(new ArrayList<>(coursesForStudents));
+            student.setCourses(new HashSet<>(coursesForStudents));
         }
 
         return students;

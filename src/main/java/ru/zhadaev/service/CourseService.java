@@ -1,9 +1,10 @@
 package ru.zhadaev.service;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.zhadaev.dao.entities.Course;
 import ru.zhadaev.dao.repository.impl.CourseDAO;
 import ru.zhadaev.exception.NotFoundException;
@@ -12,38 +13,32 @@ import ru.zhadaev.exception.NotValidStudentException;
 
 import java.util.List;
 
-@Component
+@Service
+@RequiredArgsConstructor
+@Transactional(rollbackFor = Exception.class)
 public class CourseService {
     private static final Logger logger = LoggerFactory.getLogger(CourseService.class);
 
     private final CourseDAO courseDAO;
 
-    @Autowired
-    public CourseService(CourseDAO courseDAO) {
-        this.courseDAO = courseDAO;
-    }
-
     public Course save(Course course) {
         requiredNotNull(course);
-
         return courseDAO.save(course);
     }
 
     public Course update(Course course) {
         requiredNotNull(course);
-
         return courseDAO.update(course);
     }
 
     public Course findById(Integer id) {
         requiredIdIsValid(id);
-
-        return courseDAO.findById(id).orElseThrow(() -> new NotFoundException("Course not found"));
+        return courseDAO.findById(id)
+                .orElseThrow(() -> new NotFoundException("Course not found"));
     }
 
     public List<Course> find(Course course) {
         requiredNotNull(course);
-
         List<Course> courseDb = courseDAO.findLike(course);
 
         if (courseDb.isEmpty()) {
@@ -59,7 +54,6 @@ public class CourseService {
 
     public boolean existsById(Integer id) {
         requiredIdIsValid(id);
-
         return courseDAO.existsById(id);
     }
 
@@ -82,7 +76,6 @@ public class CourseService {
 
     public void delete(Course course) {
         requiredNotNull(course);
-
         courseDAO.delete(course);
     }
 

@@ -1,11 +1,10 @@
 package ru.zhadaev.service;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.zhadaev.dao.entities.Student;
-import ru.zhadaev.dao.repository.impl.CourseDAO;
 import ru.zhadaev.dao.repository.impl.StudentDAO;
 import ru.zhadaev.exception.NotFoundException;
 import ru.zhadaev.exception.NotValidStudentException;
@@ -13,21 +12,16 @@ import ru.zhadaev.exception.NotValidStudentException;
 import java.util.List;
 
 @Component
+//@Transactional(rollbackFor = Exception.class)
+@RequiredArgsConstructor
 public class StudentService {
     private static final Logger logger = LoggerFactory.getLogger(StudentService.class);
 
-    private final CourseDAO courseDAO;
     private final StudentDAO studentDAO;
-
-    @Autowired
-    public StudentService(CourseDAO courseDAO, StudentDAO studentDAO) {
-        this.courseDAO = courseDAO;
-        this.studentDAO = studentDAO;
-    }
+    private final CourseService courseService;
 
     public Student save(Student student) {
         requiredNotNull(student);
-
         return studentDAO.save(student);
     }
 
@@ -137,8 +131,9 @@ public class StudentService {
             throw new NotFoundException("The student's was not found in the database");
         }
     }
+
     private void requiredCourseIsExist(Integer id) {
-        if (!courseDAO.existsById(id)) {
+        if (!courseService.existsById(id)) {
             logger.error("The student's course was not found in the database");
             throw new NotFoundException("The student's course was not found in the database");
         }

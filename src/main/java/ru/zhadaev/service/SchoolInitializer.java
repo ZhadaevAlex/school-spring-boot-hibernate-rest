@@ -56,6 +56,9 @@ public class SchoolInitializer {
         List<Course> coursesDb = new ArrayList<>();
         for (Course course : courses) {
             coursesDb.add(courseService.save(course));
+
+            Course finded = courseService.findById(course.getId());
+            int a = 1;
         }
 
         return coursesDb;

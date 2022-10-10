@@ -26,22 +26,20 @@ public class CourseController {
 
     @PostMapping()
     public String save(@ModelAttribute("course") Course course) {
-        courseService.save(course);
-
+        Course saved = courseService.save(course);
+        Integer id = saved.getId();
         return "redirect:/courses";
     }
 
     @GetMapping("/{id}")
     public String findById(@PathVariable("id") Integer id, Model model) {
         model.addAttribute("course", courseService.findById(id));
-
         return "courses/show";
     }
 
     @DeleteMapping("/{id}")
     public String deleteById(@PathVariable("id") Integer id) {
         courseService.deleteById(id);
-
         return "redirect:/courses";
     }
 
