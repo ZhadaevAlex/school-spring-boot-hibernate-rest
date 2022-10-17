@@ -12,6 +12,7 @@ import ru.zhadaev.exception.NotValidCourseException;
 import ru.zhadaev.exception.NotValidStudentException;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -26,8 +27,10 @@ public class CourseService {
         return courseDAO.save(course);
     }
 
-    public Course update(Course course) {
-        requiredNotNull(course);
+    public Course update(Map<String, String> updatedData, Integer id) {
+        Course course = findById(id);
+        course.setName(updatedData.get("name"));
+        course.setDescription(updatedData.get("description"));
         return courseDAO.update(course);
     }
 

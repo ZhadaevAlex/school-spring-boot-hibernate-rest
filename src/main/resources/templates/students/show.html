@@ -28,7 +28,7 @@
         </div>
 
         <div class="col-lg-auto my-2">
-            <span th:text="${student.id}"/></span>
+            <span th:text="${student?.id}"/></span>
         </div>
     </div>
 
@@ -38,7 +38,7 @@
         </div>
 
         <div class="col-lg-auto my-2">
-            <span th:text="${student.firstName}"/></span>
+            <span th:text="${student?.firstName}"/></span>
         </div>
     </div>
 
@@ -48,7 +48,7 @@
         </div>
 
         <div class="col-lg-auto my-2">
-            <span th:text="${student.lastName}"/></span>
+            <span th:text="${student?.lastName}"/></span>
         </div>
     </div>
 
@@ -58,7 +58,7 @@
         </div>
 
         <div class="col-lg-auto my-2">
-            <span th:text="${student.group.name}"/></span>
+            <span th:text="${student?.group?.name}"/></span>
         </div>
     </div>
 
@@ -68,7 +68,7 @@
         </div>
 
         <div class="col-lg-auto my-2">
-            <p th:each="course : ${student.courses}" th:text="${course.name}"/>
+            <p th:each="course : ${student?.courses}" th:text="${course?.name}"/>
         </div>
     </div>
 </div>

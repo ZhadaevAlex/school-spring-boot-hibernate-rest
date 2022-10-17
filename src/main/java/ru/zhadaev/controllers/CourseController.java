@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.*;
 import ru.zhadaev.dao.entities.Course;
 import ru.zhadaev.service.CourseService;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Controller
 @RequestMapping("/courses")
 public class CourseController {
@@ -46,14 +49,25 @@ public class CourseController {
     @DeleteMapping()
     public String deleteAll() {
         courseService.deleteAll();
-
         return "redirect:/courses";
     }
 
-    @PatchMapping("/{id}")
-    public String update(@ModelAttribute("group") Course course) {
-        courseService.update(course);
+//    @PatchMapping("/{id}")
+//    public String update(@ModelAttribute("course") Course course) {
+//        courseService.update(course);
+//
+//        return "redirect:/courses";
+//    }
 
+    @PatchMapping("/{id}")
+    public String update(@RequestParam("name") String name,
+                         @RequestParam("description") String description,
+                         @PathVariable("id") Integer id,
+                         Model model) {
+        Map<String, String> dataUpdated = new HashMap<>();
+        dataUpdated.put("name", name);
+        dataUpdated.put("description", description);
+        courseService.update(dataUpdated, id);
         return "redirect:/courses";
     }
 }
