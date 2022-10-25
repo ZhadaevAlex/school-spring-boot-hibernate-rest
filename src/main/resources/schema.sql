@@ -38,3 +38,4 @@ create table if not exists school.students_courses
     foreign key (course_id) references school.courses (course_id) on delete set null,
     unique (student_id, course_id)
 );
+

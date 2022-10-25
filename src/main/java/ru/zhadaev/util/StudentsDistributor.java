@@ -1,5 +1,6 @@
 package ru.zhadaev.util;
 
+import lombok.RequiredArgsConstructor;
 import ru.zhadaev.dao.entities.Course;
 import ru.zhadaev.dao.entities.Group;
 import ru.zhadaev.dao.entities.Student;
@@ -7,8 +8,10 @@ import ru.zhadaev.dao.entities.Student;
 import java.security.SecureRandom;
 import java.util.*;
 
+@RequiredArgsConstructor
 public class StudentsDistributor {
-    private final Random rnd = new SecureRandom();
+    private final SecureRandom random;
+
     public List<Student> distributionByCourses(List<Student> students, List<Course> courses, int minNumberCourses, int maxNumberCourses) {
         requiredNotNull(students);
         requiredNotNull(courses);
@@ -16,15 +19,15 @@ public class StudentsDistributor {
         requiredNumberRowsNotZero(courses);
 
         for (Student student : students) {
-            int numberCourses = minNumberCourses + this.rnd.nextInt(maxNumberCourses - minNumberCourses + 1);
+            int numberCourses = minNumberCourses + this.random.nextInt(maxNumberCourses - minNumberCourses + 1);
             Set<Course> coursesForStudents = new LinkedHashSet<>();
             int countCourses = 0;
             while (countCourses < numberCourses) {
-                coursesForStudents.add(courses.get(this.rnd.nextInt(courses.size())));
+                coursesForStudents.add(courses.get(this.random.nextInt(courses.size())));
                 countCourses = coursesForStudents.size();
             }
 
-            student.setCourses(new ArrayList<>(coursesForStudents));
+            student.setCourses(new HashSet<>(coursesForStudents));
         }
 
         return students;
@@ -38,7 +41,7 @@ public class StudentsDistributor {
 
         int nextGroupPointer = 0;
         for (Group group : groups) {
-            int studentsInGroup = minStudentsInGroup + this.rnd.nextInt(maxStudentsInGroup - minStudentsInGroup + 1);
+            int studentsInGroup = minStudentsInGroup + this.random.nextInt(maxStudentsInGroup - minStudentsInGroup + 1);
             if (nextGroupPointer + studentsInGroup > students.size()) {
                 break;
             }

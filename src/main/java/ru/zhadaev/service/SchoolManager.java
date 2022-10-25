@@ -1,8 +1,8 @@
 package ru.zhadaev.service;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.zhadaev.dao.entities.Group;
 import ru.zhadaev.dao.entities.Student;
@@ -12,17 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class SchoolManager {
     private static final Logger logger = LoggerFactory.getLogger(SchoolManager.class);
-
     private final GroupService groupService;
     private final StudentService studentService;
-
-    @Autowired
-    public SchoolManager(GroupService groupService, StudentService studentService) {
-        this.groupService = groupService;
-        this.studentService = studentService;
-    }
 
     public List<Group> findGroupsByNumberStudents(long numberStudents) {
         List<Student> studentsDb = studentService.findAll();

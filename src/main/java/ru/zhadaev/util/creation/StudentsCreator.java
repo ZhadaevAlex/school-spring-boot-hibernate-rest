@@ -1,11 +1,15 @@
 package ru.zhadaev.util.creation;
 
+import lombok.RequiredArgsConstructor;
 import ru.zhadaev.dao.entities.Student;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
+@RequiredArgsConstructor
 public class StudentsCreator {
-    private Random rnd;
+    private final Random random;
 
     public List<Student> createStudents(int numberStudents, List<String> firstNames, List<String> lastNames) {
         requiredNotNull(firstNames);
@@ -15,10 +19,9 @@ public class StudentsCreator {
         requiredEqualityNumberRows(firstNames, lastNames);
 
         List<Student> students = new ArrayList<>();
-        rnd = new Random();
         for (int i = 0; i < numberStudents; i++) {
-            String firstName = firstNames.get(rnd.nextInt(lastNames.size()));
-            String lastName = lastNames.get(rnd.nextInt(lastNames.size()));
+            String firstName = firstNames.get(random.nextInt(lastNames.size()));
+            String lastName = lastNames.get(random.nextInt(lastNames.size()));
             Student student = new Student();
             student.setFirstName(firstName);
             student.setLastName(lastName);

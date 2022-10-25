@@ -1,7 +1,6 @@
 package ru.zhadaev.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import lombok.RequiredArgsConstructor;
 import ru.zhadaev.dao.entities.School;
 import ru.zhadaev.dao.entities.Student;
 import ru.zhadaev.service.SchoolInitData;
@@ -9,27 +8,24 @@ import ru.zhadaev.service.SchoolInitializer;
 import ru.zhadaev.util.creation.SchoolCreator;
 import ru.zhadaev.util.creation.StudentsCreator;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 
-@Component
+@RequiredArgsConstructor
 public class InitApp {
+    private final SchoolInitializer schoolInitializer;
+    private final SchoolInitData schoolInitData;
+    private final StudentsCreator studentCreator;
+    private final SchoolCreator schoolCreator;
 
-    @Autowired
-    public InitApp(SchoolInitializer schoolInitializer) {
-        SchoolInitData schoolInitData = new SchoolInitData();
-
-        List<Student> students = new StudentsCreator().createStudents(
+    @PostConstruct
+    public void initApp() {
+        List<Student> students = studentCreator.createStudents(
                 SchoolInitData.NUMBER_STUDENTS,
                 schoolInitData.getFirstNames(),
                 schoolInitData.getLastNames());
 
-        School school = new SchoolCreator(
-                SchoolInitData.NUMBER_GROUPS,
-                SchoolInitData.MIN_STUDENTS_IN_GROUP,
-                SchoolInitData.MAX_STUDENTS_IN_GROUP,
-                schoolInitData.getSubjects(),
-                SchoolInitData.MIN_COURSES,
-                SchoolInitData.MAX_COURSES).createSchool(students);
+        School school = schoolCreator.createSchool(students);
 
         schoolInitializer.initialize(school);
     }

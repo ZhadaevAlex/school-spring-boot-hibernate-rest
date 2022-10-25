@@ -1,11 +1,14 @@
 package ru.zhadaev.util.creation;
 
-import ru.zhadaev.util.StudentsDistributor;
+import lombok.RequiredArgsConstructor;
 import ru.zhadaev.dao.entities.School;
 import ru.zhadaev.dao.entities.Student;
+import ru.zhadaev.util.StudentsDistributor;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
+@RequiredArgsConstructor
 public class SchoolCreator {
     private final int numberGroups;
     private final int minStudentsInGroup;
@@ -14,31 +17,21 @@ public class SchoolCreator {
     private final int minCourses;
     private final int maxCourses;
 
-    public SchoolCreator(int numberGroups, int minStudentsInGroup,
-                         int maxStudentsInGroup, Map<String, String> subjects,
-                         int minCourses, int maxCourses) {
-
-        requiredNotNull(subjects);
-        requiredNumberRowsNotZero(subjects);
-
-        this.numberGroups = numberGroups;
-        this.minStudentsInGroup = minStudentsInGroup;
-        this.maxStudentsInGroup = maxStudentsInGroup;
-        this.subjects = subjects;
-        this.minCourses = minCourses;
-        this.maxCourses = maxCourses;
-    }
+    private final GroupCreator groupCreator;
+    private final CourseCreator courseCreator;
+    private final StudentsDistributor studentsDistributor;
 
     public School createSchool(List<Student> students) {
+        requiredNotNull(subjects);
+        requiredNumberRowsNotZero(subjects);
         requiredNotNull(students);
         requiredNumberRowsNotZero(students);
 
         School school = new School();
 
-        school.setGroups(new GroupCreator().createGroups(numberGroups));
-        school.setCourses(new CourseCreator().createCourses(subjects));
+        school.setGroups(groupCreator.createGroups(numberGroups));
+        school.setCourses(courseCreator.createCourses(subjects));
 
-        StudentsDistributor studentsDistributor = new StudentsDistributor();
         students = studentsDistributor.distributeByGroups(students, school.getGroups(), minStudentsInGroup, maxStudentsInGroup);
         students = studentsDistributor.distributionByCourses(students, school.getCourses(), minCourses, maxCourses);
 

@@ -1,13 +1,12 @@
 package ru.zhadaev.util.creation;
 
+import lombok.RequiredArgsConstructor;
+
 import java.util.Random;
 
+@RequiredArgsConstructor
 public class RandomWords {
-    Random rnd;
-
-    public RandomWords() {
-        rnd = new Random();
-    }
+    private final Random random;
 
     String getRandomWord(int length, LetterCase letterCase) {
         StringBuilder result = new StringBuilder();
@@ -29,16 +28,16 @@ public class RandomWords {
             return from;
         }
 
-        return from + rnd.nextInt((to - from) + 1);
+        return from + random.nextInt((to - from) + 1);
     }
 
     private char rndLetter(LetterCase letterCase) {
         char result;
 
         if (letterCase == LetterCase.UPPERCASE) {
-            result = (char)(rnd.nextInt(26) + 'A');
+            result = (char)(random.nextInt(26) + 'A');
         } else {
-            result = (char)(rnd.nextInt(26) + 'a');
+            result = (char)(random.nextInt(26) + 'a');
         }
 
        return result;

@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.*;
 import ru.zhadaev.dao.entities.Course;
 import ru.zhadaev.service.CourseService;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Controller
 @RequestMapping("/courses")
 public class CourseController {
@@ -26,36 +29,45 @@ public class CourseController {
 
     @PostMapping()
     public String save(@ModelAttribute("course") Course course) {
-        courseService.save(course);
-
+        Course saved = courseService.save(course);
+        Integer id = saved.getId();
         return "redirect:/courses";
     }
 
     @GetMapping("/{id}")
     public String findById(@PathVariable("id") Integer id, Model model) {
         model.addAttribute("course", courseService.findById(id));
-
         return "courses/show";
     }
 
     @DeleteMapping("/{id}")
     public String deleteById(@PathVariable("id") Integer id) {
         courseService.deleteById(id);
-
         return "redirect:/courses";
     }
 
     @DeleteMapping()
     public String deleteAll() {
         courseService.deleteAll();
-
         return "redirect:/courses";
     }
 
-    @PatchMapping("/{id}")
-    public String update(@ModelAttribute("group") Course course) {
-        courseService.update(course);
+//    @PatchMapping("/{id}")
+//    public String update(@ModelAttribute("course") Course course) {
+//        courseService.update(course);
+//
+//        return "redirect:/courses";
+//    }
 
+    @PatchMapping("/{id}")
+    public String update(@RequestParam("name") String name,
+                         @RequestParam("description") String description,
+                         @PathVariable("id") Integer id,
+                         Model model) {
+        Map<String, String> dataUpdated = new HashMap<>();
+        dataUpdated.put("name", name);
+        dataUpdated.put("description", description);
+        courseService.update(dataUpdated, id);
         return "redirect:/courses";
     }
 }

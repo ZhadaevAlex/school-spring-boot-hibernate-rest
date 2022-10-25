@@ -1,6 +1,6 @@
 package ru.zhadaev.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -11,65 +11,61 @@ import ru.zhadaev.service.GroupService;
 import ru.zhadaev.service.SchoolManager;
 import ru.zhadaev.service.StudentService;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Controller
 @RequestMapping("/students")
+@RequiredArgsConstructor
 public class StudentController {
     private final GroupService groupService;
     private final CourseService courseService;
     private final StudentService studentService;
     private final SchoolManager schoolManager;
 
-    @Autowired
-    public StudentController(GroupService groupService, CourseService courseService, StudentService studentService, SchoolManager schoolManager) {
-        this.groupService = groupService;
-        this.courseService = courseService;
-        this.studentService = studentService;
-        this.schoolManager = schoolManager;
-    }
-
     @GetMapping()
     public String findAll(@ModelAttribute WrapperCoursesId wrapperCoursesId,
                           Model model) {
-
         model.addAttribute("groups", groupService.findAll());
         model.addAttribute("courses", courseService.findAll());
         model.addAttribute("students", studentService.findAll());
-
         return "students/index";
     }
 
     @PostMapping()
     public String save(@ModelAttribute("student") Student student) {
         studentService.save(student);
-
         return "redirect:/students";
     }
 
     @GetMapping("/{id}")
     public String findById(@PathVariable("id") Integer id, Model model) {
         model.addAttribute("student", studentService.findById(id));
-
         return "/students/show";
     }
 
     @DeleteMapping("/{id}")
     public String deleteById(@PathVariable("id") Integer id) {
         studentService.deleteById(id);
-
         return "redirect:/students";
     }
 
     @DeleteMapping()
     public String deleteAll() {
         studentService.deleteAll();
-
         return "redirect:/students";
     }
 
     @PatchMapping("/{id}")
-    public String update(@ModelAttribute("student") Student student) {
-        studentService.update(student);
-
+    public String update(@RequestParam("firstName") String firstName,
+                         @RequestParam("lastName") String lastName,
+                         @RequestParam("group.id") String groupId,
+                         @PathVariable("id") Integer id) {
+        Map<String, String> dataUpdated = new HashMap<>();
+        dataUpdated.put("firstName", firstName);
+        dataUpdated.put("lastName", lastName);
+        dataUpdated.put("groupId", groupId);
+        studentService.update(dataUpdated, id);
         return "redirect:/students";
     }
 
@@ -78,7 +74,6 @@ public class StudentController {
                                     @PathVariable("id") int id) {
 
         studentService.removeFromCourses(id, wrapperCoursesId.getCoursesId());
-
         return "redirect:/students";
     }
 
@@ -87,7 +82,6 @@ public class StudentController {
                                 @PathVariable("id") int id) {
 
         studentService.signOnCourses(id, wrapperCoursesId.getCoursesId());
-
         return "redirect:/students";
     }
 
@@ -96,7 +90,6 @@ public class StudentController {
                                 Model model) {
 
         model.addAttribute("students", schoolManager.findStudentsByCoursesName(wrapperCoursesId.getCoursesId()));
-
         return "students/index";
     }
 }

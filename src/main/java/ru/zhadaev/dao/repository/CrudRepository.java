@@ -14,7 +14,7 @@ public interface CrudRepository<T, ID> {
 
     Optional<T> findById(ID id);
 
-    Optional<List<T>> find(T entity);
+    List<T> findLike(T entity);
 
     List<T> findAll();
 

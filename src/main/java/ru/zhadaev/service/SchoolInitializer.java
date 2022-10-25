@@ -1,7 +1,6 @@
 package ru.zhadaev.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import lombok.RequiredArgsConstructor;
 import ru.zhadaev.dao.entities.Course;
 import ru.zhadaev.dao.entities.Group;
 import ru.zhadaev.dao.entities.School;
@@ -10,27 +9,18 @@ import ru.zhadaev.dao.entities.Student;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
+@RequiredArgsConstructor
 public class SchoolInitializer {
     private final GroupService groupService;
     private final CourseService courseService;
     private final StudentService studentService;
-
-    @Autowired
-    public SchoolInitializer(GroupService groupService,
-                             CourseService courseService,
-                             StudentService studentService) {
-        this.groupService = groupService;
-        this.courseService = courseService;
-        this.studentService = studentService;
-    }
 
     public void initialize(School school) {
         List<Group> groupsDb = initializeGroups(school.getGroups());
         List<Course> coursesDb = initializeCourses(school.getCourses());
 
         for (Student student : school.getStudents()) {
-             if (student.getGroup() != null) {
+            if (student.getGroup() != null) {
                 Integer id = groupsDb.stream()
                         .filter(p -> p.getName()
                                 .equals(student.getGroup().getName()))
@@ -66,6 +56,9 @@ public class SchoolInitializer {
         List<Course> coursesDb = new ArrayList<>();
         for (Course course : courses) {
             coursesDb.add(courseService.save(course));
+
+            Course finded = courseService.findById(course.getId());
+            int a = 1;
         }
 
         return coursesDb;

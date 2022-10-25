@@ -28,7 +28,7 @@
         </div>
 
         <div class="col-lg-auto">
-            <span th:text="${course.id}"/></span>
+            <span th:text="${course?.id}"/></span>
         </div>
     </div>
 
@@ -38,7 +38,7 @@
         </div>
 
         <div class="col-lg-auto">
-            <span th:text="${course.name}"/></span>
+            <span th:text="${course?.name}"/></span>
         </div>
     </div>
 
@@ -48,7 +48,7 @@
         </div>
 
         <div class="col-lg-auto my-2">
-            <span th:text="${course.description}"/></span>
+            <span th:text="${course?.description}"/></span>
         </div>
     </div>
 </div>

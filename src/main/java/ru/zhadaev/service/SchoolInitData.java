@@ -1,11 +1,15 @@
 package ru.zhadaev.service;
 
+import lombok.Getter;
+
 import java.util.*;
 
+@Getter
 public class SchoolInitData {
     private final Map<String, String> subjects = new HashMap<>();
     private final List<String> firstNames = new ArrayList<>();
     private final List<String> lastNames = new ArrayList<>();
+
     public static final Integer NUMBER_STUDENTS = 200;
     public static final Integer NUMBER_GROUPS = 10;
     public static final Integer MIN_STUDENTS_IN_GROUP = 10;
@@ -36,17 +40,5 @@ public class SchoolInitData {
                 "Martin", "Thompson", "Wood", "Lewis", "Scott",
                 "Cooper", "King", "Green", "Walker", "Edwards",
                 "Turner", "Morgan", "Baker", "Hill", "Phillips");
-    }
-
-    public Map<String, String> getSubjects() {
-        return subjects;
-    }
-
-    public List<String> getFirstNames() {
-        return firstNames;
-    }
-
-    public List<String> getLastNames() {
-        return lastNames;
     }
 }
