@@ -58,7 +58,7 @@ public class InitConfig {
                                        GroupCreator groupCreator,
                                        CourseCreator courseCreator,
                                        StudentsDistributor studentsDistributor) {
-        SchoolCreator schoolCreator = new SchoolCreator(
+        return new SchoolCreator(
                 SchoolInitData.NUMBER_GROUPS,
                 SchoolInitData.MIN_STUDENTS_IN_GROUP,
                 SchoolInitData.MAX_STUDENTS_IN_GROUP,
@@ -68,7 +68,6 @@ public class InitConfig {
                 groupCreator,
                 courseCreator,
                 studentsDistributor);
-        return schoolCreator;
     }
 
     @Bean

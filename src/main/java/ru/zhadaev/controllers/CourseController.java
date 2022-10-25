@@ -1,73 +1,64 @@
 package ru.zhadaev.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.zhadaev.dao.entities.Course;
+import ru.zhadaev.dto.CourseDto;
+import ru.zhadaev.mappers.CourseMapper;
 import ru.zhadaev.service.CourseService;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
-@Controller
-@RequestMapping("/courses")
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/courses")
 public class CourseController {
     private final CourseService courseService;
-
-    @Autowired
-    public CourseController(CourseService courseService) {
-        this.courseService = courseService;
-    }
+    private final CourseMapper courseMapper;
 
     @GetMapping()
-    public String findAll(Model model) {
-        model.addAttribute("courses", courseService.findAll());
-
-        return "courses/index";
+    public List<CourseDto> findAll() {
+        List<Course> courses = courseService.findAll();
+        return courseMapper.coursesToCoursesDto(courses);
     }
 
     @PostMapping()
-    public String save(@ModelAttribute("course") Course course) {
+    public CourseDto save(@RequestBody CourseDto courseDto) {
+        Course course = courseMapper.courseDtoToCourse(courseDto);
         Course saved = courseService.save(course);
+        CourseDto savedDto = courseMapper.courseToCourseDto(saved);
         Integer id = saved.getId();
-        return "redirect:/courses";
+        return savedDto;
     }
 
     @GetMapping("/{id}")
-    public String findById(@PathVariable("id") Integer id, Model model) {
-        model.addAttribute("course", courseService.findById(id));
-        return "courses/show";
+    public CourseDto findById(@PathVariable("id") Integer id) {
+        Course course = courseService.findById(id);
+        return courseMapper.courseToCourseDto(course);
     }
 
     @DeleteMapping("/{id}")
-    public String deleteById(@PathVariable("id") Integer id) {
+    public void deleteById(@PathVariable("id") Integer id) {
         courseService.deleteById(id);
-        return "redirect:/courses";
     }
 
     @DeleteMapping()
-    public String deleteAll() {
+    public void deleteAll() {
         courseService.deleteAll();
-        return "redirect:/courses";
     }
 
-//    @PatchMapping("/{id}")
-//    public String update(@ModelAttribute("course") Course course) {
-//        courseService.update(course);
-//
-//        return "redirect:/courses";
-//    }
+    @PutMapping("/{id}")
+    public CourseDto replace(@RequestBody CourseDto courseDto, @PathVariable Integer id) {
+        Course course = courseMapper.courseDtoToCourse(courseDto);
+        Course replaced = courseService.update(course, id);
+        return courseMapper.courseToCourseDto(replaced);
+    }
 
     @PatchMapping("/{id}")
-    public String update(@RequestParam("name") String name,
-                         @RequestParam("description") String description,
-                         @PathVariable("id") Integer id,
-                         Model model) {
-        Map<String, String> dataUpdated = new HashMap<>();
-        dataUpdated.put("name", name);
-        dataUpdated.put("description", description);
-        courseService.update(dataUpdated, id);
-        return "redirect:/courses";
+    public CourseDto update(@RequestBody CourseDto courseDto, @PathVariable("id") Integer id) {
+        Course course = courseService.findById(id);
+        courseMapper.updateCourseFromDto(courseDto, course);
+        Course updated = courseService.update(course, id);
+        return courseMapper.courseToCourseDto(updated);
     }
 }

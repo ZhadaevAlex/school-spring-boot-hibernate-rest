@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.zhadaev.dao.entities.Course;
-import ru.zhadaev.dao.entities.Group;
 import ru.zhadaev.dao.entities.Student;
 import ru.zhadaev.dao.repository.impl.StudentDAO;
 import ru.zhadaev.exception.NotFoundException;
@@ -14,7 +13,6 @@ import ru.zhadaev.exception.NotValidStudentException;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 @Service
@@ -32,12 +30,10 @@ public class StudentService {
         return studentDAO.save(student);
     }
 
-    public Student update(Map<String, String> updatedData, Integer id) {
-        Student student = findById(id);
-        Group group = groupService.findById(Integer.parseInt(updatedData.get("groupId")));
-        student.setFirstName(updatedData.get("firstName"));
-        student.setLastName(updatedData.get("lastName"));
-        student.setGroup(group);
+    public Student update(Student student, Integer id) {
+        requiredNotNull(student);
+        requiredIdIsValid(id);
+        student.setId(id);
         return studentDAO.update(student);
     }
 

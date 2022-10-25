@@ -12,7 +12,6 @@ import ru.zhadaev.exception.NotValidCourseException;
 import ru.zhadaev.exception.NotValidStudentException;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -27,10 +26,10 @@ public class CourseService {
         return courseDAO.save(course);
     }
 
-    public Course update(Map<String, String> updatedData, Integer id) {
-        Course course = findById(id);
-        course.setName(updatedData.get("name"));
-        course.setDescription(updatedData.get("description"));
+    public Course update(Course course, Integer id) {
+        requiredNotNull(course);
+        requiredIdIsValid(id);
+        course.setId(id);
         return courseDAO.update(course);
     }
 
@@ -73,8 +72,6 @@ public class CourseService {
             logger.error("Course delete error. Course not found by id");
             throw new NotFoundException("Course delete error. Course not found by id");
         }
-
-//        courseDAO.deleteById(id);
     }
 
     public void delete(Course course) {

@@ -26,8 +26,10 @@ public class GroupService {
         return groupDAO.save(group);
     }
 
-    public Group update(Group group) {
+    public Group update(Group group, Integer id) {
         requiredNotNull(group);
+        requiredIdIsValid(id);
+        group.setId(id);
         return groupDAO.update(group);
     }
 

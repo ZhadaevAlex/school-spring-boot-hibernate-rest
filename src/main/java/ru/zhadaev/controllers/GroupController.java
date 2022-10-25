@@ -1,61 +1,72 @@
 package ru.zhadaev.controllers;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.zhadaev.dao.entities.Group;
+import ru.zhadaev.dto.GroupDto;
+import ru.zhadaev.mappers.GroupMapper;
 import ru.zhadaev.service.GroupService;
 import ru.zhadaev.service.SchoolManager;
 
-@Controller
+import java.util.List;
+
+@RestController
 @RequiredArgsConstructor
-@RequestMapping("/groups")
+@RequestMapping("/api/groups")
 public class GroupController {
     private final GroupService groupService;
     private final SchoolManager schoolManager;
+    private final GroupMapper groupMapper;
 
     @GetMapping()
-    public String findAll(Model model) {
-        model.addAttribute("groups", groupService.findAll());
-        return "groups/index";
+    public List<GroupDto> findAll() {
+        List<Group> groups = groupService.findAll();
+        return groupMapper.groupsToGroupsDto(groups);
     }
 
     @PostMapping()
-    public String save(@ModelAttribute("group") Group group) {
+    public GroupDto save(@RequestBody GroupDto groupDto) {
+        Group group = groupMapper.groupDtoToGroup(groupDto);
         Group saved = groupService.save(group);
+        GroupDto savedDto = groupMapper.groupToGroupDto(saved);
         Integer id = saved.getId();
-        return "redirect:/groups";
+        return savedDto;
     }
 
     @GetMapping("/{id}")
-    public String findById(@PathVariable("id") Integer id, Model model) {
-        model.addAttribute("group", groupService.findById(id));
-        return "/groups/show";
+    public GroupDto findById(@PathVariable("id") Integer id) {
+        Group group = groupService.findById(id);
+        return groupMapper.groupToGroupDto(group);
     }
 
     @DeleteMapping("/{id}")
-    public String deleteById(@PathVariable("id") Integer id) {
+    public void deleteById(@PathVariable("id") Integer id) {
         groupService.deleteById(id);
-        return "redirect:/groups";
     }
 
     @DeleteMapping()
-    public String deleteAll() {
+    public void deleteAll() {
         groupService.deleteAll();
-        return "redirect:/groups";
+    }
+
+    @PutMapping("/{id}")
+    public GroupDto replace(@RequestBody GroupDto groupDto, @PathVariable("id") Integer id) {
+        Group group = groupMapper.groupDtoToGroup(groupDto);
+        Group replaced = groupService.update(group, id);
+        return groupMapper.groupToGroupDto(replaced);
     }
 
     @PatchMapping("/{id}")
-    public String update(@ModelAttribute("group") Group group) {
-        groupService.update(group);
-        return "redirect:/groups";
+    public GroupDto update(@RequestBody GroupDto groupDto, @PathVariable("id") Integer id) {
+        Group group = groupService.findById(id);
+        groupMapper.updateGroupFromDto(groupDto, group);
+        Group updated = groupService.update(group, id);
+        return groupMapper.groupToGroupDto(updated);
     }
 
     @GetMapping("/filter")
-    public String findAllFilter(@RequestParam("numberStudents") Integer numberStudents,
-                                Model model) {
-        model.addAttribute("groups", schoolManager.findGroupsByNumberStudents(numberStudents));
-        return "groups/index";
+    public List<GroupDto> findAllFilter(@RequestParam("numberStudents") Integer numberStudents) {
+        List<Group> groups = schoolManager.findGroupsByNumberStudents(numberStudents);
+        return groupMapper.groupsToGroupsDto(groups);
     }
 }

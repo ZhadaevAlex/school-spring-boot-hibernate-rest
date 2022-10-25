@@ -37,8 +37,6 @@ public class SchoolManager {
     }
 
     public List<Student> findStudentsByCourse(Integer courseId) {
-        requiredIdIsValid(courseId);
-
         List<Student> studentsDb = studentService.findAll();
         List<Student> studentsByCourse = new ArrayList<>();
 
@@ -54,14 +52,9 @@ public class SchoolManager {
         return studentsByCourse;
     }
 
-    public List<Student> findStudentsByCoursesName(List<Integer> coursesId) {
-        List<Student> students = new ArrayList<>();
-
-        for (Integer courseId : coursesId) {
-            students.addAll(findStudentsByCourse(courseId));
-        }
-
-        return students;
+    public List<Student> findStudentsByCourseId(Integer courseId) {
+        requiredIdIsValid(courseId);
+        return findStudentsByCourse(courseId);
     }
 
     private void requiredIdIsValid(Integer id) {
