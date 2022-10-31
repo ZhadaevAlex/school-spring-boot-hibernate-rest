@@ -55,7 +55,7 @@ public class GroupController {
         Group replaced = groupService.update(group, id);
         return groupMapper.groupToGroupDto(replaced);
     }
-
+    
     @PatchMapping("/{id}")
     public GroupDto update(@RequestBody GroupDto groupDto, @PathVariable("id") Integer id) {
         Group group = groupService.findById(id);
