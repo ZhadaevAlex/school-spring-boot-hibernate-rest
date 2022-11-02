@@ -1,0 +1,564 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  description: API of the "School" task
+  contact:
+    name: Zhadaev Alexander
+    url: www.zhadaev.ru
+    email: zhadaevs@yandex.ru
+  version: 1.0-SNAPSHOT
+servers:
+  - url: http://localhost:8080
+    description: Generated server url
+paths:
+  /api/students/{id}:
+    summary: Represents a student
+    description: >
+      This resource represents an individual student in the system.
+      Each student is identified by a numeric `id`.
+    get:
+      summary: Get a student by id
+      description: >
+        This method allows you to get a school student by its id.
+      tags:
+        - student-controller
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: The student id
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentDto'
+    put:
+      summary: Edit a student
+      description: >
+        This method updates the student with the specified id. The values of the student properties are replaced with the values from the request body. Unspecified values are replaced with default values.
+      tags:
+        - student-controller
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: The student id
+      requestBody:
+        description: >
+          You must specify the student parameters.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentDto'
+        required: true
+      responses:
+        '202':
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentDto'
+    delete:
+      summary: Delete a student
+      description: >
+        This method removes the student with the specified id.
+      tags:
+        - student-controller
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: The student id
+      responses:
+        '200':
+          description: Successful operation
+    patch:
+      summary: Edit a student
+      description: >
+        This method updates the student with the specified id. The values of the student properties are replaced with the values from the request body. Unspecified values are not changed
+      tags:
+        - student-controller
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: The student id
+      requestBody:
+        description: >
+          You must specify the student parameters
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentDto'
+        required: true
+      responses:
+        '202':
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentDto'
+  /api/groups/{id}:
+    summary: Represents a group
+    description: >
+      This resource represents an individual group in the system.
+      Each group is identified by a numeric `id`.
+    get:
+      summary: Get a group by id
+      description: >
+        This method allows you to get a school group by its id.
+      tags:
+        - group-controller
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: The group id
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupDto'
+    put:
+      summary: Edit a group
+      description: >
+        This method updates the group with the specified id. The values of the group properties are replaced with the values from the request body. Unspecified values are replaced with default values.
+      tags:
+        - group-controller
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: The group id
+      requestBody:
+        description: >
+          You must specify the group parameters.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroupDto'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            pplication/json:
+              schema:
+                $ref: '#/components/schemas/GroupDto'
+    delete:
+      summary: Delete a group
+      description: >
+        This method removes the group with the specified id.
+      tags:
+        - group-controller
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: The group id
+      responses:
+        '200':
+          description: Successful operation
+    patch:
+      summary: Edit a group
+      description: >
+        This method updates the group with the specified id. The values of the group properties are replaced with the values from the request body. Unspecified values are not changed.
+      tags:
+        - group-controller
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: The group id
+      requestBody:
+        description: >
+          You must specify the group parameters.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroupDto'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupDto'
+  /api/courses/{id}:
+    summary: Represents a course
+    description: >
+      This resource represents an individual course in the system.
+      Each course is identified by a numeric `id`.
+    get:
+      summary: Get a course by id
+      description: >
+        This method allows you to get a school course by its id.
+      tags:
+        - course-controller
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: The course id
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseDto'
+    put:
+      summary: Edit a course
+      description: >
+        This method updates the course with the specified id. The values of the course properties are replaced with the values from the request body. Unspecified values are replaced with default values.
+      tags:
+        - course-controller
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: The course id
+      requestBody:
+        description: >
+          You must specify the course parameters.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourseDto'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseDto'
+    delete:
+      summary: Delete a course
+      description: >
+        This method removes the course with the specified id.
+      tags:
+        - course-controller
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: The course id
+      responses:
+        '200':
+          description: Successful operation
+    patch:
+      summary: Edit a course
+      description: >
+        This method updates the course with the specified id. The values of the course properties are replaced with the values from the request body. Unspecified values are not changed.
+      tags:
+        - course-controller
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: The course id
+      requestBody:
+        description: >
+          You must specify the course parameters.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourseDto'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseDto'
+  /api/students:
+    summary: Represents a students
+    description: >
+      This resource represents an all students in the system.
+    get:
+      summary: Get all students
+      description: >
+        This method allows you to get a list of all school students.
+      tags:
+        - student-controller
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StudentDto'
+    post:
+      summary: Add a new student
+      description: >
+        This method adds a new student to the school.
+      tags:
+        - student-controller
+      requestBody:
+        description: >
+          You must specify the student parameters.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentDto'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentDto'
+    delete:
+      summary: Delete all students
+      description: >
+        This method removes all students.
+      tags:
+        - student-controller
+      responses:
+        '200':
+          description: Successful operation
+  /api/groups:
+    summary: Represents a groups
+    description: >
+      This resource represents an all groups in the system.
+    get:
+      summary: Get all groups
+      description: >
+        This method allows you to get a list of all school groups
+      tags:
+        - group-controller
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GroupDto'
+    post:
+      summary: Add a new group
+      description: >
+        This method adds a new group to the school.
+      tags:
+        - group-controller
+      requestBody:
+        description: >
+          You must specify the group parameters.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroupDto'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupDto'
+    delete:
+      description: >
+        This method removes all groups.
+      tags:
+        - group-controller
+      responses:
+        '200':
+          description: Successful operation
+  /api/courses:
+    summary: Represents a courses
+    description: >
+      This resource represents an all courses in the system.
+    get:
+      summary: Get all courses
+      description: >
+        This method allows you to get a list of all school courses.
+      tags:
+        - course-controller
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CourseDto'
+    post:
+      summary: Add a new course
+      description: >
+        This method adds a new course to the school.
+      tags:
+        - course-controller
+      requestBody:
+        description: >
+          You must specify the course parameters.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourseDto'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseDto'
+    delete:
+      summary: Delete all courses
+      description: >
+        This method removes all courses.
+      tags:
+        - course-controller
+      responses:
+        '200':
+          description: Successful operation
+  /api/students/filter:
+    get:
+      summary: Get filtered students
+      description: >
+        This method allows you to get all students related to course with given name.
+      tags:
+        - student-controller
+      operationId: findAllFilter
+      parameters:
+        - name: courseId
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: The course id
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StudentDto'
+  /api/groups/filter:
+    get:
+      summary: Get filtered groups
+      description: >
+        This method allows you to get all groups with the number of students less than or equal to the specifie.
+      tags:
+        - group-controller
+      parameters:
+        - name: numberStudents
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: >
+            Number of students in the group.
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GroupDto'
+components:
+  schemas:
+    Course:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+        description:
+          type: string
+    Group:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+    StudentDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        group:
+          $ref: '#/components/schemas/Group'
+        firstName:
+          type: string
+        lastName:
+          type: string
+        courses:
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/Course'
+    GroupDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+    CourseDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+        description:
+          type: string
