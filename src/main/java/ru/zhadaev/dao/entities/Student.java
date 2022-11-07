@@ -1,8 +1,6 @@
 package ru.zhadaev.dao.entities;
 
 import lombok.Data;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -12,11 +10,16 @@ import java.util.Set;
 @Data
 public class Student {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(
+            schema = "school",
+            name = "student_seq",
+            sequenceName = "students_student_id_sequence",
+            initialValue = 201,
+            allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "student_seq")
     @Column(name = "student_id")
     private Integer id;
 
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne
     @JoinColumn(name = "group_id")
     private Group group;

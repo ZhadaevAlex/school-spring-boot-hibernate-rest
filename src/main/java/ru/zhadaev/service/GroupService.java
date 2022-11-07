@@ -9,7 +9,6 @@ import ru.zhadaev.dao.entities.Group;
 import ru.zhadaev.dao.repository.impl.GroupDAO;
 import ru.zhadaev.exception.NotFoundException;
 import ru.zhadaev.exception.NotValidGroupException;
-import ru.zhadaev.exception.NotValidStudentException;
 
 import java.util.List;
 
@@ -90,7 +89,7 @@ public class GroupService {
     private void requiredIdIsValid(Integer id) {
         if (id == null || id < 1) {
             logger.error("The id value must be non-null and greater than 0");
-            throw new NotValidStudentException("The id value must be non-null and greater than 0");
+            throw new NotValidGroupException("The id value must be non-null and greater than 0");
         }
     }
 }

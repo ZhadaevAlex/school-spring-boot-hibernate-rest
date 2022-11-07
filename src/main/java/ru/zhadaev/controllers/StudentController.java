@@ -2,6 +2,7 @@ package ru.zhadaev.controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import ru.zhadaev.dao.entities.Student;
 import ru.zhadaev.dto.StudentDto;
@@ -19,13 +20,16 @@ public class StudentController {
     private final SchoolManager schoolManager;
     private final StudentMapper studentMapper;
 
-    @GetMapping
-    public List<StudentDto> findAll() {
-        List<Student> students = studentService.findAll();
+    @GetMapping()
+    @ResponseStatus(HttpStatus.OK)
+    public List<StudentDto> findAll(@Nullable @RequestParam("courseId") Integer courseId) {
+        List<Student> students = (courseId == null) ?
+                studentService.findAll()
+                : schoolManager.findStudentsByCourseId(courseId);
         return studentMapper.studentsToStudentsDto(students);
     }
 
-    @PostMapping
+    @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     public StudentDto save(@RequestBody StudentDto studentDto) {
         Student student = studentMapper.studentDtoToStudent(studentDto);
@@ -34,17 +38,20 @@ public class StudentController {
     }
 
     @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public StudentDto findById(@PathVariable("id") Integer id) {
         Student student = studentService.findById(id);
         return studentMapper.studentToStudentDto(student);
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public void deleteById(@PathVariable("id") Integer id) {
         studentService.deleteById(id);
     }
 
-    @DeleteMapping
+    @DeleteMapping()
+    @ResponseStatus(HttpStatus.OK)
     public void deleteAll() {
         studentService.deleteAll();
     }
@@ -64,11 +71,5 @@ public class StudentController {
         studentMapper.updateStudentFromDto(studentDto, student);
         Student updated = studentService.update(student, id);
         return studentMapper.studentToStudentDto(updated);
-    }
-
-    @GetMapping("/filter")//FixMe: add filter to 'findAll()' endpoint!
-    public List<StudentDto> findAllFilter(@RequestParam("courseId") Integer courseId) {
-        List<Student> students = schoolManager.findStudentsByCourseId(courseId);
-        return studentMapper.studentsToStudentsDto(students);
     }
 }

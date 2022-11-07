@@ -9,7 +9,6 @@ import ru.zhadaev.dao.entities.Course;
 import ru.zhadaev.dao.repository.impl.CourseDAO;
 import ru.zhadaev.exception.NotFoundException;
 import ru.zhadaev.exception.NotValidCourseException;
-import ru.zhadaev.exception.NotValidStudentException;
 
 import java.util.List;
 
@@ -93,7 +92,7 @@ public class CourseService {
     private void requiredIdIsValid(Integer id) {
         if (id == null || id < 1) {
             logger.error("The id value must be non-null and greater than 0");
-            throw new NotValidStudentException("The id value must be non-null and greater than 0");
+            throw new NotValidCourseException("The id value must be non-null and greater than 0");
         }
     }
 }

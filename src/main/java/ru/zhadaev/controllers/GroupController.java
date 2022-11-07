@@ -1,7 +1,8 @@
 package ru.zhadaev.controllers;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import ru.zhadaev.dao.entities.Group;
 import ru.zhadaev.dto.GroupDto;
@@ -20,12 +21,16 @@ public class GroupController {
     private final GroupMapper groupMapper;
 
     @GetMapping()
-    public List<GroupDto> findAll() {
-        List<Group> groups = groupService.findAll();
+    @ResponseStatus(HttpStatus.OK)
+    public List<GroupDto> findAll(@Nullable @RequestParam("numberStudents") Integer numberStudents) {
+        List<Group> groups = (numberStudents == null) ?
+                groupService.findAll()
+                : schoolManager.findGroupsByNumberStudents(numberStudents);
         return groupMapper.groupsToGroupsDto(groups);
     }
 
     @PostMapping()
+    @ResponseStatus(HttpStatus.CREATED)
     public GroupDto save(@RequestBody GroupDto groupDto) {
         Group group = groupMapper.groupDtoToGroup(groupDto);
         Group saved = groupService.save(group);
@@ -35,22 +40,26 @@ public class GroupController {
     }
 
     @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public GroupDto findById(@PathVariable("id") Integer id) {
         Group group = groupService.findById(id);
         return groupMapper.groupToGroupDto(group);
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public void deleteById(@PathVariable("id") Integer id) {
         groupService.deleteById(id);
     }
 
     @DeleteMapping()
+    @ResponseStatus(HttpStatus.OK)
     public void deleteAll() {
         groupService.deleteAll();
     }
 
     @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
     public GroupDto replace(@RequestBody GroupDto groupDto, @PathVariable("id") Integer id) {
         Group group = groupMapper.groupDtoToGroup(groupDto);
         Group replaced = groupService.update(group, id);
@@ -58,16 +67,11 @@ public class GroupController {
     }
 
     @PatchMapping("/{id}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
     public GroupDto update(@RequestBody GroupDto groupDto, @PathVariable("id") Integer id) {
         Group group = groupService.findById(id);
         groupMapper.updateGroupFromDto(groupDto, group);
         Group updated = groupService.update(group, id);
         return groupMapper.groupToGroupDto(updated);
-    }
-
-    @GetMapping("/filter")
-    public List<GroupDto> findAllFilter(@RequestParam("numberStudents") Integer numberStudents) {
-        List<Group> groups = schoolManager.findGroupsByNumberStudents(numberStudents);
-        return groupMapper.groupsToGroupsDto(groups);
     }
 }

@@ -9,7 +9,13 @@ import javax.persistence.*;
 @Data
 public class Course {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(
+            schema = "school",
+            name = "course_seq",
+            sequenceName = "courses_course_id_sequence",
+            initialValue = 11,
+            allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "course_seq")
     @Column(name = "course_id")
     private Integer id;
 
