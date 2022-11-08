@@ -11,6 +11,7 @@ import ru.zhadaev.exception.NotFoundException;
 import ru.zhadaev.exception.NotValidCourseException;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -25,14 +26,14 @@ public class CourseService {
         return courseDAO.save(course);
     }
 
-    public Course update(Course course, Integer id) {
+    public Course update(Course course, UUID id) {
         requiredNotNull(course);
         requiredIdIsValid(id);
         course.setId(id);
         return courseDAO.update(course);
     }
 
-    public Course findById(Integer id) {
+    public Course findById(UUID id) {
         requiredIdIsValid(id);
         return courseDAO.findById(id)
                 .orElseThrow(() -> new NotFoundException("Course not found"));
@@ -53,7 +54,7 @@ public class CourseService {
         return courseDAO.findAll();
     }
 
-    public boolean existsById(Integer id) {
+    public boolean existsById(UUID id) {
         requiredIdIsValid(id);
         return courseDAO.existsById(id);
     }
@@ -62,7 +63,7 @@ public class CourseService {
         return courseDAO.count();
     }
 
-    public void deleteById(Integer id) {
+    public void deleteById(UUID id) {
         requiredIdIsValid(id);
 
         if (courseDAO.existsById(id)) {
@@ -89,8 +90,8 @@ public class CourseService {
         }
     }
 
-    private void requiredIdIsValid(Integer id) {
-        if (id == null || id < 1) {
+    private void requiredIdIsValid(UUID id) {
+        if (id == null) {
             logger.error("The id value must be non-null and greater than 0");
             throw new NotValidCourseException("The id value must be non-null and greater than 0");
         }

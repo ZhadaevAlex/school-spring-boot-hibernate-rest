@@ -1,23 +1,20 @@
 package ru.zhadaev.dao.entities;
 
 import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.UUID;
 
 @Entity
 @Table(schema = "school", name = "courses")
 @Data
 public class Course {
     @Id
-    @SequenceGenerator(
-            schema = "school",
-            name = "course_seq",
-            sequenceName = "courses_course_id_sequence",
-            initialValue = 11,
-            allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "course_seq")
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "course_id")
-    private Integer id;
+    private UUID id;
 
     @Column(name = "course_name")
     private String name;

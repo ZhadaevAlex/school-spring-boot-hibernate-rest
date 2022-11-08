@@ -10,6 +10,7 @@ import ru.zhadaev.exception.NotValidStudentException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -36,7 +37,7 @@ public class SchoolManager {
         return result;
     }
 
-    public List<Student> findStudentsByCourse(Integer courseId) {
+    public List<Student> findStudentsByCourse(UUID courseId) {
         List<Student> studentsDb = studentService.findAll();
         List<Student> studentsByCourse = new ArrayList<>();
 
@@ -52,13 +53,13 @@ public class SchoolManager {
         return studentsByCourse;
     }
 
-    public List<Student> findStudentsByCourseId(Integer courseId) {
+    public List<Student> findStudentsByCourseId(UUID courseId) {
         requiredIdIsValid(courseId);
         return findStudentsByCourse(courseId);
     }
 
-    private void requiredIdIsValid(Integer id) {
-        if (id == null || id < 1) {
+    private void requiredIdIsValid(UUID id) {
+        if (id == null) {
             logger.error("The id value must be non-null and greater than 0");
             throw new NotValidStudentException("The id value must be non-null and greater than 0");
         }

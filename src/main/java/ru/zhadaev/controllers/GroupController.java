@@ -11,6 +11,7 @@ import ru.zhadaev.service.GroupService;
 import ru.zhadaev.service.SchoolManager;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,20 +36,20 @@ public class GroupController {
         Group group = groupMapper.groupDtoToGroup(groupDto);
         Group saved = groupService.save(group);
         GroupDto savedDto = groupMapper.groupToGroupDto(saved);
-        Integer id = saved.getId();
+        UUID id = saved.getId();
         return savedDto;
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public GroupDto findById(@PathVariable("id") Integer id) {
+    public GroupDto findById(@PathVariable("id") UUID id) {
         Group group = groupService.findById(id);
         return groupMapper.groupToGroupDto(group);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteById(@PathVariable("id") Integer id) {
+    public void deleteById(@PathVariable("id") UUID id) {
         groupService.deleteById(id);
     }
 
@@ -60,7 +61,7 @@ public class GroupController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public GroupDto replace(@RequestBody GroupDto groupDto, @PathVariable("id") Integer id) {
+    public GroupDto replace(@RequestBody GroupDto groupDto, @PathVariable("id") UUID id) {
         Group group = groupMapper.groupDtoToGroup(groupDto);
         Group replaced = groupService.update(group, id);
         return groupMapper.groupToGroupDto(replaced);
@@ -68,7 +69,7 @@ public class GroupController {
 
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public GroupDto update(@RequestBody GroupDto groupDto, @PathVariable("id") Integer id) {
+    public GroupDto update(@RequestBody GroupDto groupDto, @PathVariable("id") UUID id) {
         Group group = groupService.findById(id);
         groupMapper.updateGroupFromDto(groupDto, group);
         Group updated = groupService.update(group, id);

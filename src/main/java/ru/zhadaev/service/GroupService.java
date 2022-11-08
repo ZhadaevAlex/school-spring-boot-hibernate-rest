@@ -11,6 +11,7 @@ import ru.zhadaev.exception.NotFoundException;
 import ru.zhadaev.exception.NotValidGroupException;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -25,14 +26,14 @@ public class GroupService {
         return groupDAO.save(group);
     }
 
-    public Group update(Group group, Integer id) {
+    public Group update(Group group, UUID id) {
         requiredNotNull(group);
         requiredIdIsValid(id);
         group.setId(id);
         return groupDAO.update(group);
     }
 
-    public Group findById(Integer id) {
+    public Group findById(UUID id) {
         requiredIdIsValid(id);
         return groupDAO.findById(id)
                 .orElseThrow(() -> new NotFoundException("Group not found"));
@@ -51,7 +52,7 @@ public class GroupService {
         return groupDAO.findAll();
     }
 
-    public boolean existsById(Integer id) {
+    public boolean existsById(UUID id) {
         requiredIdIsValid(id);
         return groupDAO.existsById(id);
     }
@@ -60,7 +61,7 @@ public class GroupService {
         return groupDAO.count();
     }
 
-    public void deleteById(Integer id) {
+    public void deleteById(UUID id) {
         requiredIdIsValid(id);
         if (groupDAO.existsById(id)) {
             groupDAO.deleteById(id);
@@ -86,8 +87,8 @@ public class GroupService {
         }
     }
 
-    private void requiredIdIsValid(Integer id) {
-        if (id == null || id < 1) {
+    private void requiredIdIsValid(UUID id) {
+        if (id == null) {
             logger.error("The id value must be non-null and greater than 0");
             throw new NotValidGroupException("The id value must be non-null and greater than 0");
         }

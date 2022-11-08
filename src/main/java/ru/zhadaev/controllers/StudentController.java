@@ -11,6 +11,7 @@ import ru.zhadaev.service.SchoolManager;
 import ru.zhadaev.service.StudentService;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,7 +23,7 @@ public class StudentController {
 
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
-    public List<StudentDto> findAll(@Nullable @RequestParam("courseId") Integer courseId) {
+    public List<StudentDto> findAll(@Nullable @RequestParam("courseId") UUID courseId) {
         List<Student> students = (courseId == null) ?
                 studentService.findAll()
                 : schoolManager.findStudentsByCourseId(courseId);
@@ -39,14 +40,14 @@ public class StudentController {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public StudentDto findById(@PathVariable("id") Integer id) {
+    public StudentDto findById(@PathVariable("id") UUID id) {
         Student student = studentService.findById(id);
         return studentMapper.studentToStudentDto(student);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteById(@PathVariable("id") Integer id) {
+    public void deleteById(@PathVariable("id") UUID id) {
         studentService.deleteById(id);
     }
 
@@ -58,7 +59,7 @@ public class StudentController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public StudentDto replace(@RequestBody StudentDto studentDto, @PathVariable Integer id) {
+    public StudentDto replace(@RequestBody StudentDto studentDto, @PathVariable UUID id) {
         Student student = studentMapper.studentDtoToStudent(studentDto);
         Student replaced = studentService.update(student, id);
         return studentMapper.studentToStudentDto(replaced);
@@ -66,7 +67,7 @@ public class StudentController {
 
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public StudentDto update(@RequestBody StudentDto studentDto, @PathVariable("id") Integer id) {
+    public StudentDto update(@RequestBody StudentDto studentDto, @PathVariable("id") UUID id) {
         Student student = studentService.findById(id);
         studentMapper.updateStudentFromDto(studentDto, student);
         Student updated = studentService.update(student, id);

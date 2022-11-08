@@ -9,6 +9,7 @@ import ru.zhadaev.mappers.CourseMapper;
 import ru.zhadaev.service.CourseService;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,20 +31,20 @@ public class CourseController {
         Course course = courseMapper.courseDtoToCourse(courseDto);
         Course saved = courseService.save(course);
         CourseDto savedDto = courseMapper.courseToCourseDto(saved);
-        Integer id = saved.getId();
+        UUID id = saved.getId();
         return savedDto;
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public CourseDto findById(@PathVariable("id") Integer id) {
+    public CourseDto findById(@PathVariable("id") UUID id) {
         Course course = courseService.findById(id);
         return courseMapper.courseToCourseDto(course);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteById(@PathVariable("id") Integer id) {
+    public void deleteById(@PathVariable("id") UUID id) {
         courseService.deleteById(id);
     }
 
@@ -55,7 +56,7 @@ public class CourseController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public CourseDto replace(@RequestBody CourseDto courseDto, @PathVariable Integer id) {
+    public CourseDto replace(@RequestBody CourseDto courseDto, @PathVariable UUID id) {
         Course course = courseMapper.courseDtoToCourse(courseDto);
         Course replaced = courseService.update(course, id);
         return courseMapper.courseToCourseDto(replaced);
@@ -63,7 +64,7 @@ public class CourseController {
 
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public CourseDto update(@RequestBody CourseDto courseDto, @PathVariable("id") Integer id) {
+    public CourseDto update(@RequestBody CourseDto courseDto, @PathVariable("id") UUID id) {
         Course course = courseService.findById(id);
         courseMapper.updateCourseFromDto(courseDto, course);
         Course updated = courseService.update(course, id);
