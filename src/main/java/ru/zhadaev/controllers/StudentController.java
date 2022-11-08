@@ -3,19 +3,23 @@ package ru.zhadaev.controllers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.zhadaev.dao.entities.Student;
 import ru.zhadaev.dto.StudentDto;
 import ru.zhadaev.mappers.StudentMapper;
 import ru.zhadaev.service.SchoolManager;
 import ru.zhadaev.service.StudentService;
+import ru.zhadaev.validation.Marker;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/students")
+@Validated
 public class StudentController {
     private final StudentService studentService;
     private final SchoolManager schoolManager;
@@ -23,7 +27,7 @@ public class StudentController {
 
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
-    public List<StudentDto> findAll(@Nullable @RequestParam("courseId") UUID courseId) {
+    public List<StudentDto> findAll(@RequestParam("courseId") @Nullable UUID courseId) {
         List<Student> students = (courseId == null) ?
                 studentService.findAll()
                 : schoolManager.findStudentsByCourseId(courseId);
@@ -32,7 +36,8 @@ public class StudentController {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public StudentDto save(@RequestBody StudentDto studentDto) {
+    @Validated(Marker.OnPostPut.class)
+    public StudentDto save(@RequestBody @Valid StudentDto studentDto) {
         Student student = studentMapper.studentDtoToStudent(studentDto);
         Student saved = studentService.save(student);
         return studentMapper.studentToStudentDto(saved);
@@ -59,7 +64,8 @@ public class StudentController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public StudentDto replace(@RequestBody StudentDto studentDto, @PathVariable UUID id) {
+    @Validated(Marker.OnPostPut.class)
+    public StudentDto replace(@RequestBody @Valid StudentDto studentDto, @PathVariable UUID id) {
         Student student = studentMapper.studentDtoToStudent(studentDto);
         Student replaced = studentService.update(student, id);
         return studentMapper.studentToStudentDto(replaced);

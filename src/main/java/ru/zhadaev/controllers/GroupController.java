@@ -3,19 +3,24 @@ package ru.zhadaev.controllers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.zhadaev.dao.entities.Group;
 import ru.zhadaev.dto.GroupDto;
 import ru.zhadaev.mappers.GroupMapper;
 import ru.zhadaev.service.GroupService;
 import ru.zhadaev.service.SchoolManager;
+import ru.zhadaev.validation.Marker;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/groups")
+@Validated
 public class GroupController {
     private final GroupService groupService;
     private final SchoolManager schoolManager;
@@ -23,7 +28,7 @@ public class GroupController {
 
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
-    public List<GroupDto> findAll(@Nullable @RequestParam("numberStudents") Integer numberStudents) {
+    public List<GroupDto> findAll(@RequestParam("numberStudents") @Valid @Nullable @Min(0) Integer numberStudents) {
         List<Group> groups = (numberStudents == null) ?
                 groupService.findAll()
                 : schoolManager.findGroupsByNumberStudents(numberStudents);
@@ -32,7 +37,8 @@ public class GroupController {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public GroupDto save(@RequestBody GroupDto groupDto) {
+    @Validated(Marker.OnPostPut.class)
+    public GroupDto save(@RequestBody @Valid GroupDto groupDto) {
         Group group = groupMapper.groupDtoToGroup(groupDto);
         Group saved = groupService.save(group);
         GroupDto savedDto = groupMapper.groupToGroupDto(saved);
@@ -60,8 +66,9 @@ public class GroupController {
     }
 
     @PutMapping("/{id}")
+    @Validated(Marker.OnPostPut.class)
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public GroupDto replace(@RequestBody GroupDto groupDto, @PathVariable("id") UUID id) {
+    public GroupDto replace(@RequestBody @Valid GroupDto groupDto, @PathVariable("id") UUID id) {
         Group group = groupMapper.groupDtoToGroup(groupDto);
         Group replaced = groupService.update(group, id);
         return groupMapper.groupToGroupDto(replaced);
