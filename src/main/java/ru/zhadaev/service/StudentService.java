@@ -41,8 +41,8 @@ public class StudentService {
         Student student = studentDAO.findById(id)
                 .orElseThrow(() -> new NotFoundException("Student not found"));
         studentMapper.updateStudentFromDto(studentDto, student);
-        Student updated = studentDAO.update(student);
-        return studentMapper.studentToStudentDto(updated);
+//        Student updated = studentDAO.update(student);
+        return studentMapper.studentToStudentDto(student);
     }
 
     public StudentDto findById(UUID id) {

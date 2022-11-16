@@ -45,8 +45,8 @@ public class GroupService {
         Group group = groupDAO.findById(id).
                 orElseThrow(() -> new NotFoundException("Group not found"));
         groupMapper.updateGroupFromDto(groupDto, group);
-        Group updated = groupDAO.update(group);
-        return groupMapper.groupToGroupDto(updated);
+//        Group updated = groupDAO.update(group);
+        return groupMapper.groupToGroupDto(group);
     }
 
     public GroupDto findById(UUID id) {
