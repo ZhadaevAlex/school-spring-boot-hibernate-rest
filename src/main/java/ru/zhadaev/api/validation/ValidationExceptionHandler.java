@@ -1,4 +1,4 @@
-package ru.zhadaev.validation;
+package ru.zhadaev.api.validation;
 
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -17,8 +17,7 @@ public class ValidationExceptionHandler {
                 response.getViolations().add(new Violation(
                         violation.getMessage(),
                         violation.getPropertyPath().toString(),
-                        violation.getInvalidValue(),
-                        ex.getClass().toString())));
+                        violation.getInvalidValue())));
         return response;
     }
 
@@ -30,8 +29,7 @@ public class ValidationExceptionHandler {
                 response.getViolations().add(new Violation(
                         fieldError.getDefaultMessage(),
                         fieldError.getObjectName(),
-                        fieldError.getRejectedValue(),
-                        ex.getClass().toString())));
+                        fieldError.getRejectedValue())));
         return response;
     }
 }

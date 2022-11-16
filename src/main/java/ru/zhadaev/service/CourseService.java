@@ -5,10 +5,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.zhadaev.api.dto.CourseDto;
+import ru.zhadaev.api.mappers.CourseMapper;
 import ru.zhadaev.dao.entities.Course;
 import ru.zhadaev.dao.repository.impl.CourseDAO;
 import ru.zhadaev.exception.NotFoundException;
-import ru.zhadaev.exception.NotValidCourseException;
 
 import java.util.List;
 import java.util.UUID;
@@ -20,42 +21,49 @@ public class CourseService {
     private static final Logger logger = LoggerFactory.getLogger(CourseService.class);
 
     private final CourseDAO courseDAO;
+    private final CourseMapper courseMapper;
 
-    public Course save(Course course) {
-        requiredNotNull(course);
-        return courseDAO.save(course);
+    public CourseDto save(CourseDto courseDto) {
+        Course course = courseMapper.courseDtoToCourse(courseDto);
+        Course saved = courseDAO.save(course);
+        UUID id = saved.getId();
+        return courseMapper.courseToCourseDto(saved);
     }
 
-    public Course update(Course course, UUID id) {
-        requiredNotNull(course);
-        requiredIdIsValid(id);
+    public CourseDto replace(CourseDto courseDto, UUID id) {
+        Course course = courseMapper.courseDtoToCourse(courseDto);
         course.setId(id);
-        return courseDAO.update(course);
+        Course replaced = courseDAO.update(course);
+        return courseMapper.courseToCourseDto(replaced);
     }
 
-    public Course findById(UUID id) {
-        requiredIdIsValid(id);
-        return courseDAO.findById(id)
+    public CourseDto update(CourseDto courseDto, UUID id) {
+        Course course = courseDAO.findById(id)
                 .orElseThrow(() -> new NotFoundException("Course not found"));
+        courseMapper.updateCourseFromDto(courseDto, course);
+        return courseMapper.courseToCourseDto(course);
+    }
+
+    public CourseDto findById(UUID id) {
+        Course course = courseDAO.findById(id)
+                .orElseThrow(() -> new NotFoundException("Course not found"));
+        return courseMapper.courseToCourseDto(course);
     }
 
     public List<Course> find(Course course) {
-        requiredNotNull(course);
         List<Course> courseDb = courseDAO.findLike(course);
-
         if (courseDb.isEmpty()) {
             throw new NotFoundException("Courses not found");
         }
-
         return courseDb;
     }
 
-    public List<Course> findAll() {
-        return courseDAO.findAll();
+    public List<CourseDto> findAll() {
+        List<Course> courses = courseDAO.findAll();
+        return courseMapper.coursesToCoursesDto(courses);
     }
 
     public boolean existsById(UUID id) {
-        requiredIdIsValid(id);
         return courseDAO.existsById(id);
     }
 
@@ -64,8 +72,6 @@ public class CourseService {
     }
 
     public void deleteById(UUID id) {
-        requiredIdIsValid(id);
-
         if (courseDAO.existsById(id)) {
             courseDAO.deleteById(id);
         } else {
@@ -75,25 +81,10 @@ public class CourseService {
     }
 
     public void delete(Course course) {
-        requiredNotNull(course);
         courseDAO.delete(course);
     }
 
     public void deleteAll() {
         courseDAO.deleteAll();
-    }
-
-    private void requiredNotNull(Course course) {
-        if (course == null) {
-            logger.error("Course required is not null!");
-            throw new NotValidCourseException("Course required is not null!");
-        }
-    }
-
-    private void requiredIdIsValid(UUID id) {
-        if (id == null) {
-            logger.error("The id value must be non-null and greater than 0");
-            throw new NotValidCourseException("The id value must be non-null and greater than 0");
-        }
     }
 }

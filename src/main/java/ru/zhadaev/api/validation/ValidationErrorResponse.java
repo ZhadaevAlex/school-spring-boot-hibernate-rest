@@ -1,4 +1,4 @@
-package ru.zhadaev.validation;
+package ru.zhadaev.api.validation;
 
 import lombok.Data;
 

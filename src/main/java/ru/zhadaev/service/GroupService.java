@@ -5,11 +5,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.zhadaev.api.dto.GroupDto;
+import ru.zhadaev.api.mappers.GroupMapper;
 import ru.zhadaev.dao.entities.Group;
+import ru.zhadaev.dao.entities.Student;
 import ru.zhadaev.dao.repository.impl.GroupDAO;
+import ru.zhadaev.dao.repository.impl.StudentDAO;
 import ru.zhadaev.exception.NotFoundException;
-import ru.zhadaev.exception.NotValidGroupException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,32 +24,51 @@ public class GroupService {
     private static final Logger logger = LoggerFactory.getLogger(GroupService.class);
 
     private final GroupDAO groupDAO;
+    private final StudentDAO studentDAO;
+    private final GroupMapper groupMapper;
 
-    public Group save(Group group) {
-        requiredNotNull(group);
-        return groupDAO.save(group);
+    public GroupDto save(GroupDto groupDto) {
+        Group group = groupMapper.groupDtoToGroup(groupDto);
+        Group saved = groupDAO.save(group);
+        UUID id = saved.getId();
+        return groupMapper.groupToGroupDto(saved);
     }
 
-    public Group update(Group group, UUID id) {
-        requiredNotNull(group);
-        requiredIdIsValid(id);
+    public GroupDto replace(GroupDto groupDto, UUID id) {
+        Group group = groupMapper.groupDtoToGroup(groupDto);
         group.setId(id);
-        return groupDAO.update(group);
+        Group replaced = groupDAO.update(group);
+        return groupMapper.groupToGroupDto(replaced);
     }
 
-    public Group findById(UUID id) {
-        requiredIdIsValid(id);
-        return groupDAO.findById(id)
-                .orElseThrow(() -> new NotFoundException("Group not found"));
+    public GroupDto update(GroupDto groupDto, UUID id) {
+        Group group = groupDAO.findById(id).
+                orElseThrow(() -> new NotFoundException("Group not found"));
+        groupMapper.updateGroupFromDto(groupDto, group);
+        Group updated = groupDAO.update(group);
+        return groupMapper.groupToGroupDto(updated);
     }
 
-    public List<Group> find(Group group) {
-        requiredNotNull(group);
+    public GroupDto findById(UUID id) {
+        Group group = groupDAO.findById(id).
+                orElseThrow(() -> new NotFoundException("Group not found"));
+        return groupMapper.groupToGroupDto(group);
+    }
+
+    public List<GroupDto> find(GroupDto groupDto) {
+        Group group = groupMapper.groupDtoToGroup(groupDto);
         List<Group> groupsDb = groupDAO.findLike(group);
         if (groupsDb.isEmpty()) {
             throw new NotFoundException("Groups not found");
         }
-        return groupsDb;
+        return groupMapper.groupsToGroupsDto(groupsDb);
+    }
+
+    public List<GroupDto> findAll(Integer numberStudents) {
+        List<Group> groups = (numberStudents == null) ?
+                groupDAO.findAll()
+                : findGroupsByNumberStudents(numberStudents);
+        return groupMapper.groupsToGroupsDto(groups);
     }
 
     public List<Group> findAll() {
@@ -53,7 +76,6 @@ public class GroupService {
     }
 
     public boolean existsById(UUID id) {
-        requiredIdIsValid(id);
         return groupDAO.existsById(id);
     }
 
@@ -62,7 +84,6 @@ public class GroupService {
     }
 
     public void deleteById(UUID id) {
-        requiredIdIsValid(id);
         if (groupDAO.existsById(id)) {
             groupDAO.deleteById(id);
         } else {
@@ -72,7 +93,6 @@ public class GroupService {
     }
 
     public void delete(Group group) {
-        requiredNotNull(group);
         groupDAO.delete(group);
     }
 
@@ -80,17 +100,21 @@ public class GroupService {
         groupDAO.deleteAll();
     }
 
-    private void requiredNotNull(Group group) {
-        if (group == null) {
-            logger.error("Group required is not null!");
-            throw new NotValidGroupException("Group required is not null!");
-        }
-    }
+    public List<Group> findGroupsByNumberStudents(long numberStudents) {
+        List<Student> studentsDb = studentDAO.findAll();
+        List<Group> groupsDb = groupDAO.findAll();
+        List<Group> result = new ArrayList<>();
 
-    private void requiredIdIsValid(UUID id) {
-        if (id == null) {
-            logger.error("The id value must be non-null and greater than 0");
-            throw new NotValidGroupException("The id value must be non-null and greater than 0");
+        for (Group group : groupsDb) {
+            long numberStudentsInGroup = studentsDb.stream()
+                    .filter(p -> p.getGroup() != null && p.getGroup().getId().equals(group.getId()))
+                    .count();
+
+            if (numberStudentsInGroup <= numberStudents) {
+                result.add(group);
+            }
         }
+
+        return result;
     }
 }

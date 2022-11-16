@@ -1,6 +1,6 @@
 openapi: 3.0.1
 info:
-  title: OpenAPI definitionnn
+  title: OpenAPI definition
   description: API of the "School" task
   contact:
     name: Zhadaev Alexander
@@ -30,6 +30,7 @@ paths:
             type: string
             format: uuid
           description: The student id
+          example: a46e9a8e-f535-4437-8bbf-c3a7216e74e5
       responses:
         '200':
           description: Successful operation
@@ -37,6 +38,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StudentDto'
+              example:
+                id: a46e9a8e-f535-4437-8bbf-c3a7216e74e5
+                firstName: Mia
+                lastName: Phillips
+                group:
+                  id: 46fa82ce-4e6d-45ae-a4e4-914971f1eb4f
+                  name: YT-80
+                courses:
+                  - id: 1a94740f-cab8-4522-91fa-ad996c72b92d
+                    name: Computer science
+                    description: Subject Computer science
+                  - id: cea9af46-4727-4822-8f06-807efe886f42
+                    name: Economics
+                    description: Subject Economics
     put:
       summary: Edit a student
       description: >
@@ -51,13 +66,30 @@ paths:
             type: string
             format: uuid
           description: The student id
+          example: a46e9a8e-f535-4437-8bbf-c3a7216e74e5
       requestBody:
         description: >
-          You must specify the student parameters.
+          You must specify the student properties. For the group and courses, it is enough to fill in only the id.
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/StudentDto'
+            examples:
+              All properties are filled in:
+                value:
+                  firstName: Mia
+                  lastName: Phillips
+                  group:
+                    id: 46fa82ce-4e6d-45ae-a4e4-914971f1eb4f
+                  courses:
+                  - id: 1a94740f-cab8-4522-91fa-ad996c72b92d
+                  - id: cea9af46-4727-4822-8f06-807efe886f42
+              Not all properties are filled in:
+                value:
+                  firstName: Mia
+                  lastName: Phillips
+                  group:
+                    id: 46fa82ce-4e6d-45ae-a4e4-914971f1eb4f
         required: true
       responses:
         '202':
@@ -66,6 +98,31 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StudentDto'
+              examples:
+                All properties are filled in:
+                  value:
+                    id: a46e9a8e-f535-4437-8bbf-c3a7216e74e5
+                    firstName: Mia
+                    lastName: Phillips
+                    group:
+                      id: 46fa82ce-4e6d-45ae-a4e4-914971f1eb4f
+                      name: null
+                    courses:
+                    - id: 1a94740f-cab8-4522-91fa-ad996c72b92d
+                      name: null
+                      description: null
+                    - id: cea9af46-4727-4822-8f06-807efe886f42
+                      name: null
+                      description: null
+                Not all properties are filled in:
+                  value:
+                    id: a46e9a8e-f535-4437-8bbf-c3a7216e74e5
+                    firstName: Mia
+                    lastName: Phillips
+                    group:
+                      id: 46fa82ce-4e6d-45ae-a4e4-914971f1eb4f
+                      name: null
+                    courses: null
     delete:
       summary: Delete a student
       description: >
@@ -80,13 +137,14 @@ paths:
             type: string
             format: uuid
           description: The student id
+          example: a46e9a8e-f535-4437-8bbf-c3a7216e74e5
       responses:
         '200':
           description: Successful operation
     patch:
       summary: Edit a student
       description: >
-        This method updates the student with the specified id. The values of the student properties are replaced with the values from the request body. Unspecified values are not changed
+        This method updates the student with the specified id. The values of the student properties are replaced with the values from the request body. Unspecified values are not changed.
       tags:
         - student-controller
       parameters:
@@ -97,13 +155,18 @@ paths:
             type: string
             format: uuid
           description: The student id
+          example: a46e9a8e-f535-4437-8bbf-c3a7216e74e5
       requestBody:
         description: >
-          You must specify the student parameters
+          You must specify the student parameters. For the group and courses, it is enough to fill in only the id.
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/StudentDto'
+            example:
+              courses:
+                - id: 1a94740f-cab8-4522-91fa-ad996c72b92d
+                - id: cea9af46-4727-4822-8f06-807efe886f42
         required: true
       responses:
         '202':
@@ -112,6 +175,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StudentDto'
+              example:
+                id: a46e9a8e-f535-4437-8bbf-c3a7216e74e5
+                firstName: Mia
+                lastName: Phillips
+                group:
+                  id: 46fa82ce-4e6d-45ae-a4e4-914971f1eb4f
+                  name: YT-80
+                courses:
+                  - id: cea9af46-4727-4822-8f06-807efe886f42
+                    name: null
+                    description: null
+                  - id: 1a94740f-cab8-4522-91fa-ad996c72b92d
+                    name: null
+                    description: null  
   /api/groups/{id}:
     summary: Represents a group
     description: >
@@ -131,6 +208,7 @@ paths:
             type: string
             format: uuid
           description: The group id
+          example: 46fa82ce-4e6d-45ae-a4e4-914971f1eb4f
       responses:
         '200':
           description: Successful operation
@@ -138,6 +216,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GroupDto'
+              example:
+                id: 46fa82ce-4e6d-45ae-a4e4-914971f1eb4f
+                name: YT-80
     put:
       summary: Edit a group
       description: >
@@ -152,6 +233,7 @@ paths:
             type: string
             format: uuid
           description: The group id
+          example: 46fa82ce-4e6d-45ae-a4e4-914971f1eb4f
       requestBody:
         description: >
           You must specify the group parameters.
@@ -159,6 +241,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/GroupDto'
+            example:
+              name: YT-80
       responses:
         '202':
           description: Accepted
@@ -166,6 +250,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GroupDto'
+              example:
+                id: 46fa82ce-4e6d-45ae-a4e4-914971f1eb4f
+                name: YT-80
     delete:
       summary: Delete a group
       description: >
@@ -180,6 +267,7 @@ paths:
             type: string
             format: uuid
           description: The group id
+          example: 46fa82ce-4e6d-45ae-a4e4-914971f1eb4f
       responses:
         '200':
           description: Successful operation
@@ -197,6 +285,7 @@ paths:
             type: string
             format: uuid
           description: The group id
+          example: 46fa82ce-4e6d-45ae-a4e4-914971f1eb4f
       requestBody:
         description: >
           You must specify the group parameters.
@@ -204,6 +293,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/GroupDto'
+            example:
+              name: YT-80
       responses:
         '202':
           description: Accepted
@@ -211,6 +302,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GroupDto'
+              example:
+                id: 46fa82ce-4e6d-45ae-a4e4-914971f1eb4f
+                name: YT-80
   /api/courses/{id}:
     summary: Represents a course
     description: >
@@ -230,6 +324,7 @@ paths:
             type: string
             format: uuid
           description: The course id
+          example: 1a94740f-cab8-4522-91fa-ad996c72b92d
       responses:
         '200':
           description: Successful operation
@@ -237,6 +332,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CourseDto'
+              example: 
+                name: Computer science
+                description: Subject Computer science
     put:
       summary: Edit a course
       description: >
@@ -251,6 +349,7 @@ paths:
             type: string
             format: uuid
           description: The course id
+          example: 1a94740f-cab8-4522-91fa-ad996c72b92d
       requestBody:
         description: >
           You must specify the course parameters.
@@ -258,6 +357,14 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CourseDto'
+            examples:
+              All properties are filled in:
+                value:
+                  name: Computer science
+                  description: Subject Computer science
+              Not all properties are filled in:
+                value:
+                  description: Subject Computer science
         required: true
       responses:
         '202':
@@ -266,6 +373,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CourseDto'
+              examples:
+                All properties are filled in:
+                  value:
+                    id: 1a94740f-cab8-4522-91fa-ad996c72b92d
+                    name: Computer science
+                    description: Subject Computer science
+                Not all properties are filled in:
+                  value:
+                    id: 1a94740f-cab8-4522-91fa-ad996c72b92d
+                    name: null
+                    description: Subject Computer science
     delete:
       summary: Delete a course
       description: >
@@ -280,6 +398,7 @@ paths:
             type: string
             format: uuid
           description: The course id
+          example: a46e9a8e-f535-4437-8bbf-c3a7216e74e5
       responses:
         '200':
           description: Successful operation
@@ -297,6 +416,7 @@ paths:
             type: string
             format: uuid
           description: The course id
+          example: cea9af46-4727-4822-8f06-807efe886f42
       requestBody:
         description: >
           You must specify the course parameters.
@@ -304,6 +424,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CourseDto'
+            example: 
+              description: Subject Computer science
         required: true
       responses:
         '202':
@@ -312,6 +434,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CourseDto'
+              example:
+                id: cea9af46-4727-4822-8f06-807efe886f42
+                name: Economics
+                description: Subject Economics
   /api/students:
     summary: Represents a students
     description: >
@@ -319,7 +445,7 @@ paths:
     get:
       summary: Get all students
       description: >
-        This method allows you to get a list of all school students.
+        This method allows you to get a list of all school students. If the filter parameter is set, the method returns a list of filtered students.
       tags:
         - student-controller
       parameters:
@@ -329,6 +455,7 @@ paths:
           schema:
             type: string
             format: uuid
+          description: ID of the course the students are studying at.
       responses:
         '200':
           description: Successful operation
@@ -338,6 +465,36 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/StudentDto'
+              example:
+                - id: a46e9a8e-f535-4437-8bbf-c3a7216e74e5
+                  firstName: Mia
+                  lastName: Phillips
+                  group:
+                    id: 46fa82ce-4e6d-45ae-a4e4-914971f1eb4f
+                    name: YT-80
+                  courses:
+                    - id: 1a94740f-cab8-4522-91fa-ad996c72b92d
+                      name: Computer science
+                      description: Subject Computer science
+                    - id: cea9af46-4727-4822-8f06-807efe886f42
+                      name: Economics
+                      description: Subject Economics
+                - id: 821a15ed-2e3c-4f32-a0b7-4e52d81b550f
+                  firstName: Jessica
+                  lastName: Anderson
+                  group:
+                    id: 46fa82ce-4e6d-45ae-a4e4-914971f1eb4f
+                    name: YT-80
+                  courses:
+                    - id: acffffde-c76d-4618-9a32-2e79d5cd087e
+                      name: Music
+                      description: Subject Music
+                    - id: 51d5f402-7150-4bab-af7c-816bdba735f5
+                      name: Astronomy
+                      description: Subject Astronomy
+                    - id: 99c44d20-1056-49a7-a3a4-2e86cf4e0688
+                      name: Botany
+                      description: Subject Botany
     post:
       summary: Add a new student
       description: >
@@ -346,11 +503,28 @@ paths:
         - student-controller
       requestBody:
         description: >
-          You must specify the student parameters.
+          You must specify the student parameters. For the group and courses, it is enough to fill in only the id.
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/StudentDto'
+            examples:
+              All properties are filled in:
+                value:
+                  firstName: Mia
+                  lastName: Phillips
+                  group:
+                    id: 46fa82ce-4e6d-45ae-a4e4-914971f1eb4f
+                  courses:
+                  - id: 1a94740f-cab8-4522-91fa-ad996c72b92d
+                  - id: cea9af46-4727-4822-8f06-807efe886f42
+              Not all properties are filled in:
+                value:
+                  firstName: Mia
+                  lastName: Phillips
+                  group:
+                    id: 46fa82ce-4e6d-45ae-a4e4-914971f1eb4f
+            
         required: true
       responses:
         '201':
@@ -359,6 +533,31 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StudentDto'
+              examples:
+                All properties are filled in:
+                  value:
+                    id: d62bf582-59a2-4c07-8149-dd26ffa12af3
+                    firstName: Mia
+                    lastName: Phillips
+                    group:
+                      id: 46fa82ce-4e6d-45ae-a4e4-914971f1eb4f
+                      name: null
+                    courses:
+                    - id: 1a94740f-cab8-4522-91fa-ad996c72b92d
+                      name: null
+                      description: null
+                    - id: cea9af46-4727-4822-8f06-807efe886f42
+                      name: null
+                      description: null
+                Not all properties are filled in:
+                  value:
+                    id: d62bf582-59a2-4c07-8149-dd26ffa12af3
+                    firstName: Mia
+                    lastName: Phillips
+                    group:
+                      id: 46fa82ce-4e6d-45ae-a4e4-914971f1eb4f
+                      name: null
+                    courses: null
     delete:
       summary: Delete all students
       description: >
@@ -375,7 +574,7 @@ paths:
     get:
       summary: Get all groups
       description: >
-        This method allows you to get a list of all school groups
+        This method allows you to get a list of all school groups. If the filter parameter is set, the method returns a list of filtered groups. In this case, the method returns groups in which the number of students is less than or equal to the specified.
       tags:
         - group-controller
       parameters:
@@ -385,6 +584,9 @@ paths:
           schema:
             type: integer
             format: int32
+            minimum: 0
+          description: Number of students
+          example: 15
       responses:
         '200':
           description: Successful operation
@@ -394,6 +596,13 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/GroupDto'
+              example:
+                - id: 408a9358-c6b1-4b36-8912-7bbd4803f1b1
+                  name: BA-51
+                - id: d73d111e-7159-48e5-9247-e050db9e0437
+                  name: OU-60
+                - id: 10562d54-0acc-4fbf-baba-98c0aa77a900
+                  name: SV-51
     post:
       summary: Add a new group
       description: >
@@ -407,6 +616,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/GroupDto'
+            example:
+              name: SV-51
       responses:
         '201':
           description: Created
@@ -414,6 +625,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GroupDto'
+              example:
+                id: c20bf536-996e-45cb-8f8d-b57f7b9a5998
+                name: SV-51
     delete:
       summary: Delete all groups
       description: >
@@ -442,6 +656,16 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/CourseDto'
+              example:
+                - id: 1565f8d4-35bb-4c48-9045-c91acdb753ec
+                  name: Chemistry
+                  description:  Subject Chemistry
+                - id: df5b330d-5f6a-4223-8d0b-b71f45636b9f
+                  name: Literature
+                  directional:  Subject Literature
+                - id: acffffde-c76d-4618-9a32-2e79d5cd087e
+                  name: Music
+                  directional: Subject Music
     post:
       summary: Add a new course
       description: >
@@ -455,6 +679,9 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CourseDto'
+            example:
+              name: Chemistry
+              description:  Subject Chemistry
         required: true
       responses:
         '201':
@@ -463,6 +690,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CourseDto'
+              example:
+                id: 7a46abc6-d100-40f1-a16f-a1a0ea18f630
+                name: Chemistry
+                description:  Subject Chemistry
     delete:
       summary: Delete all courses
       description: >
@@ -484,8 +715,10 @@ components:
           $ref: '#/components/schemas/GroupDto'
         firstName:
           type: string
+          minLength: 2
         lastName:
           type: string
+          minLength: 2
         courses:
           uniqueItems: true
           type: array

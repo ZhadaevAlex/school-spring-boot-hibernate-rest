@@ -1,7 +1,7 @@
-package ru.zhadaev.dto;
+package ru.zhadaev.api.dto;
 
 import lombok.Data;
-import ru.zhadaev.validation.Marker;
+import ru.zhadaev.api.validation.Marker;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;

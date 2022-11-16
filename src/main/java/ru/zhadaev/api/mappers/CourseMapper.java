@@ -1,10 +1,10 @@
-package ru.zhadaev.mappers;
+package ru.zhadaev.api.mappers;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import ru.zhadaev.dao.entities.Course;
-import ru.zhadaev.dto.CourseDto;
+import ru.zhadaev.api.dto.CourseDto;
 
 import java.util.List;
 

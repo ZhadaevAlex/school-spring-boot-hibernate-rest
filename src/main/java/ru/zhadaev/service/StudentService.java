@@ -5,11 +5,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.zhadaev.api.dto.StudentDto;
+import ru.zhadaev.api.mappers.StudentMapper;
 import ru.zhadaev.dao.entities.Student;
 import ru.zhadaev.dao.repository.impl.StudentDAO;
 import ru.zhadaev.exception.NotFoundException;
-import ru.zhadaev.exception.NotValidStudentException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,27 +22,36 @@ public class StudentService {
     private static final Logger logger = LoggerFactory.getLogger(StudentService.class);
 
     private final StudentDAO studentDAO;
+    private final StudentMapper studentMapper;
 
-    public Student save(Student student) {
-        requiredNotNull(student);
-        return studentDAO.save(student);
+    public StudentDto save(StudentDto studentDto) {
+        Student student = studentMapper.studentDtoToStudent(studentDto);
+        Student saved = studentDAO.save(student);
+        return studentMapper.studentToStudentDto(saved);
     }
 
-    public Student update(Student student, UUID id) {
-        requiredNotNull(student);
-        requiredIdIsValid(id);
+    public StudentDto replace(StudentDto studentDto, UUID id) {
+        Student student = studentMapper.studentDtoToStudent(studentDto);
         student.setId(id);
-        return studentDAO.update(student);
+        Student replaced = studentDAO.update(student);
+        return studentMapper.studentToStudentDto(replaced);
     }
 
-    public Student findById(UUID id) {
-        requiredIdIsValid(id);
-        return studentDAO.findById(id).orElseThrow(() -> new NotFoundException("Student not found"));
+    public StudentDto update(StudentDto studentDto, UUID id) {
+        Student student = studentDAO.findById(id)
+                .orElseThrow(() -> new NotFoundException("Student not found"));
+        studentMapper.updateStudentFromDto(studentDto, student);
+        Student updated = studentDAO.update(student);
+        return studentMapper.studentToStudentDto(updated);
+    }
+
+    public StudentDto findById(UUID id) {
+        Student student = studentDAO.findById(id)
+                .orElseThrow(() -> new NotFoundException("Student not found"));
+        return studentMapper.studentToStudentDto(student);
     }
 
     public List<Student> find(Student student) {
-        requiredNotNull(student);
-
         List<Student> studentDb = studentDAO.findLike(student);
 
         if (studentDb.isEmpty()) {
@@ -50,13 +61,18 @@ public class StudentService {
         return studentDb;
     }
 
+    public List<StudentDto> findAll(UUID courseId) {
+        List<Student> students = (courseId == null) ?
+                studentDAO.findAll()
+                : findStudentsByCourseId(courseId);
+        return studentMapper.studentsToStudentsDto(students);
+    }
+
     public List<Student> findAll() {
         return studentDAO.findAll();
     }
 
     public boolean existsById(UUID id) {
-        requiredIdIsValid(id);
-
         return studentDAO.existsById(id);
     }
 
@@ -65,8 +81,6 @@ public class StudentService {
     }
 
     public void deleteById(UUID id) {
-        requiredIdIsValid(id);
-
         if (studentDAO.existsById(id)) {
             studentDAO.deleteById(id);
         } else {
@@ -78,7 +92,6 @@ public class StudentService {
     }
 
     public void delete(Student student) {
-        requiredNotNull(student);
         studentDAO.delete(student);
     }
 
@@ -86,17 +99,19 @@ public class StudentService {
         studentDAO.deleteAll();
     }
 
-    private void requiredNotNull(Student student) {
-        if (student == null) {
-            logger.error("Student required is not null!");
-            throw new NotValidStudentException("Student required is not null!");
-        }
-    }
+    public List<Student> findStudentsByCourseId(UUID courseId) {
+        List<Student> studentsDb = studentDAO.findAll();
+        List<Student> studentsByCourse = new ArrayList<>();
 
-    private void requiredIdIsValid(UUID id) {
-        if (id == null) {
-            logger.error("The id value must be non-null and greater than 0");
-            throw new NotValidStudentException("The id value must be non-null and greater than 0");
+        for (Student student : studentsDb) {
+            boolean contains = student.getCourses().stream()
+                    .anyMatch(p -> p.getId().equals(courseId));
+
+            if (contains) {
+                studentsByCourse.add(student);
+            }
         }
+
+        return studentsByCourse;
     }
 }
