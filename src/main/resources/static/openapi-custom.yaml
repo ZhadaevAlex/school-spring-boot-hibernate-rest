@@ -143,7 +143,7 @@ paths:
                 timestamp: "2022-11-17T17:47:01.030+00:00"
                 status: Not Found
                 message: Student replace error. Student not found by id
-        '422':
+        '400':
           description: >
             Validation error. The student's first and last name must consist of at least two characters.
           content:
@@ -152,7 +152,7 @@ paths:
                 $ref: '#/components/schemas/ValidationError'
               example:
                 timestamp: "2022-11-18T08:34:12.995+00:00"
-                status: Unprocessable Entity
+                status: Bad Request
                 violations:
                   - message: The student's first name must consist of at least two characters
                     propertyPath: studentDto
@@ -246,7 +246,7 @@ paths:
                 timestamp: "2022-11-17T17:47:01.030+00:00"
                 status: Not Found
                 message: Student update error. Student not found by id
-        '422':
+        '400':
           description: >
             Validation error. The student's first and last name must consist of at least two characters.
           content:
@@ -255,7 +255,7 @@ paths:
                 $ref: '#/components/schemas/ValidationError'
               example:
                 timestamp: "2022-11-18T08:34:12.995+00:00"
-                status: Unprocessable Entity
+                status: Bad Request
                 violations:
                   - message: The student's first name must consist of at least two characters
                     propertyPath: studentDto
@@ -347,7 +347,7 @@ paths:
                 timestamp: "2022-11-17T17:47:01.030+00:00"
                 status: Not Found
                 message: Group replace error. Group not found by id
-        '422':
+        '400':
           description: >
             Validation error. The group name must consist of at least one character.
           content:
@@ -356,7 +356,7 @@ paths:
                 $ref: '#/components/schemas/ValidationError'
               example:
                 timestamp: "2022-11-17T19:07:45.652+00:0"
-                status: Unprocessable Entity
+                status: Bad Request
                 violations:
                   - message: The group name must consist of at least one character
                     propertyPath: groupDto
@@ -433,7 +433,7 @@ paths:
                 timestamp: "2022-11-17T17:47:01.030+00:00"
                 status: Not Found
                 message: Group update error. Group not found by id
-        '422':
+        '400':
           description: >
             Validation error. The group name must consist of at least one character.
           content:
@@ -442,7 +442,7 @@ paths:
                 $ref: '#/components/schemas/ValidationError'
               example:
                 timestamp: "2022-11-17T19:07:45.652+00:0"
-                status: Unprocessable Entity
+                status: Bad Request
                 violations:
                   - message: The group name must consist of at least one character
                     propertyPath: groupDto
@@ -546,7 +546,7 @@ paths:
                 timestamp: "2022-11-17T17:47:01.030+00:00"
                 status: Not Found
                 message: Course replace error. Course not found by id
-        '422':
+        '400':
           description: >
             Validation error. The course name must consist of at least one character.
           content:
@@ -555,7 +555,7 @@ paths:
                 $ref: '#/components/schemas/ValidationError'
               example:
                 timestamp: "2022-11-17T20:05:27.674+00:00"
-                status: Unprocessable Entity
+                status: Bad Request
                 violations:
                   - message: The course name must consist of at least one character
                     propertyPath: courseDto
@@ -634,7 +634,7 @@ paths:
                 timestamp: "2022-11-17T17:47:01.030+00:00"
                 status: Not Found
                 message: Course update error. Course not found by id
-        '422':
+        '400':
           description: >
             Validation error. The course name must consist of at least one character.
           content:
@@ -643,7 +643,7 @@ paths:
                 $ref: '#/components/schemas/ValidationError'
               example:
                 timestamp: "2022-11-17T20:05:27.674+00:00"
-                status: Unprocessable Entity
+                status: Bad Request
                 violations:
                   - message: The course name must consist of at least one character
                     propertyPath: courseDto
@@ -769,7 +769,7 @@ paths:
                       id: 46fa82ce-4e6d-45ae-a4e4-914971f1eb4f
                       name: null
                     courses: null
-        '422':
+        '400':
           description: >
             Validation error. The student's first and last name must consist of at least two characters.
           content:
@@ -778,7 +778,7 @@ paths:
                 $ref: '#/components/schemas/ValidationError'
               example:
                 timestamp: "2022-11-18T08:34:12.995+00:00"
-                status: Unprocessable Entity
+                status: Bad Request
                 violations:
                   - message: The student's first name must consist of at least two characters
                     propertyPath: studentDto
@@ -845,7 +845,6 @@ paths:
                   - message: The number of students must be greater than or equal to zero
                     propertyPath: findAll.numberStudents
                     invalidValue: -2
-                
     post:
       summary: Add a new group
       description: >
@@ -871,7 +870,7 @@ paths:
               example:
                 id: c20bf536-996e-45cb-8f8d-b57f7b9a5998
                 name: SV-51
-        '422':
+        '400':
           description: >
             Validation error. The group name must consist of at least one character.
           content:
@@ -880,7 +879,7 @@ paths:
                 $ref: '#/components/schemas/ValidationError'
               example:
                 timestamp: "2022-11-17T19:07:45.652+00:0"
-                status: Unprocessable Entity
+                status: Bad Request
                 violations:
                   - message: The group name must consist of at least one character
                     propertyPath: groupDto
@@ -951,7 +950,7 @@ paths:
                 id: 7a46abc6-d100-40f1-a16f-a1a0ea18f630
                 name: Chemistry
                 description:  Subject Chemistry
-        '422':
+        '400':
           description: >
             Validation error. The course name must consist of at least one character.
           content:
@@ -960,7 +959,7 @@ paths:
                 $ref: '#/components/schemas/ValidationError'
               example:
                 timestamp: "2022-11-17T20:05:27.674+00:00"
-                status: Unprocessable Entity
+                status: Bad Request
                 violations:
                   - message: The course name must consist of at least one character
                     propertyPath: courseDto
@@ -1042,4 +1041,3 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Violation'
-        
