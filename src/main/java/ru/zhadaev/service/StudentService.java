@@ -1,15 +1,13 @@
 package ru.zhadaev.service;
 
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.zhadaev.api.dto.StudentDto;
+import ru.zhadaev.api.errors.NotFoundException;
 import ru.zhadaev.api.mappers.StudentMapper;
 import ru.zhadaev.dao.entities.Student;
 import ru.zhadaev.dao.repository.impl.StudentDAO;
-import ru.zhadaev.exception.NotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,53 +17,50 @@ import java.util.UUID;
 @Transactional(rollbackFor = Exception.class)
 @RequiredArgsConstructor
 public class StudentService {
-    private static final Logger logger = LoggerFactory.getLogger(StudentService.class);
-
     private final StudentDAO studentDAO;
-    private final StudentMapper studentMapper;
+    private final StudentMapper mapper;
 
     public StudentDto save(StudentDto studentDto) {
-        Student student = studentMapper.studentDtoToStudent(studentDto);
+        Student student = mapper.toEntity(studentDto);
         Student saved = studentDAO.save(student);
-        return studentMapper.studentToStudentDto(saved);
+        return mapper.toDto(saved);
     }
 
     public StudentDto replace(StudentDto studentDto, UUID id) {
-        Student student = studentMapper.studentDtoToStudent(studentDto);
+        if (!existsById(id)) throw new NotFoundException("Student replace error. Student not found by id");
+        Student student = mapper.toEntity(studentDto);
         student.setId(id);
         Student replaced = studentDAO.update(student);
-        return studentMapper.studentToStudentDto(replaced);
+        return mapper.toDto(replaced);
     }
 
     public StudentDto update(StudentDto studentDto, UUID id) {
         Student student = studentDAO.findById(id)
-                .orElseThrow(() -> new NotFoundException("Student not found"));
-        studentMapper.updateStudentFromDto(studentDto, student);
-//        Student updated = studentDAO.update(student);
-        return studentMapper.studentToStudentDto(student);
+                .orElseThrow(() -> new NotFoundException("Student update error. Student not found by id"));
+        mapper.update(studentDto, student);
+        return mapper.toDto(student);
     }
 
     public StudentDto findById(UUID id) {
         Student student = studentDAO.findById(id)
-                .orElseThrow(() -> new NotFoundException("Student not found"));
-        return studentMapper.studentToStudentDto(student);
+                .orElseThrow(() -> new NotFoundException("Student not found by id"));
+        return mapper.toDto(student);
     }
 
-    public List<Student> find(Student student) {
-        List<Student> studentDb = studentDAO.findLike(student);
-
-        if (studentDb.isEmpty()) {
-            throw new NotFoundException("Students not found");
+    public List<StudentDto> find(StudentDto studentDto) {
+        Student student = mapper.toEntity(studentDto);
+        List<Student> students = studentDAO.findLike(student);
+        if (students.isEmpty()) {
+            throw new NotFoundException("Students not found by id");
         }
-
-        return studentDb;
+        return mapper.toDto(students);
     }
 
     public List<StudentDto> findAll(UUID courseId) {
         List<Student> students = (courseId == null) ?
                 studentDAO.findAll()
                 : findStudentsByCourseId(courseId);
-        return studentMapper.studentsToStudentsDto(students);
+        return mapper.toDto(students);
     }
 
     public List<Student> findAll() {
@@ -84,7 +79,6 @@ public class StudentService {
         if (studentDAO.existsById(id)) {
             studentDAO.deleteById(id);
         } else {
-            logger.error("Student delete error. Student not found by id");
             throw new NotFoundException("Student delete error. Student not found by id");
         }
 

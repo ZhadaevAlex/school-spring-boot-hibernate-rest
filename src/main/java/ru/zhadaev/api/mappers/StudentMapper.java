@@ -11,8 +11,8 @@ import java.util.List;
 @Mapper(componentModel = "spring",
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface StudentMapper {
-    StudentDto studentToStudentDto(Student student);
-    Student studentDtoToStudent(StudentDto studentDto);
-    List<StudentDto> studentsToStudentsDto(List<Student> students);
-    void updateStudentFromDto(StudentDto studentDto, @MappingTarget Student student);
+    StudentDto toDto(Student student);
+    Student toEntity(StudentDto studentDto);
+    List<StudentDto> toDto(List<Student> students);
+    void update(StudentDto studentDto, @MappingTarget Student student);
 }

@@ -11,8 +11,8 @@ import java.util.List;
 @Mapper(componentModel = "spring",
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface GroupMapper {
-    GroupDto groupToGroupDto(Group group);
-    Group groupDtoToGroup(GroupDto groupDto);
-    List<GroupDto> groupsToGroupsDto(List<Group> groups);
-    void updateGroupFromDto(GroupDto groupDto, @MappingTarget Group group);
+    GroupDto toDto(Group group);
+    Group toEntity(GroupDto groupDto);
+    List<GroupDto> toDto(List<Group> groups);
+    void update(GroupDto groupDto, @MappingTarget Group group);
 }

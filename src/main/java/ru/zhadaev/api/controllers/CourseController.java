@@ -2,10 +2,8 @@ package ru.zhadaev.api.controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.zhadaev.api.dto.CourseDto;
-import ru.zhadaev.api.validation.Marker;
 import ru.zhadaev.service.CourseService;
 
 import javax.validation.Valid;
@@ -25,7 +23,6 @@ public class CourseController {
     }
 
     @PostMapping()
-    @Validated(Marker.OnPostPut.class)
     @ResponseStatus(HttpStatus.CREATED)
     public CourseDto save(@RequestBody @Valid CourseDto courseDto) {
         return courseService.save(courseDto);
@@ -48,14 +45,13 @@ public class CourseController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    @Validated(Marker.OnPostPut.class)
     public CourseDto replace(@RequestBody @Valid CourseDto courseDto, @PathVariable UUID id) {
         return courseService.replace(courseDto, id);
     }
 
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public CourseDto update(@RequestBody CourseDto courseDto, @PathVariable("id") UUID id) {
+    public CourseDto update(@RequestBody @Valid CourseDto courseDto, @PathVariable("id") UUID id) {
         return courseService.update(courseDto, id);
     }
 }

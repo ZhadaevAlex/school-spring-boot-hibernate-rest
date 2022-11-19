@@ -1,35 +1,44 @@
 package ru.zhadaev.api.validation;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.validation.ConstraintViolationException;
+import java.sql.Timestamp;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class ValidationExceptionHandler {
+
     @ExceptionHandler(ConstraintViolationException.class)
-    @ResponseBody
-    public ValidationErrorResponse onConstraintViolationException(ConstraintViolationException ex) {
-        ValidationErrorResponse response = new ValidationErrorResponse();
+    public ResponseEntity<ValidationError> onConstraintViolationException(ConstraintViolationException ex) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        ValidationError response = new ValidationError();
+        response.setTimestamp(new Timestamp(System.currentTimeMillis()));
+        response.setStatus(status.getReasonPhrase());
         ex.getConstraintViolations().forEach(violation ->
                 response.getViolations().add(new Violation(
                         violation.getMessage(),
                         violation.getPropertyPath().toString(),
                         violation.getInvalidValue())));
-        return response;
+        return ResponseEntity.status(status)
+                .body(response);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseBody
-    public ValidationErrorResponse onMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
-        ValidationErrorResponse response = new ValidationErrorResponse();
+    public ResponseEntity<ValidationError> onMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        ValidationError response = new ValidationError();
+        response.setTimestamp(new Timestamp(System.currentTimeMillis()));
+        response.setStatus(status.getReasonPhrase());
         ex.getBindingResult().getFieldErrors().forEach(fieldError ->
                 response.getViolations().add(new Violation(
                         fieldError.getDefaultMessage(),
                         fieldError.getObjectName(),
                         fieldError.getRejectedValue())));
-        return response;
+        return ResponseEntity.status(status)
+                .body(response);
     }
 }

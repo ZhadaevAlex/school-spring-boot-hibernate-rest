@@ -52,6 +52,16 @@ paths:
                   - id: cea9af46-4727-4822-8f06-807efe886f42
                     name: Economics
                     description: Subject Economics
+        '404':
+          description: Student not found by id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomError'
+              example:
+                timestamp: "2022-11-17T17:47:01.030+00:00"
+                status: Not Found
+                message: Student not found by id
     put:
       summary: Edit a student
       description: >
@@ -123,6 +133,33 @@ paths:
                       id: 46fa82ce-4e6d-45ae-a4e4-914971f1eb4f
                       name: null
                     courses: null
+        '404':
+          description: Student replace error. Student not found by id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomError'
+              example:
+                timestamp: "2022-11-17T17:47:01.030+00:00"
+                status: Not Found
+                message: Student replace error. Student not found by id
+        '422':
+          description: >
+            Validation error. The student's first and last name must consist of at least two characters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+              example:
+                timestamp: "2022-11-18T08:34:12.995+00:00"
+                status: Unprocessable Entity
+                violations:
+                  - message: The student's first name must consist of at least two characters
+                    propertyPath: studentDto
+                    invalidValue: A
+                  - message: The student's last name must consist of at least two characters
+                    propertyPath: studentDto
+                    invalidValue: B
     delete:
       summary: Delete a student
       description: >
@@ -141,6 +178,16 @@ paths:
       responses:
         '200':
           description: Successful operation
+        '404':
+          description: Student delete error. Student not found by id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomError'
+              example:
+                timestamp: "2022-11-17T17:47:01.030+00:00"
+                status: Not Found
+                message: Student delete error. Student not found by id
     patch:
       summary: Edit a student
       description: >
@@ -188,7 +235,34 @@ paths:
                     description: null
                   - id: 1a94740f-cab8-4522-91fa-ad996c72b92d
                     name: null
-                    description: null  
+                    description: null
+        '404':
+          description: Student update error. Student not found by id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomError'
+              example:
+                timestamp: "2022-11-17T17:47:01.030+00:00"
+                status: Not Found
+                message: Student update error. Student not found by id
+        '422':
+          description: >
+            Validation error. The student's first and last name must consist of at least two characters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+              example:
+                timestamp: "2022-11-18T08:34:12.995+00:00"
+                status: Unprocessable Entity
+                violations:
+                  - message: The student's first name must consist of at least two characters
+                    propertyPath: studentDto
+                    invalidValue: A
+                  - message: The student's last name must consist of at least two characters
+                    propertyPath: studentDto
+                    invalidValue: B
   /api/groups/{id}:
     summary: Represents a group
     description: >
@@ -219,6 +293,16 @@ paths:
               example:
                 id: 46fa82ce-4e6d-45ae-a4e4-914971f1eb4f
                 name: YT-80
+        '404':
+          description: Group not found by id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomError'
+              example:
+                timestamp: "2022-11-17T17:47:01.030+00:00"
+                status: Not Found
+                message: Group not found by id
     put:
       summary: Edit a group
       description: >
@@ -253,6 +337,30 @@ paths:
               example:
                 id: 46fa82ce-4e6d-45ae-a4e4-914971f1eb4f
                 name: YT-80
+        '404':
+          description: Group replace error. Group not found by id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomError'
+              example:
+                timestamp: "2022-11-17T17:47:01.030+00:00"
+                status: Not Found
+                message: Group replace error. Group not found by id
+        '422':
+          description: >
+            Validation error. The group name must consist of at least one character.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+              example:
+                timestamp: "2022-11-17T19:07:45.652+00:0"
+                status: Unprocessable Entity
+                violations:
+                  - message: The group name must consist of at least one character
+                    propertyPath: groupDto
+                    invalidValue: " "
     delete:
       summary: Delete a group
       description: >
@@ -271,6 +379,16 @@ paths:
       responses:
         '200':
           description: Successful operation
+        '404':
+          description: Group delete error. Group not found by id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomError'
+              example:
+                timestamp: "2022-11-17T17:47:01.030+00:00"
+                status: Not Found
+                message: Group delete error. Group not found by id
     patch:
       summary: Edit a group
       description: >
@@ -305,6 +423,30 @@ paths:
               example:
                 id: 46fa82ce-4e6d-45ae-a4e4-914971f1eb4f
                 name: YT-80
+        '404':
+          description: Group update error. Group not found by id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomError'
+              example:
+                timestamp: "2022-11-17T17:47:01.030+00:00"
+                status: Not Found
+                message: Group update error. Group not found by id
+        '422':
+          description: >
+            Validation error. The group name must consist of at least one character.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+              example:
+                timestamp: "2022-11-17T19:07:45.652+00:0"
+                status: Unprocessable Entity
+                violations:
+                  - message: The group name must consist of at least one character
+                    propertyPath: groupDto
+                    invalidValue: " "
   /api/courses/{id}:
     summary: Represents a course
     description: >
@@ -335,6 +477,16 @@ paths:
               example: 
                 name: Computer science
                 description: Subject Computer science
+        '404':
+          description: Course not found by id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomError'
+              example:
+                timestamp: "2022-11-17T17:47:01.030+00:00"
+                status: Not Found
+                message: Course not found by id
     put:
       summary: Edit a course
       description: >
@@ -384,6 +536,30 @@ paths:
                     id: 1a94740f-cab8-4522-91fa-ad996c72b92d
                     name: null
                     description: Subject Computer science
+        '404':
+          description: Course replace error. Course not found by id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomError'
+              example:
+                timestamp: "2022-11-17T17:47:01.030+00:00"
+                status: Not Found
+                message: Course replace error. Course not found by id
+        '422':
+          description: >
+            Validation error. The course name must consist of at least one character.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+              example:
+                timestamp: "2022-11-17T20:05:27.674+00:00"
+                status: Unprocessable Entity
+                violations:
+                  - message: The course name must consist of at least one character
+                    propertyPath: courseDto
+                    invalidValue: " "
     delete:
       summary: Delete a course
       description: >
@@ -402,6 +578,16 @@ paths:
       responses:
         '200':
           description: Successful operation
+        '404':
+          description: Course delete error. Course not found by id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomError'
+              example:
+                timestamp: "2022-11-17T17:47:01.030+00:00"
+                status: Not Found
+                message: Course delete error. Course not found by id
     patch:
       summary: Edit a course
       description: >
@@ -438,6 +624,30 @@ paths:
                 id: cea9af46-4727-4822-8f06-807efe886f42
                 name: Economics
                 description: Subject Economics
+        '404':
+          description: Course update error. Course not found by id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomError'
+              example:
+                timestamp: "2022-11-17T17:47:01.030+00:00"
+                status: Not Found
+                message: Course update error. Course not found by id
+        '422':
+          description: >
+            Validation error. The course name must consist of at least one character.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+              example:
+                timestamp: "2022-11-17T20:05:27.674+00:00"
+                status: Unprocessable Entity
+                violations:
+                  - message: The course name must consist of at least one character
+                    propertyPath: courseDto
+                    invalidValue: " "
   /api/students:
     summary: Represents a students
     description: >
@@ -456,6 +666,7 @@ paths:
             type: string
             format: uuid
           description: ID of the course the students are studying at.
+          example: 1a94740f-cab8-4522-91fa-ad996c72b92d
       responses:
         '200':
           description: Successful operation
@@ -558,6 +769,23 @@ paths:
                       id: 46fa82ce-4e6d-45ae-a4e4-914971f1eb4f
                       name: null
                     courses: null
+        '422':
+          description: >
+            Validation error. The student's first and last name must consist of at least two characters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+              example:
+                timestamp: "2022-11-18T08:34:12.995+00:00"
+                status: Unprocessable Entity
+                violations:
+                  - message: The student's first name must consist of at least two characters
+                    propertyPath: studentDto
+                    invalidValue: A
+                  - message: The student's last name must consist of at least two characters
+                    propertyPath: studentDto
+                    invalidValue: B
     delete:
       summary: Delete all students
       description: >
@@ -603,6 +831,21 @@ paths:
                   name: OU-60
                 - id: 10562d54-0acc-4fbf-baba-98c0aa77a900
                   name: SV-51
+        '400':
+          description: >
+            Validation error. The number of students must be greater than or equal to zero.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+              example:
+                timestamp: "2022-11-17T19:07:45.652+00:0"
+                status: Bad Request
+                violations:
+                  - message: The number of students must be greater than or equal to zero
+                    propertyPath: findAll.numberStudents
+                    invalidValue: -2
+                
     post:
       summary: Add a new group
       description: >
@@ -628,6 +871,20 @@ paths:
               example:
                 id: c20bf536-996e-45cb-8f8d-b57f7b9a5998
                 name: SV-51
+        '422':
+          description: >
+            Validation error. The group name must consist of at least one character.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+              example:
+                timestamp: "2022-11-17T19:07:45.652+00:0"
+                status: Unprocessable Entity
+                violations:
+                  - message: The group name must consist of at least one character
+                    propertyPath: groupDto
+                    invalidValue: " "
     delete:
       summary: Delete all groups
       description: >
@@ -694,6 +951,20 @@ paths:
                 id: 7a46abc6-d100-40f1-a16f-a1a0ea18f630
                 name: Chemistry
                 description:  Subject Chemistry
+        '422':
+          description: >
+            Validation error. The course name must consist of at least one character.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+              example:
+                timestamp: "2022-11-17T20:05:27.674+00:00"
+                status: Unprocessable Entity
+                violations:
+                  - message: The course name must consist of at least one character
+                    propertyPath: courseDto
+                    invalidValue: " "
     delete:
       summary: Delete all courses
       description: >
@@ -742,3 +1013,33 @@ components:
           type: string
         description:
           type: string
+    CustomError:
+      type: object
+      properties:
+        timestamp:
+          type: string
+        status:
+          type: string
+        message:
+          type: string
+    Violation:
+      type: object
+      properties:
+        message:
+          type: string
+        propertyPath:
+          type: string
+        invalidValue:
+          type: object
+    ValidationError:
+      type: object
+      properties:
+        timestamp:
+          type: string
+        status:
+          type: string
+        violations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Violation'
+        

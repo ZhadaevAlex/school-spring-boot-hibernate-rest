@@ -1,17 +1,15 @@
 package ru.zhadaev.service;
 
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.zhadaev.api.dto.GroupDto;
+import ru.zhadaev.api.errors.NotFoundException;
 import ru.zhadaev.api.mappers.GroupMapper;
 import ru.zhadaev.dao.entities.Group;
 import ru.zhadaev.dao.entities.Student;
 import ru.zhadaev.dao.repository.impl.GroupDAO;
 import ru.zhadaev.dao.repository.impl.StudentDAO;
-import ru.zhadaev.exception.NotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,54 +19,52 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Transactional(rollbackFor = Exception.class)
 public class GroupService {
-    private static final Logger logger = LoggerFactory.getLogger(GroupService.class);
-
     private final GroupDAO groupDAO;
     private final StudentDAO studentDAO;
-    private final GroupMapper groupMapper;
+    private final GroupMapper mapper;
 
     public GroupDto save(GroupDto groupDto) {
-        Group group = groupMapper.groupDtoToGroup(groupDto);
+        Group group = mapper.toEntity(groupDto);
         Group saved = groupDAO.save(group);
         UUID id = saved.getId();
-        return groupMapper.groupToGroupDto(saved);
+        return mapper.toDto(saved);
     }
 
     public GroupDto replace(GroupDto groupDto, UUID id) {
-        Group group = groupMapper.groupDtoToGroup(groupDto);
+        if (!existsById(id)) throw new NotFoundException("Group replace error. Group not found by id");
+        Group group = mapper.toEntity(groupDto);
         group.setId(id);
         Group replaced = groupDAO.update(group);
-        return groupMapper.groupToGroupDto(replaced);
+        return mapper.toDto(replaced);
     }
 
     public GroupDto update(GroupDto groupDto, UUID id) {
-        Group group = groupDAO.findById(id).
-                orElseThrow(() -> new NotFoundException("Group not found"));
-        groupMapper.updateGroupFromDto(groupDto, group);
-//        Group updated = groupDAO.update(group);
-        return groupMapper.groupToGroupDto(group);
+        Group group = groupDAO.findById(id)
+                .orElseThrow(() -> new NotFoundException("Group update error. Group not found by id"));
+        mapper.update(groupDto, group);
+        return mapper.toDto(group);
     }
 
     public GroupDto findById(UUID id) {
         Group group = groupDAO.findById(id).
-                orElseThrow(() -> new NotFoundException("Group not found"));
-        return groupMapper.groupToGroupDto(group);
+                orElseThrow(() -> new NotFoundException("Group not found by id"));
+        return mapper.toDto(group);
     }
 
     public List<GroupDto> find(GroupDto groupDto) {
-        Group group = groupMapper.groupDtoToGroup(groupDto);
-        List<Group> groupsDb = groupDAO.findLike(group);
-        if (groupsDb.isEmpty()) {
+        Group group = mapper.toEntity(groupDto);
+        List<Group> groups = groupDAO.findLike(group);
+        if (groups.isEmpty()) {
             throw new NotFoundException("Groups not found");
         }
-        return groupMapper.groupsToGroupsDto(groupsDb);
+        return mapper.toDto(groups);
     }
 
     public List<GroupDto> findAll(Integer numberStudents) {
         List<Group> groups = (numberStudents == null) ?
                 groupDAO.findAll()
                 : findGroupsByNumberStudents(numberStudents);
-        return groupMapper.groupsToGroupsDto(groups);
+        return mapper.toDto(groups);
     }
 
     public List<Group> findAll() {
@@ -87,7 +83,6 @@ public class GroupService {
         if (groupDAO.existsById(id)) {
             groupDAO.deleteById(id);
         } else {
-            logger.error("Group delete error. Group not found by id");
             throw new NotFoundException("Group delete error. Group not found by id");
         }
     }

@@ -1,15 +1,13 @@
 package ru.zhadaev.service;
 
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.zhadaev.api.dto.CourseDto;
 import ru.zhadaev.api.mappers.CourseMapper;
+import ru.zhadaev.api.errors.NotFoundException;
 import ru.zhadaev.dao.entities.Course;
 import ru.zhadaev.dao.repository.impl.CourseDAO;
-import ru.zhadaev.exception.NotFoundException;
 
 import java.util.List;
 import java.util.UUID;
@@ -18,49 +16,50 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Transactional(rollbackFor = Exception.class)
 public class CourseService {
-    private static final Logger logger = LoggerFactory.getLogger(CourseService.class);
-
     private final CourseDAO courseDAO;
-    private final CourseMapper courseMapper;
+    private final CourseMapper mapper;
 
     public CourseDto save(CourseDto courseDto) {
-        Course course = courseMapper.courseDtoToCourse(courseDto);
+        Course course = mapper.toEntity(courseDto);
         Course saved = courseDAO.save(course);
         UUID id = saved.getId();
-        return courseMapper.courseToCourseDto(saved);
+        return mapper.toDto(saved);
     }
 
     public CourseDto replace(CourseDto courseDto, UUID id) {
-        Course course = courseMapper.courseDtoToCourse(courseDto);
+        if (!existsById(id)) throw new NotFoundException("Group replace error. Group not found by id");
+        Course course = mapper.toEntity(courseDto);
         course.setId(id);
         Course replaced = courseDAO.update(course);
-        return courseMapper.courseToCourseDto(replaced);
+        return mapper.toDto(replaced);
     }
 
     public CourseDto update(CourseDto courseDto, UUID id) {
         Course course = courseDAO.findById(id)
-                .orElseThrow(() -> new NotFoundException("Course not found"));
-        courseMapper.updateCourseFromDto(courseDto, course);
-        return courseMapper.courseToCourseDto(course);
+                .orElseThrow(() -> new NotFoundException("Course update error. Course not found by id"));
+        mapper.update(courseDto, course);
+        return mapper.toDto(course);
     }
 
     public CourseDto findById(UUID id) {
         Course course = courseDAO.findById(id)
-                .orElseThrow(() -> new NotFoundException("Course not found"));
-        return courseMapper.courseToCourseDto(course);
+                .orElseThrow(() -> new NotFoundException("Course not found by id"));
+        return mapper.toDto(course);
     }
 
-    public List<Course> find(Course course) {
-        List<Course> courseDb = courseDAO.findLike(course);
-        if (courseDb.isEmpty()) {
-            throw new NotFoundException("Courses not found");
+    public List<CourseDto> find(CourseDto courseDto) {
+        Course course = mapper.toEntity(courseDto);
+        List<Course> courses = courseDAO.findLike(course);
+        if (courses.isEmpty()) {
+            throw new NotFoundException("Courses not found by id");
         }
-        return courseDb;
+
+        return mapper.toDto(courses);
     }
 
     public List<CourseDto> findAll() {
         List<Course> courses = courseDAO.findAll();
-        return courseMapper.coursesToCoursesDto(courses);
+        return mapper.toDto(courses);
     }
 
     public boolean existsById(UUID id) {
@@ -75,7 +74,6 @@ public class CourseService {
         if (courseDAO.existsById(id)) {
             courseDAO.deleteById(id);
         } else {
-            logger.error("Course delete error. Course not found by id");
             throw new NotFoundException("Course delete error. Course not found by id");
         }
     }

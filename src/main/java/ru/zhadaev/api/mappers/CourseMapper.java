@@ -11,8 +11,8 @@ import java.util.List;
 @Mapper(componentModel = "spring",
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface CourseMapper {
-    CourseDto courseToCourseDto(Course course);
-    Course courseDtoToCourse(CourseDto courseDto);
-    List<CourseDto> coursesToCoursesDto(List<Course> courses);
-    void updateCourseFromDto(CourseDto courseDto, @MappingTarget Course course);
+    CourseDto toDto(Course course);
+    Course toEntity(CourseDto courseDto);
+    List<CourseDto> toDto(List<Course> courses);
+    void update(CourseDto courseDto, @MappingTarget Course course);
 }
