@@ -10,12 +10,13 @@ import ru.zhadaev.dao.repository.CrudRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static java.util.Optional.ofNullable;
 
 @Repository
 @RequiredArgsConstructor
-public class GroupDAO implements CrudRepository<Group, Integer> {
+public class GroupDAO implements CrudRepository<Group, UUID> {
     private final SessionFactory sessionFactory;
 
     @Override
@@ -31,7 +32,7 @@ public class GroupDAO implements CrudRepository<Group, Integer> {
     }
 
     @Override
-    public Optional<Group> findById(Integer id) {
+    public Optional<Group> findById(UUID id) {
         return ofNullable(getSession()
                 .get(Group.class, id));
     }
@@ -51,7 +52,7 @@ public class GroupDAO implements CrudRepository<Group, Integer> {
     }
 
     @Override
-    public boolean existsById(Integer id) {
+    public boolean existsById(UUID id) {
         return this.findById(id).isPresent();
     }
 
@@ -61,7 +62,7 @@ public class GroupDAO implements CrudRepository<Group, Integer> {
     }
 
     @Override
-    public void deleteById(Integer id) {
+    public void deleteById(UUID id) {
         Query query = getSession().createQuery("delete from Group where id =:id");
         query.setParameter("id", id);
         query.executeUpdate();

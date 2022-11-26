@@ -1,70 +1,73 @@
 package ru.zhadaev.service;
 
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.zhadaev.dao.entities.Course;
-import ru.zhadaev.dao.entities.Group;
+import ru.zhadaev.api.dto.StudentDto;
+import ru.zhadaev.api.errors.NotFoundException;
+import ru.zhadaev.api.mappers.StudentMapper;
 import ru.zhadaev.dao.entities.Student;
 import ru.zhadaev.dao.repository.impl.StudentDAO;
-import ru.zhadaev.exception.NotFoundException;
-import ru.zhadaev.exception.NotValidStudentException;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.UUID;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
 @RequiredArgsConstructor
 public class StudentService {
-    private static final Logger logger = LoggerFactory.getLogger(StudentService.class);
-
     private final StudentDAO studentDAO;
-    private final CourseService courseService;
-    private final GroupService groupService;
+    private final StudentMapper mapper;
 
-    public Student save(Student student) {
-        requiredNotNull(student);
-        return studentDAO.save(student);
+    public StudentDto save(StudentDto studentDto) {
+        Student student = mapper.toEntity(studentDto);
+        Student saved = studentDAO.save(student);
+        return mapper.toDto(saved);
     }
 
-    public Student update(Map<String, String> updatedData, Integer id) {
-        Student student = findById(id);
-        Group group = groupService.findById(Integer.parseInt(updatedData.get("groupId")));
-        student.setFirstName(updatedData.get("firstName"));
-        student.setLastName(updatedData.get("lastName"));
-        student.setGroup(group);
-        return studentDAO.update(student);
+    public StudentDto replace(StudentDto studentDto, UUID id) {
+        if (!existsById(id)) throw new NotFoundException("Student replace error. Student not found by id");
+        Student student = mapper.toEntity(studentDto);
+        student.setId(id);
+        Student replaced = studentDAO.update(student);
+        return mapper.toDto(replaced);
     }
 
-    public Student findById(Integer id) {
-        requiredIdIsValid(id);
-        return studentDAO.findById(id).orElseThrow(() -> new NotFoundException("Student not found"));
+    public StudentDto update(StudentDto studentDto, UUID id) {
+        Student student = studentDAO.findById(id)
+                .orElseThrow(() -> new NotFoundException("Student update error. Student not found by id"));
+        mapper.update(studentDto, student);
+        return mapper.toDto(student);
     }
 
-    public List<Student> find(Student student) {
-        requiredNotNull(student);
+    public StudentDto findById(UUID id) {
+        Student student = studentDAO.findById(id)
+                .orElseThrow(() -> new NotFoundException("Student not found by id"));
+        return mapper.toDto(student);
+    }
 
-        List<Student> studentDb = studentDAO.findLike(student);
-
-        if (studentDb.isEmpty()) {
-            throw new NotFoundException("Students not found");
+    public List<StudentDto> find(StudentDto studentDto) {
+        Student student = mapper.toEntity(studentDto);
+        List<Student> students = studentDAO.findLike(student);
+        if (students.isEmpty()) {
+            throw new NotFoundException("Students not found by id");
         }
+        return mapper.toDto(students);
+    }
 
-        return studentDb;
+    public List<StudentDto> findAll(UUID courseId) {
+        List<Student> students = (courseId == null) ?
+                studentDAO.findAll()
+                : findStudentsByCourseId(courseId);
+        return mapper.toDto(students);
     }
 
     public List<Student> findAll() {
         return studentDAO.findAll();
     }
 
-    public boolean existsById(Integer id) {
-        requiredIdIsValid(id);
-
+    public boolean existsById(UUID id) {
         return studentDAO.existsById(id);
     }
 
@@ -72,13 +75,10 @@ public class StudentService {
         return studentDAO.count();
     }
 
-    public void deleteById(Integer id) {
-        requiredIdIsValid(id);
-
+    public void deleteById(UUID id) {
         if (studentDAO.existsById(id)) {
             studentDAO.deleteById(id);
         } else {
-            logger.error("Student delete error. Student not found by id");
             throw new NotFoundException("Student delete error. Student not found by id");
         }
 
@@ -86,7 +86,6 @@ public class StudentService {
     }
 
     public void delete(Student student) {
-        requiredNotNull(student);
         studentDAO.delete(student);
     }
 
@@ -94,68 +93,19 @@ public class StudentService {
         studentDAO.deleteAll();
     }
 
-    public void signOnCourses(Integer studentId, List<Integer> coursesId) {
-        requiredIdIsValid(studentId);
-        requiredStudentIsExist(studentId);
-        Student student = findById(studentId);
+    public List<Student> findStudentsByCourseId(UUID courseId) {
+        List<Student> studentsDb = studentDAO.findAll();
+        List<Student> studentsByCourse = new ArrayList<>();
 
-        Set<Course> courses = (student.getCourses() == null) ?
-                new HashSet<>() : student.getCourses();
+        for (Student student : studentsDb) {
+            boolean contains = student.getCourses().stream()
+                    .anyMatch(p -> p.getId().equals(courseId));
 
-        for (Integer courseId : coursesId) {
-            requiredIdIsValid(courseId);
-            requiredCourseIsExist(courseId);
-            courses.add(courseService.findById(courseId));
+            if (contains) {
+                studentsByCourse.add(student);
+            }
         }
 
-        student.setCourses(courses);
-        studentDAO.update(student);
-    }
-
-    public void removeFromCourses(Integer studentId, List<Integer> coursesId) {
-        requiredIdIsValid(studentId);
-        requiredStudentIsExist(studentId);
-        Student student = findById(studentId);
-
-        Set<Course> courses = (student.getCourses() == null) ?
-                new HashSet<>() : student.getCourses();
-
-        for (Integer courseId : coursesId) {
-            requiredIdIsValid(courseId);
-            requiredCourseIsExist(courseId);
-            Course course = courses.stream().filter(p -> p.getId() == courseId).findFirst().get();
-            courses.remove(course);
-        }
-
-        student.setCourses(courses);
-        studentDAO.update(student);
-    }
-
-    private void requiredNotNull(Student student) {
-        if (student == null) {
-            logger.error("Student required is not null!");
-            throw new NotValidStudentException("Student required is not null!");
-        }
-    }
-
-    private void requiredStudentIsExist(Integer id) {
-        if (!studentDAO.existsById(id)) {
-            logger.error("The student's course was not found in the database");
-            throw new NotFoundException("The student's was not found in the database");
-        }
-    }
-
-    private void requiredCourseIsExist(Integer id) {
-        if (!courseService.existsById(id)) {
-            logger.error("The student's course was not found in the database");
-            throw new NotFoundException("The student's course was not found in the database");
-        }
-    }
-
-    private void requiredIdIsValid(Integer id) {
-        if (id == null || id < 1) {
-            logger.error("The id value must be non-null and greater than 0");
-            throw new NotValidStudentException("The id value must be non-null and greater than 0");
-        }
+        return studentsByCourse;
     }
 }

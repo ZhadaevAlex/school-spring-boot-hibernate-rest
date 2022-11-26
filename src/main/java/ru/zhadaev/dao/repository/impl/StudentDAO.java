@@ -10,12 +10,13 @@ import ru.zhadaev.dao.repository.CrudRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static java.util.Optional.ofNullable;
 
 @Repository
 @RequiredArgsConstructor
-public class StudentDAO implements CrudRepository<Student, Integer> {
+public class StudentDAO implements CrudRepository<Student, UUID> {
     private final SessionFactory sessionFactory;
 
     @Override
@@ -31,7 +32,7 @@ public class StudentDAO implements CrudRepository<Student, Integer> {
     }
 
     @Override
-    public Optional<Student> findById(Integer id) {
+    public Optional<Student> findById(UUID id) {
         return ofNullable(getSession()
                 .get(Student.class, id));
     }
@@ -50,7 +51,7 @@ public class StudentDAO implements CrudRepository<Student, Integer> {
     }
 
     @Override
-    public boolean existsById(Integer id) {
+    public boolean existsById(UUID id) {
         Optional<Student> optStudent = this.findById(id);
 
         return optStudent.isPresent();
@@ -62,7 +63,7 @@ public class StudentDAO implements CrudRepository<Student, Integer> {
     }
 
     @Override
-    public void deleteById(Integer id) {
+    public void deleteById(UUID id) {
         Query query = getSession().createQuery("delete from Student where id = :id");
         query.setParameter("id", id);
         query.executeUpdate();
