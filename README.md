@@ -8,7 +8,6 @@ Additionally use:
 - Validation
 - Lombok
 - Open API
-- AOP for logging
 
 Use PostgreSQL DB
 Use PostgreSQL DB.
