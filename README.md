@@ -1,6 +1,16 @@
-# sql-jdbc-school
-Create an application sql-jdbc-school that inserts/updates/deletes data in the database using JDBC.
+# school-spring-boot-hibernate-rest
+Create an application that inserts/updates/deletes data in the database using:
+- Spring Boot
+- Hibernate
+- REST
 
+Additionally use:
+- Validation
+- Lombok
+- Open API
+- AOP for logging
+
+Use PostgreSQL DB
 Use PostgreSQL DB.
 
 Tables (given types are Java types, use SQL analogs that fit the most:
